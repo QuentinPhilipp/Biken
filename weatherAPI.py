@@ -9,7 +9,7 @@ key = 'ac69ab213a56edaffaac9baa47770444'
 city = 'Brest'
 country = 'FR'
 
-requestURL = 'http://api.openweathermap.org/data/2.5/forecast?q='+city+','+country+'&APPID='+key
+requestURL = 'http://api.openweathermap.org/data/2.5/forecast?q='+city+','+country+'&units=metric'+'&APPID='+key
 
 meteo = requests.get(requestURL).json()
 
