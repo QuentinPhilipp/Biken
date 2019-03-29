@@ -18,3 +18,4 @@ Pour l'appel il faut renseigner la ville, le pays et la clé.
 La fonction ***requests.get(....).json()*** nous renvoie un fichier json que l'on peux facilement traiter. Regardez le retour de la fonction si vous voulez voir l’intégralité du fichier
 
 
+oui
