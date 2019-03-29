@@ -14,7 +14,7 @@ requestURL = 'http://api.openweathermap.org/data/2.5/forecast?q='+city+','+count
 meteo = requests.get(requestURL).json()
 
 #print meteo
-#test
+#test3
 
 #print meteo["city"]  #print info of the city              {u'country': u'FR', u'population': 144899, u'id': 3030300, u'coord': {u'lat': 48.3905, u'lon': -4.4861}, u'name': u'Brest'}
 
