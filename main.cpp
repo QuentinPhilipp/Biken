@@ -14,7 +14,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
-//test branche Charles
 
 int main(int argc, char *argv[])
 {
