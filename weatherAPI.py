@@ -4,6 +4,8 @@ import json
 #doc :
 #https://openweathermap.org/forecast5
 
+#modification depuis la nouvelle branche
+
 key = 'ac69ab213a56edaffaac9baa47770444'
 
 city = 'Brest'
