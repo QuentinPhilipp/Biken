@@ -3,6 +3,7 @@ import QtQuick.Window 2.2
 import QtLocation 5.6
 import QtPositioning 5.6
 import "helper.js" as Helper
+import "map"
 
 /*
   Coodrinates for the test:
@@ -15,6 +16,8 @@ import "helper.js" as Helper
 
 Window {
     id: mainWaindow
+
+    property var map
 
     width: 1500
     minimumWidth: 800
@@ -34,93 +37,13 @@ Window {
             id: mapPlugin
             preferred: ["osm", "esri"]
         }
+    }
 
-        Map {
-            id: map
-            property alias routeQuery: routeQuery
-            property alias routeModel: routeModel
-
-            anchors.fill: mapContainer
-            plugin: mapPlugin
-            center: QtPositioning.coordinate(48.368718, -4.588330) // Plouzane
-            zoomLevel: 10
-
-            function calculateCoordinateRoute(startCoordinate, endCoordinate)
-            {
-                // clear away any old data in the query
-                routeQuery.clearWaypoints();
-
-                // add the start and end coords as waypoints on the route
-                routeQuery.addWaypoint(startCoordinate)
-                routeQuery.addWaypoint(endCoordinate)
-                routeQuery.travelModes = RouteQuery.BicycleTravel
-                routeQuery.routeOptimizations = RouteQuery.FastestRoute
-
-                for (var i=0; i<9; i++) {
-                    routeQuery.setFeatureWeight(i, 0)
-                }
-                //for (var i=0; i<routeDialog.features.length; i++) {
-                //    map.routeQuery.setFeatureWeight(routeDialog.features[i], RouteQuery.AvoidFeatureWeight)
-                //}
-                //! [routerequest0 feature weight]
-
-                //! [routerequest1]
-                routeModel.update();
-
-                //! [routerequest1]
-                //! [routerequest2]
-                // center the map on the start coord
-                map.center = startCoordinate;
-                //! [routerequest2]
-            }
-
-            function showRouteListPage()
-            {
-                if (routeModel.count > 0) {
-                    //textToDisplay.text="Itinéraire: " + routeModel.get(0).segments[1].path
-                    for (var i = 0; i < routeModel.get(0).segments.length; i++) {
-                        textToDisplay.text+="\nInstruction: " + routeModel.get(0).segments[i].maneuver.instructionText
-                                + "\nDistance: "+Helper.formatDistance(routeModel.get(0).segments[i].maneuver.distanceToNextInstruction)
-                                + "\nDénivelé: "+routeModel.get(0).segments[i].path[0].altitude + "m\n"
-                    }
-                }
-            }
-
-            RouteModel {
-                id: routeModel
-                plugin : map.plugin
-                query:  RouteQuery {
-                    id: routeQuery
-                }
-                onStatusChanged: {
-                    if (status == RouteModel.Ready) {
-                        switch (count) {
-                        case 1:
-                            map.showRouteListPage()
-                            break
-                        }
-                    }
-                }
-            }
-
-            MapItemView {
-                model: routeModel
-                delegate: routeDelegate
-            }
-
-            Component {
-                id: routeDelegate
-
-                MapRoute {
-                    route: routeData
-                    line.color: "#ff00ff"
-                    line.width: 5
-                    smooth: true
-                    opacity: 0.8
-                }
-            }
-        }
-
+    MyMap {
+        //permet de créer un object MyMap (défini dans le fichier "MyMap.qml")
+        id : thisIsTheMap
+        anchors.fill: mapContainer
+        plugin: mapPlugin
     }
 
     Rectangle{
@@ -231,10 +154,10 @@ Window {
                                                                    parseFloat(fromLongitude.text));
                     var endCoordinate = QtPositioning.coordinate(parseFloat(toLatitude.text),
                                                                  parseFloat(toLongitude.text));
-                    //startCoordinate = QtPositioning.coordinate(48.368718, -4.588330);
-                    //endCoordinate = QtPositioning.coordinate(48.535807,-4.658547);
+                    /*var startCoordinate = QtPositioning.coordinate(48.368718, -4.588330);
+                    var endCoordinate = QtPositioning.coordinate(48.535807,-4.658547);*/
                     if (startCoordinate.isValid && endCoordinate.isValid) {
-                        map.calculateCoordinateRoute(startCoordinate,endCoordinate)
+                        thisIsTheMap.calculateCoordinateRoute(startCoordinate,endCoordinate)
                     }
                 }
             }
