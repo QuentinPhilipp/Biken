@@ -1,5 +1,5 @@
-#ifndef WAYS
-#define WAYS 1
+#ifndef WAYS_HPP
+#define WAYS_HPP 1
 
 #include "Nodes.h"
 #include <vector>
@@ -11,6 +11,7 @@ class Ways
   Ways(string id,std::vector<Nodes> nodes);
 
   void displayNode();
+  void displayGPSData();
 
   private :
   string id;
