@@ -150,12 +150,12 @@ Window {
             MouseArea{
                 anchors.fill: parent
                 onPressed: {
-                    var startCoordinate = QtPositioning.coordinate(parseFloat(fromLatitude.text),
+                    /*var startCoordinate = QtPositioning.coordinate(parseFloat(fromLatitude.text),
                                                                    parseFloat(fromLongitude.text));
                     var endCoordinate = QtPositioning.coordinate(parseFloat(toLatitude.text),
-                                                                 parseFloat(toLongitude.text));
-                    /*var startCoordinate = QtPositioning.coordinate(48.368718, -4.588330);
-                    var endCoordinate = QtPositioning.coordinate(48.535807,-4.658547);*/
+                                                                 parseFloat(toLongitude.text));*/
+                    var startCoordinate = QtPositioning.coordinate(48.368718, -4.588330);
+                    var endCoordinate = QtPositioning.coordinate(48.535807,-4.658547);
                     if (startCoordinate.isValid && endCoordinate.isValid) {
                         thisIsTheMap.calculateCoordinateRoute(startCoordinate,endCoordinate)
                     }
