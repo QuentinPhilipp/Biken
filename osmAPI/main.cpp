@@ -4,16 +4,73 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QUrl>
-
+#include <string>
 #include <QByteArray>
 #include <QEvent>
 #include <QDebug>
 #include <QObject>
-
+#include "Nodes.h"
+#include "Ways.h"
 #include <QJsonObject>
 #include <QJsonDocument>
-#include <QJsonObject>
 #include <QJsonArray>
+
+std::tuple<std::vector<Nodes>,std::vector<Ways>> generateWaysAndNodes(std::vector<QJsonValue> ways,std::vector<QJsonValue> nodes){
+    //transfromer les nodes en object node
+    std::vector<Nodes> nodesObjectVector;
+    for(auto node : nodes){
+        QJsonObject value = node.toObject();
+        std::string id = std::to_string(value["id"].toInt());
+        double latitude = value["lat"].toDouble();
+        double longitude = value["lon"].toDouble();
+        Nodes n = Nodes(id,latitude,longitude);
+        nodesObjectVector.emplace_back(n);
+    }
+    qDebug() << "All nodes transformed";
+//    qDebug() << nodesObjectVector.size();
+
+
+    //transformer les ways en Objets de type ways
+    //et y ajouter les nodes
+    std::vector<Ways> waysObjectVector;
+    int counter =0;
+    for(auto way : ways)
+    {
+        std::vector<Nodes> nodesWaysVector;
+        QJsonObject value = way.toObject();
+        std::string id = std::to_string(value["id"].toInt());
+        QJsonArray nodesArray = value["nodes"].toArray();
+        for(auto node : nodesArray)
+        {
+            std::string nodeId = std::to_string(node.toInt());
+            for(auto nodeObject : nodesObjectVector)
+            {
+                //qDebug() <<"nodeObject id : " << atoi(nodeObject.getId().c_str());
+                //qDebug() <<"nodeId : "<<atoi(nodeId.c_str());
+               if (nodeObject.getId()==nodeId)
+               {
+                    nodesWaysVector.emplace_back(nodeObject);
+                    //qDebug() << "\n\n\n\nMATCH\n\n\n\n";
+                    counter+=1;
+               }
+            }
+        }
+        if (nodesWaysVector.size()!=0)
+        {
+            Ways w = Ways(id,nodesWaysVector);
+            waysObjectVector.emplace_back(w);
+        }
+
+    }
+    qDebug() << "All ways transformed";
+//    qDebug() << waysObjectVector.size();
+//    qDebug() << "counter of referencies : "<< counter;
+//    waysObjectVector[0].displayGPSData();
+    qDebug() << "Roads are stored in the classes. OK ! ";
+
+    return {nodesObjectVector,waysObjectVector};
+    }
+
 
 int main(int argc, char *argv[])
 {
@@ -36,14 +93,34 @@ int main(int argc, char *argv[])
     //Put the reply in JSON
     if(reply->error() == QNetworkReply::NoError)
     {
-        QString strReply = QString(reply->readAll()); //readAll returns a QByteArray -> we convert it into a String
-
+        std::vector<QJsonValue> nodes;
+        std::vector<QJsonValue> ways;
+        QString strReply = (QString)reply->readAll();
         QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
-        QJsonObject jsonObj = jsonResponse.object();
+        QJsonObject jsonObject = jsonResponse.object();
+        QJsonArray jsonArray = jsonObject["elements"].toArray();
 
-        qDebug() << jsonObj;
+
+        //Put all the nodes in a vector and all the ways in another
+        for (auto elem : jsonArray)
+        {
+            QJsonValue value = elem;
+            QJsonObject item = value.toObject();
+            QJsonValue val = item["type"];
+            if (val=="node") {nodes.emplace_back(elem);}
+            else {ways.emplace_back(elem);}
+        }
+        //store all the roads and nodes in differents classes.
+        auto [nodeVector,waysVector] = generateWaysAndNodes(ways,nodes);
+
+        //Examples
+        waysVector[0].displayGPSData();
+
+
     }
 
     manager->~QNetworkAccessManager();
     return a.exec();
 }
+
+
