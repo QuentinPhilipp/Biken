@@ -15,52 +15,47 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 
+//using qDebug to print in the Qt console
+
+
+
+//This function is used to transform JsonValues array to differents classes define in the files 'Nodes.cpp' and 'Ways.cpp'
 std::tuple<std::vector<Nodes>,std::vector<Ways>> generateWaysAndNodes(std::vector<QJsonValue> ways,std::vector<QJsonValue> nodes){
-    //transfromer les nodes en object node
-    std::vector<Nodes> nodesObjectVector;
+    //transform nodes in nodeObject
+    std::vector<Nodes> nodesObjectVector;                                       //store all node object in a vector
     for(auto node : nodes){
         QJsonObject value = node.toObject();
-        std::string id = std::to_string(value["id"].toInt());
-        double latitude = value["lat"].toDouble();
-        double longitude = value["lon"].toDouble();
+        std::string id = std::to_string(value["id"].toInt());                   //get the id
+        double latitude = value["lat"].toDouble();                              //get latitude
+        double longitude = value["lon"].toDouble();                             //get longitude
         Nodes n = Nodes(id,latitude,longitude);
         nodesObjectVector.emplace_back(n);
     }
     qDebug() << "All nodes transformed";
 //    qDebug() << nodesObjectVector.size();
 
-
-    //transformer les ways en Objets de type ways
-    //et y ajouter les nodes
-    std::vector<Ways> waysObjectVector;
-    int counter =0;
+    //transform ways in wayObject and add the node in it
+    std::vector<Ways> waysObjectVector;                                         //store all ways object in a vector
     for(auto way : ways)
     {
-        std::vector<Nodes> nodesWaysVector;
+        std::vector<Nodes> nodesWaysVector;                                     //store all the nodes that go in this way
         QJsonObject value = way.toObject();
-        std::string id = std::to_string(value["id"].toInt());
+        std::string id = std::to_string(value["id"].toInt());                   //get the id in string
         QJsonArray nodesArray = value["nodes"].toArray();
         for(auto node : nodesArray)
         {
             std::string nodeId = std::to_string(node.toInt());
             for(auto nodeObject : nodesObjectVector)
             {
-                //qDebug() <<"nodeObject id : " << atoi(nodeObject.getId().c_str());
-                //qDebug() <<"nodeId : "<<atoi(nodeId.c_str());
                if (nodeObject.getId()==nodeId)
-               {
-                    nodesWaysVector.emplace_back(nodeObject);
-                    //qDebug() << "\n\n\n\nMATCH\n\n\n\n";
-                    counter+=1;
-               }
+               {nodesWaysVector.emplace_back(nodeObject);}                      //emplace back the node in the vector that store all the node of this way
             }
         }
-        if (nodesWaysVector.size()!=0)
+        if (nodesWaysVector.size()!=0)                                          //security
         {
-            Ways w = Ways(id,nodesWaysVector);
-            waysObjectVector.emplace_back(w);
+            Ways w = Ways(id,nodesWaysVector);                                  //creating the way
+            waysObjectVector.emplace_back(w);                                   //emplace back in the ways vector
         }
-
     }
     qDebug() << "All ways transformed";
 //    qDebug() << waysObjectVector.size();
@@ -122,5 +117,3 @@ int main(int argc, char *argv[])
     manager->~QNetworkAccessManager();
     return a.exec();
 }
-
-

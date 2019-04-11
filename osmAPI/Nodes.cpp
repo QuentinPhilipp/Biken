@@ -12,12 +12,10 @@ string Nodes::getId() const
 {
   return this->id;
 }
-
 double Nodes::getLongitude() const
 {
   return this->longitude;
 }
-
 double Nodes::getLatitude() const
 {
   return this->latitude;

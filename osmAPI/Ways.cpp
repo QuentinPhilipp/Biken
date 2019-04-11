@@ -16,7 +16,7 @@ void Ways::displayNode()
 }
 
 void Ways::displayGPSData()         //display way id and the position
-{
+{                                   //using qDebug to print in the Qt console
   qDebug() << "~~~~~~~ Ways n° : "<< atoi(id.c_str()) << " ~~~~~~~\n\n";
   for (auto &e : nodes)
   {
@@ -25,5 +25,3 @@ void Ways::displayGPSData()         //display way id and the position
     qDebug() << "longitude : " << e.getLongitude()<<"\n\n";
   }
 }
-
-

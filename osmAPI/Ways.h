@@ -3,7 +3,7 @@
 
 #include "Nodes.h"
 #include <vector>
-#include <QDebug>
+#include <QDebug>                  //using qDebug to print in the Qt console
 using namespace std;
 
 class Ways
