@@ -28,11 +28,13 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
     Nodes.cpp \
-    Ways.cpp
+    Ways.cpp \
+    requetesapi.cpp
 
 HEADERS += \
     Nodes.h \
-    Ways.h
+    Ways.h \
+    requetesapi.h
 
 FORMS += \
         mainwindow.ui
