@@ -2,13 +2,13 @@
 
 
 //constructor
-Nodes::Nodes(string id,double lat,double lon) : id{id},latitude{lat},longitude{lon}
+Nodes::Nodes(uint64_t id,double lat,double lon) : id{id},latitude{lat},longitude{lon}
 {};
 
 
 
 //getter (read-only)
-string Nodes::getId() const
+uint64_t Nodes::getId() const
 {
   return this->id;
 }
