@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
     {
         std::vector<QJsonValue> nodes;
         std::vector<QJsonValue> ways;
-        QString strReply = (QString)reply->readAll();
+        QString strReply = QString(reply->readAll());
         QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
         QJsonObject jsonObject = jsonResponse.object();
         QJsonArray jsonArray = jsonObject["elements"].toArray();
