@@ -1,133 +1,125 @@
 #include <QApplication>
 
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrl>
+
 #include <string>
-#include <QByteArray>
-#include <QEvent>
 #include <QDebug>
 #include <QObject>
-#include "Nodes.h"
-#include "Ways.h"
 #include <QJsonObject>
-#include <QJsonDocument>
 #include <QJsonArray>
 
-//using qDebug to print in the Qt console
+#include "Nodes.h"
+#include "Ways.h"
+#include "requetesapi.h"
+
+using namespace std;
 
 
-
-//This function is used to transform JsonValues array to differents classes define in the files 'Nodes.cpp' and 'Ways.cpp'
-std::tuple<std::vector<Nodes>,std::vector<Ways>> generateWaysAndNodes(std::vector<QJsonValue> ways,std::vector<QJsonValue> nodes){
-    //transform nodes in nodeObject
-    std::vector<Nodes> nodesObjectVector;                                       //store all node object in a vector
-    for(auto node : nodes){
-        QJsonObject value = node.toObject();
-        std::string id = std::to_string(value["id"].toInt());                   //get the id
-        double latitude = value["lat"].toDouble();                              //get latitude
-        double longitude = value["lon"].toDouble();                             //get longitude
-        Nodes n = Nodes(id,latitude,longitude);
-        nodesObjectVector.emplace_back(n);
-    }
-    qDebug() << "All nodes transformed";
-//    qDebug() << nodesObjectVector.size();
-
-    //transform ways in wayObject and add the node in it
-    std::vector<Ways> waysObjectVector;                                         //store all ways object in a vector
-    for(auto way : ways)
-    {
-        std::vector<Nodes> nodesWaysVector;                                     //store all the nodes that go in this way
-        QJsonObject value = way.toObject();
-        std::string id = std::to_string(value["id"].toInt());                   //get the id in string
-        QJsonArray nodesArray = value["nodes"].toArray();
-        for(auto node : nodesArray)
-        {
-            std::string nodeId = std::to_string(node.toInt());
-            for(auto nodeObject : nodesObjectVector)
-            {
-               if (nodeObject.getId()==nodeId)
-               {nodesWaysVector.emplace_back(nodeObject);}                      //emplace back the node in the vector that store all the node of this way
-            }
-        }
-        if (nodesWaysVector.size()!=0)                                          //security
-        {
-            Ways w = Ways(id,nodesWaysVector);                                  //creating the way
-            waysObjectVector.emplace_back(w);                                   //emplace back in the ways vector
-        }
-    }
-    qDebug() << "All ways transformed";
-//    qDebug() << waysObjectVector.size();
-//    qDebug() << "counter of referencies : "<< counter;
-//    waysObjectVector[0].displayGPSData();
-    qDebug() << "Roads are stored in the classes. OK ! ";
-
-    return {nodesObjectVector,waysObjectVector};
-    }
+vector<Ways> generateWaysAndNodes(QJsonObject allRoads);
+Nodes getNodeFromNodeId(uint64_t nodeId, uint nbNodes, vector<Nodes> &nodesObjectVector);
 
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QString latitude = "48.434420";
-    QString longitude = "-4.640103";
-    QString radius = "1000"; //in meter
-    QString urlString = "http://overpass-api.de/api/interpreter?data=%3Cosm-script%20output%3D%22json"
-            "%22%3E%0A%20%20%3Cquery%20type%3D%22way"
-            "%22%3E%0A%20%20%20%20%20%20%3C"
-            "around%20lat%3D%22"+latitude+
-            "%22%20lon%3D%22"+longitude+
-            "%22%20radius%3D%22"+radius+
-            "%22%2F%3E%0A%20%20%20%20%20%20%3Chas-kv%20k%3D%22highway"
-            //here we set the roads we want (motorway,trunk,primary,secondary,tertiary,unclassified,residential)
-            "%22%20regv%3D%22primary%7Csecondary%7Ctertiary%7C"
-            "%22%2F%3E%0A%20%20%3C%2Fquery%3E%0A%20%20%3Cunion%3E%0A%20%20%20%20%3Citem%2F%3E%0A%20%20%20%20%3"
-            "Crecurse%20type%3D%22down%22%2F%3E%0A%20%20%3C%2Funion%3E%0A%20%20%3Cprint%2F%3E%0A%3C%2Fosm-script%3E";
-    QUrl url(urlString);
-    QNetworkRequest request(url);
 
-    QNetworkAccessManager *manager = new QNetworkAccessManager();
-
-    //In this part, we create a loop that runs until the QNetworkReply has finished processing.
-    QEventLoop loop;
-    QObject::connect(manager,
-                     SIGNAL(finished(QNetworkReply*)), //finished is a signal from the QNetworkReply Class that is emitted when the reply has finished processing.
-                     &loop,
-                     SLOT(quit())); //slot from QEventLoop that calls exit()
-    QNetworkReply* reply = manager->get(request);
-    loop.exec(); //enters the loop and stays in it until loop.exit() is called
+    //make a request to get all the roads around a coordinate
+    RequetesAPI *requeteRoads = new RequetesAPI();
+    QString radius = "100000"; //radius in meters
+    QJsonObject allRoads = requeteRoads->getAllRoadsAroundThePoint("48.434420","-4.640103",radius);
 
 
-    //Put the reply in JSON
-    if(reply->error() == QNetworkReply::NoError)
-    {
-        std::vector<QJsonValue> nodes;
-        std::vector<QJsonValue> ways;
-        QString strReply = QString(reply->readAll());
-        QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
-        QJsonObject jsonObject = jsonResponse.object();
-        QJsonArray jsonArray = jsonObject["elements"].toArray();
+    //store all the roads and nodes in differents classes.
+    vector<Ways> waysVector = generateWaysAndNodes(allRoads);
 
+    //Verification
+    uint size = waysVector.size();
+    qDebug() << "\nAmount of ways: " << size ;
+    waysVector[size-1].displayGPSData();
+    qDebug() << "\n~~~~ Finished ! ~~~~";
 
-        //Put all the nodes in a vector and all the ways in another
-        for (auto elem : jsonArray)
-        {
-            QJsonValue value = elem;
-            QJsonObject item = value.toObject();
-            QJsonValue val = item["type"];
-            if (val=="node") {nodes.emplace_back(elem);}
-            else {ways.emplace_back(elem);}
-        }
-        //store all the roads and nodes in differents classes.
-        auto [nodeVector,waysVector] = generateWaysAndNodes(ways,nodes);
-
-        //Examples
-        waysVector[0].displayGPSData();
-
-
-    }
-
-    manager->~QNetworkAccessManager();
     return a.exec();
+}
+
+
+//This function is used to transform JsonValues array to differents classes define in the files 'Nodes.cpp' and 'Ways.cpp'
+vector<Ways> generateWaysAndNodes(QJsonObject allRoads){
+    vector<Ways> waysObjectVector;    //A vector that contains every Ways objects
+    vector<Nodes> nodesObjectVector;  //A vector that contains every Nodes objects
+    uint nbNodes=0;
+
+    int length = allRoads["elements"].toArray().size(); //allRoads["elements"] contains all the ways and nodes (in JSON)
+    for (int i=0;i<length;i++) {
+        QJsonValue element = QJsonValue(allRoads["elements"])[i]; //contains one way OR one node (with everything that's inside it), (in JSON)
+        if(element["type"]=="node"){
+            uint64_t nodeId = static_cast<uint64_t>(element["id"].toDouble()); //it has to be uint64_t because the Id can be more than 2^32 (so uint_32_t and below won't work)
+            double latitude = element["lat"].toDouble();
+            double longitude = element["lon"].toDouble();
+            Nodes node = Nodes(nodeId,latitude,longitude); //create an object Nodes with the 3 parameters from above
+            nodesObjectVector.emplace_back(node);
+            nbNodes++;
+        }
+        else if(element["type"]=="way"){
+            vector<uint64_t> nodesIdVector;                                //A vector that contains all the Nodes' Id of one object Ways
+            vector<Nodes> nodesVector;                                     //A vector that contains all the Nodes of one object Ways
+            uint64_t id = static_cast<uint64_t>(element["id"].toDouble()); //get the id in uint64_t (same reason as above)
+            QJsonArray nodesArray = element["nodes"].toArray();            //nodesArray contains all the nodes from one way (in JSON)
+            for(auto node : nodesArray)
+            {
+                uint64_t nodeId = static_cast<uint64_t>(node.toDouble());
+                nodesIdVector.emplace_back(nodeId);
+                Nodes wayNode = getNodeFromNodeId(nodeId,nbNodes, nodesObjectVector); //returns the object Nodes that correspond to the given nodeId
+                nodesVector.emplace_back(wayNode);
+            }
+            if (nodesIdVector.size()!=0) //security
+            {
+                Ways w = Ways(id,nodesIdVector,nodesVector); //creating the way with the parameters from above
+                waysObjectVector.emplace_back(w);
+            }
+        }
+    }
+    qDebug() << "Roads are stored in the classes. OK ! ";
+
+    return waysObjectVector;
+}
+
+
+Nodes getNodeFromNodeId(uint64_t nodeId, uint nbNodes, vector<Nodes> &nodesObjectVector){
+    /*
+     * Ici, pour parcourir tous les nodes (sachant qu'il y en a énormément), j'utilise la méthode du juste prix:
+     * Cela permet par exemple de retrouver un élément dans une liste de 1 000 000 d'éléments en seulement une vingtaine d'opérations.
+     */
+    uint i = nbNodes-1;
+    Nodes node = nodesObjectVector[i];
+    uint64_t id;
+    uint prev_i=0;
+    uint temporaryValue=0;
+    uint valueToSubstract;
+    while(true){
+        node = nodesObjectVector[i];
+        id =node.getId();
+        if(id==nodeId){
+            return node;
+        }
+        else {
+            temporaryValue=i;
+            if(i>prev_i){
+                valueToSubstract=(i-prev_i)/2;
+            }
+            else {
+                valueToSubstract=(prev_i-i)/2;
+            }
+
+            if(valueToSubstract==0){ //I had to add this because in the last operation we can have: (prev_i-i=1), so valueToSubstract would be 1/2=0
+                valueToSubstract=1;
+            }
+
+            if(id>nodeId){
+                i-=valueToSubstract;
+            }
+            else{
+                i+=valueToSubstract;
+            }
+            prev_i=temporaryValue;
+        }
+    }
 }
