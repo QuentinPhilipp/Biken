@@ -9,14 +9,16 @@ using namespace std;
 class Ways
 {
   public :
-    Ways(string id,std::vector<Nodes> nodes);
+    Ways(uint64_t id,vector<uint64_t> nodesId,vector<Nodes> n);
 
     void displayNode();
     void displayGPSData();
+    void displayWay();
 
   private:
-    string id;
-    std::vector<Nodes> nodes;
+    uint64_t id;
+    vector<uint64_t> nodesId;
+    vector<Nodes> nodes;
 };
 
 
