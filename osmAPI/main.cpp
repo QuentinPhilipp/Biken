@@ -10,11 +10,12 @@
 #include "Nodes.h"
 #include "Ways.h"
 #include "requetesapi.h"
+#include "datamanager.h"
 
 using namespace std;
 
 
-vector<Ways> generateWaysAndNodes(QJsonObject allRoads);
+vector<Ways> generateWaysAndNodes(QJsonObject allRoads,dataManager db);
 Nodes getNodeFromNodeId(uint64_t nodeId, uint nbNodes, vector<Nodes> &nodesObjectVector);
 
 
@@ -27,26 +28,45 @@ int main(int argc, char *argv[])
     QString radius = "1000"; //radius in meters
     QJsonObject allRoads = requeteRoads->getAllRoadsAroundThePoint("48.434420","-4.640103",radius);
 
+    //create the datamanger class
+    dataManager *db = new dataManager();
 
     //store all the roads and nodes in differents classes.
-    vector<Ways> waysVector = generateWaysAndNodes(allRoads);
+    vector<Ways> waysVector = generateWaysAndNodes(allRoads,*db);
 
     //Verification
     uint size = waysVector.size();
     qDebug() << "\nAmount of ways: " << size ;
-    waysVector[size-1].displayGPSData();
+    //waysVector[size-1].displayGPSData();
     qDebug() << "\n~~~~ Finished ! ~~~~";
+    qDebug() << "\n~~~~ Testing DataBase !~~~~\n";
+
+//    db->addValuesNodes(1215781231,-40,-30);
+//    db->addValuesNodes(1215781230,-45,-35);
+//    db->addValuesWays(136110429,1215781231);
+//    db->addValuesWays(136110429,1215781230);
+//    db->addValuesWays(136110450,1215781230);
+//    db->addValuesWays(136110429,1215781230);
+
+    qDebug() << "List of the node of Road id 105576006";
+    std::vector<QVariant> nodes = db->requestNodesFromRoad(105576006);
+    for (auto elem : nodes)
+    {
+        qDebug() << elem.toString();
+    }
+    qDebug() << "Latitude and longitue of the node id 1215777654";
+    auto[lat,lon] = db->requestLatLonFromNodes(1215777654);
+    qDebug() << "Latitude : "<<lat.toString()<<" | Longitude : "<<lon.toString();
 
     return a.exec();
 }
 
 
 //This function is used to transform JsonValues array to differents classes define in the files 'Nodes.cpp' and 'Ways.cpp'
-vector<Ways> generateWaysAndNodes(QJsonObject allRoads){
+vector<Ways> generateWaysAndNodes(QJsonObject allRoads,dataManager db){
     vector<Ways> waysObjectVector;    //A vector that contains every Ways objects
     vector<Nodes> nodesObjectVector;  //A vector that contains every Nodes objects
     uint nbNodes=0;
-
     int length = allRoads["elements"].toArray().size(); //allRoads["elements"] contains all the ways and nodes (in JSON)
     for (int i=0;i<length;i++) {
 
@@ -61,6 +81,7 @@ vector<Ways> generateWaysAndNodes(QJsonObject allRoads){
             double longitude = element["lon"].toDouble();
             Nodes node = Nodes(nodeId,latitude,longitude); //create an object Nodes with the 3 parameters from above
             nodesObjectVector.emplace_back(node);
+            db.addValuesNodes(nodeId,latitude,longitude);
             nbNodes++;
         }
         else if(element["type"]=="way"){
@@ -74,11 +95,14 @@ vector<Ways> generateWaysAndNodes(QJsonObject allRoads){
                 nodesIdVector.emplace_back(nodeId);
                 Nodes wayNode = getNodeFromNodeId(nodeId,nbNodes, nodesObjectVector); //returns the object Nodes that correspond to the given nodeId
                 nodesVector.emplace_back(wayNode);
+                db.addValuesWays(id,nodeId);                               //Ajout a la base de donnée
+
             }
             if (nodesIdVector.size()!=0) //security
             {
                 Ways w = Ways(id,nodesIdVector,nodesVector); //creating the way with the parameters from above
                 waysObjectVector.emplace_back(w);
+
             }
         }
     }

@@ -6,6 +6,9 @@
 
 QT       += core gui
 QT += network
+QT += sql
+QT       += core gui sql
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -29,12 +32,14 @@ SOURCES += \
         main.cpp \
     Nodes.cpp \
     Ways.cpp \
-    requetesapi.cpp
+    requetesapi.cpp \
+    datamanager.cpp
 
 HEADERS += \
     Nodes.h \
     Ways.h \
-    requetesapi.h
+    requetesapi.h \
+    datamanager.h
 
 FORMS += \
         mainwindow.ui
