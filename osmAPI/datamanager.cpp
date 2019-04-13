@@ -46,7 +46,8 @@ void dataManager::addValuesNodes(uint64_t id,double latitude,double longitude)
     idVar.setValue(id);
 
     //check if the node already exist in the database
-    auto [lat,lon] = requestLatLonFromNodes(id);
+    QVariant lat,lon;
+    std::tie(lat,lon) = requestLatLonFromNodes(id);
     if ((lat==latVar) && (lon==lonVar)){
         qDebug() << "Node already in the Database";                                                     //already in
     } else {

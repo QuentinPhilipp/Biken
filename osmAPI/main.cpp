@@ -55,7 +55,8 @@ int main(int argc, char *argv[])
         qDebug() << elem.toString();
     }
     qDebug() << "Latitude and longitue of the node id 1215777654";
-    auto[lat,lon] = db->requestLatLonFromNodes(1215777654);
+    QVariant lat,lon;
+    std::tie(lat,lon) = db->requestLatLonFromNodes(1215777654);
     qDebug() << "Latitude : "<<lat.toString()<<" | Longitude : "<<lon.toString();
 
     return a.exec();
