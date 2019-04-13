@@ -23,7 +23,8 @@ SOURCES += \
     way.cpp \
     requeteapi.cpp \
     roadsdata.cpp \
-    datamanager.cpp
+    datamanager.cpp \
+    myadress.cpp
 
 RESOURCES += qml.qrc
 
@@ -43,4 +44,5 @@ HEADERS += \
     way.h \
     requeteapi.h \
     roadsdata.h \
-    datamanager.h
+    datamanager.h \
+    myadress.h

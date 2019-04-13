@@ -69,32 +69,16 @@ Window {
 
 
         Rectangle{
-            id: departInputLatitude
+            id: departInput
             anchors.left: depart.right
             anchors.leftMargin: 10
             anchors.top: parent.top
             anchors.topMargin: 150
-            width: 100
+            width: 200
             height: 20
             color: "black"
             TextInput{
-                id: fromLatitude
-                anchors.fill:parent
-                font.pixelSize: 12
-                color:"white"
-            }
-        }
-        Rectangle{
-            id: departInputLongitude
-            anchors.left: departInputLatitude.right
-            anchors.leftMargin: 10
-            anchors.top: parent.top
-            anchors.topMargin: 150
-            width: 100
-            height: 20
-            color: "black"
-            TextInput{
-                id: fromLongitude
+                id: start
                 anchors.fill:parent
                 font.pixelSize: 12
                 color:"white"
@@ -114,32 +98,16 @@ Window {
         }
 
         Rectangle{
-            id: arriveeInputLatitude
+            id: arriveeInput
             anchors.left: depart.right
             anchors.leftMargin: 10
-            anchors.top: departInputLatitude.bottom
+            anchors.top: departInput.bottom
             anchors.topMargin: 10
-            width: 100
+            width: 200
             height: 20
             color: "black"
             TextInput{
-                id: toLatitude
-                anchors.fill:parent
-                font.pixelSize: 12
-                color:"white"
-            }
-        }
-        Rectangle{
-            id: arriveeInputLongitude
-            anchors.left: arriveeInputLatitude.right
-            anchors.leftMargin: 10
-            anchors.top: departInputLongitude.bottom
-            anchors.topMargin: 10
-            width: 100
-            height: 20
-            color: "black"
-            TextInput{
-                id: toLongitude
+                id: finish
                 anchors.fill:parent
                 font.pixelSize: 12
                 color:"white"
@@ -148,8 +116,8 @@ Window {
 
         Button{
             id: validation
-            anchors.right: arriveeInputLongitude.right
-            anchors.top: arriveeInputLongitude.bottom
+            anchors.right: arriveeInput.right
+            anchors.top: arriveeInput.bottom
             anchors.topMargin: 10
             width: 70
             height: 20
@@ -159,8 +127,15 @@ Window {
                                                                parseFloat(fromLongitude.text));
                 var endCoordinate = QtPositioning.coordinate(parseFloat(toLatitude.text),
                                                              parseFloat(toLongitude.text));*/
-                var startCoordinate = QtPositioning.coordinate(roadsData.getFromX(5), roadsData.getFromY());
-                var endCoordinate = QtPositioning.coordinate(roadsData.getToX(),roadsData.getToY());
+                /*var startCoordinate = QtPositioning.coordinate(roadsData.getFromX(5), roadsData.getFromY());
+                var endCoordinate = QtPositioning.coordinate(roadsData.getToX(),roadsData.getToY());*/
+
+                var startingCoordinates = myAdress.toCoordinates(start.text);
+                var finishCoordinates = myAdress.toCoordinates(finish.text);
+
+                var startCoordinate = QtPositioning.coordinate(startingCoordinates[0],startingCoordinates[1]);
+                var endCoordinate = QtPositioning.coordinate(finishCoordinates[0],finishCoordinates[1]);
+
                 if (startCoordinate.isValid && endCoordinate.isValid) {
                     thisIsTheMap.calculateCoordinateRoute(startCoordinate,endCoordinate)
                 }
