@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 
     //make a request to get all the roads around a coordinate
     RequetesAPI *requeteRoads = new RequetesAPI();
-    QString radius = "100000"; //radius in meters
+    QString radius = "1000"; //radius in meters
     QJsonObject allRoads = requeteRoads->getAllRoadsAroundThePoint("48.434420","-4.640103",radius);
 
 
@@ -49,7 +49,12 @@ vector<Ways> generateWaysAndNodes(QJsonObject allRoads){
 
     int length = allRoads["elements"].toArray().size(); //allRoads["elements"] contains all the ways and nodes (in JSON)
     for (int i=0;i<length;i++) {
-        QJsonValue element = QJsonValue(allRoads["elements"])[i]; //contains one way OR one node (with everything that's inside it), (in JSON)
+
+        //For Qt 5.9
+        QJsonObject element = allRoads["elements"].toArray()[i].toObject();      //Must cconvert to object in Qt 5.9 to apply [] operator
+        //For Qt 5.10+
+        //QJsonValue element = QJsonValue(allRoads["elements"])[i]; //contains one way OR one node (with everything that's inside it), (in JSON)
+
         if(element["type"]=="node"){
             uint64_t nodeId = static_cast<uint64_t>(element["id"].toDouble()); //it has to be uint64_t because the Id can be more than 2^32 (so uint_32_t and below won't work)
             double latitude = element["lat"].toDouble();
