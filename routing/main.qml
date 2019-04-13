@@ -214,12 +214,4 @@ Window {
         color: "#252525"
         border.color: "white"
     }
-
-    /*MouseArea{
-        id: mapMouseArea
-        anchors.fill: mapContainer
-        onPressAndHold: {
-            mainWaindow.xtext=mapMouseArea.mouseX
-        }
-    }*/
 }

@@ -18,8 +18,8 @@ int main(int argc, char *argv[])
     QJsonObject allRoads = requeteRoads->getAllRoadsAroundThePoint("48.434420","-4.640103",radius);
 
     //create the datamanger class
-    DataManager *db = new DataManager();
-
+    //DataManager *db = new DataManager();
+    QScopedPointer<DataManager> db(new DataManager);
 
     /*RoadsData roadsData = RoadsData();
     roadsData.generateWaysAndNodes(allRoads);

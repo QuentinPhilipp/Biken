@@ -18,6 +18,8 @@ public:
     void generateWaysAndNodes(QJsonObject allRoads, DataManager db);
     Node getNodeFromNodeId(uint64_t nodeId, vector<Node> &nodeObjectVector);
     vector<Way> getWayVector() const;
+    void findRouteFrom(double lat, double lon);
+
     Q_INVOKABLE void test();
     Q_INVOKABLE double getFromX(int i);
     Q_INVOKABLE double getFromY();

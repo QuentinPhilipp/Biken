@@ -1,7 +1,7 @@
 #ifndef WAY_HPP
 #define WAY_HPP 1
 
-#include "Node.h"
+#include "node.h"
 #include <vector>
 #include <QDebug>                  //using qDebug to print in the Qt console
 using namespace std;

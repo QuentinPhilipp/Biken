@@ -1,4 +1,4 @@
-#include "Way.h"
+#include "way.h"
 #include <iostream>
 
 
