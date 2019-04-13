@@ -6,6 +6,7 @@
 
 #include "way.h"
 #include "node.h"
+#include "datamanager.h"
 
 using namespace std;
 
@@ -14,7 +15,7 @@ class RoadsData : public QObject
     Q_OBJECT
 public:
     explicit RoadsData(QObject *parent = 0);
-    void generateWaysAndNodes(QJsonObject allRoads);
+    void generateWaysAndNodes(QJsonObject allRoads, DataManager db);
     Node getNodeFromNodeId(uint64_t nodeId, vector<Node> &nodeObjectVector);
     vector<Way> getWayVector() const;
     Q_INVOKABLE void test();

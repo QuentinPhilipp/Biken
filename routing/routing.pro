@@ -1,4 +1,9 @@
 QT += quick
+QT       += core gui
+QT += network
+QT += sql
+QT       += core gui sql
+
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -17,7 +22,8 @@ SOURCES += \
     node.cpp \
     way.cpp \
     requeteapi.cpp \
-    roadsdata.cpp
+    roadsdata.cpp \
+    datamanager.cpp
 
 RESOURCES += qml.qrc
 
@@ -36,4 +42,5 @@ HEADERS += \
     node.h \
     way.h \
     requeteapi.h \
-    roadsdata.h
+    roadsdata.h \
+    datamanager.h

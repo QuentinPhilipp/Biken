@@ -8,7 +8,7 @@ RoadsData::RoadsData(QObject *parent) : QObject (parent)
 
 }
 
-void RoadsData::generateWaysAndNodes(QJsonObject allRoads)
+void RoadsData::generateWaysAndNodes(QJsonObject allRoads, DataManager db)
 {
     vector<Way> wayObjectVector;    //A vector that contains every Way objects
     vector<Node> nodeObjectVector;  //A vector that contains every Node objects
@@ -22,6 +22,7 @@ void RoadsData::generateWaysAndNodes(QJsonObject allRoads)
             double longitude = element["lon"].toDouble();
             Node node = Node(nodeId,latitude,longitude); //create an object Node with the 3 parameters from above
             nodeObjectVector.emplace_back(node);
+            db.addValuesNodes(nodeId,latitude,longitude);
         }
         else if(element["type"]=="way"){
             vector<uint64_t> nodeIdVector;                                //A vector that contains all the Node objects' Id of one object Way
@@ -34,6 +35,7 @@ void RoadsData::generateWaysAndNodes(QJsonObject allRoads)
                 nodeIdVector.emplace_back(nodeId);
                 Node wayNode = getNodeFromNodeId(nodeId, nodeObjectVector); //returns the object Node that correspond to the given nodeId
                 nodeVector.emplace_back(wayNode);
+                db.addValuesWays(id,nodeId);
             }
             if (nodeIdVector.size()!=0) //security
             {
