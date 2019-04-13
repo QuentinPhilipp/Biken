@@ -51,6 +51,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    manager->~QNetworkAccessManager(); 
+    manager->~QNetworkAccessManager();
     return a.exec();
 }
