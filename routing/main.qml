@@ -1,5 +1,6 @@
 import QtQuick 2.5
 import QtQuick.Window 2.2
+import QtQuick.Controls 2.0
 import QtLocation 5.6
 import QtPositioning 5.6
 import "helper.js" as Helper
@@ -66,32 +67,40 @@ Window {
             color:"white"
         }
 
+
         Rectangle{
-            id: departInputRectangle
+            id: departInputLatitude
             anchors.left: depart.right
             anchors.leftMargin: 10
             anchors.top: parent.top
             anchors.topMargin: 150
-            width: 200
+            width: 100
             height: 20
             color: "black"
             TextInput{
                 id: fromLatitude
-                width:100
-                height:20
-                anchors.left:parent.left
-                font.pixelSize: 12
-                color:"white"
-            }
-            TextInput{
-                id: fromLongitude
-                width:100
-                height:20
-                anchors.left:fromLatitude.right
+                anchors.fill:parent
                 font.pixelSize: 12
                 color:"white"
             }
         }
+        Rectangle{
+            id: departInputLongitude
+            anchors.left: departInputLatitude.right
+            anchors.leftMargin: 10
+            anchors.top: parent.top
+            anchors.topMargin: 150
+            width: 100
+            height: 20
+            color: "black"
+            TextInput{
+                id: fromLongitude
+                anchors.fill:parent
+                font.pixelSize: 12
+                color:"white"
+            }
+        }
+
 
         Text {
             id: arrivee
@@ -105,61 +114,67 @@ Window {
         }
 
         Rectangle{
-            id: arriveeInputRectangle
-            anchors.left: arrivee.right
+            id: arriveeInputLatitude
+            anchors.left: depart.right
             anchors.leftMargin: 10
-            anchors.top: departInputRectangle.top
-            anchors.topMargin: 30
-            width: 200
+            anchors.top: departInputLatitude.bottom
+            anchors.topMargin: 10
+            width: 100
             height: 20
             color: "black"
-
             TextInput{
                 id: toLatitude
-                width:100
-                height:20
-                anchors.left:parent.left
+                anchors.fill:parent
                 font.pixelSize: 12
                 color:"white"
             }
+        }
+        Rectangle{
+            id: arriveeInputLongitude
+            anchors.left: arriveeInputLatitude.right
+            anchors.leftMargin: 10
+            anchors.top: departInputLongitude.bottom
+            anchors.topMargin: 10
+            width: 100
+            height: 20
+            color: "black"
             TextInput{
                 id: toLongitude
-                width:100
-                height:20
-                anchors.left:toLatitude.right
+                anchors.fill:parent
                 font.pixelSize: 12
                 color:"white"
             }
         }
 
-        Rectangle{
+        Button{
             id: validation
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            anchors.top: arrivee.top
-            anchors.topMargin: 30
-            width: 200
+            anchors.right: arriveeInputLongitude.right
+            anchors.top: arriveeInputLongitude.bottom
+            anchors.topMargin: 10
+            width: 70
             height: 20
-            color: "black"
+
+            onPressed: {
+                /*var startCoordinate = QtPositioning.coordinate(parseFloat(fromLatitude.text),
+                                                               parseFloat(fromLongitude.text));
+                var endCoordinate = QtPositioning.coordinate(parseFloat(toLatitude.text),
+                                                             parseFloat(toLongitude.text));*/
+                var startCoordinate = QtPositioning.coordinate(roadsData.getFromX(5), roadsData.getFromY());
+                var endCoordinate = QtPositioning.coordinate(roadsData.getToX(),roadsData.getToY());
+                if (startCoordinate.isValid && endCoordinate.isValid) {
+                    thisIsTheMap.calculateCoordinateRoute(startCoordinate,endCoordinate)
+                }
+                roadsData.test()
+            }
+
             Text{
-                anchors.fill: parent
+                anchors.left: parent.left
+                anchors.leftMargin: 10
+                anchors.top: parent.top
+                anchors.topMargin: 2
                 font.pixelSize: 12
                 text: "Valider"
-                color: "white"
-            }
-            MouseArea{
-                anchors.fill: parent
-                onPressed: {
-                    /*var startCoordinate = QtPositioning.coordinate(parseFloat(fromLatitude.text),
-                                                                   parseFloat(fromLongitude.text));
-                    var endCoordinate = QtPositioning.coordinate(parseFloat(toLatitude.text),
-                                                                 parseFloat(toLongitude.text));*/
-                    var startCoordinate = QtPositioning.coordinate(48.368718, -4.588330);
-                    var endCoordinate = QtPositioning.coordinate(48.535807,-4.658547);
-                    if (startCoordinate.isValid && endCoordinate.isValid) {
-                        thisIsTheMap.calculateCoordinateRoute(startCoordinate,endCoordinate)
-                    }
-                }
+                color: "black"
             }
         }
 

@@ -81,7 +81,7 @@ Map {
         MapRoute {
             route: routeData
             line.color: "#ff00ff"
-            line.width: 5
+            line.width: 3
             smooth: true
             opacity: 0.8
         }
