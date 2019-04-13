@@ -78,6 +78,7 @@ vector<Ways> generateWaysAndNodes(QJsonObject allRoads){
         }
     }
     qDebug() << "Roads are stored in the classes. OK ! ";
+    qDebug() << "\nAmount of nodes: " << nodesObjectVector.size();
 
     return waysObjectVector;
 }
