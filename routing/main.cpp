@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty())
         return -1;
 
-   MyAdress* myAdress = new MyAdress();
-   engine.rootContext()->setContextProperty("myAdress",myAdress);
+    MyAdress* myAdress = new MyAdress();
+    engine.rootContext()->setContextProperty("myAdress",myAdress);
     engine.rootContext()->setContextProperty("roadsData", roadsData.data()); //créer une variable roadsData utilisable dans notre QML
 
     return app.exec();

@@ -95,6 +95,8 @@ vector<Way> RoadsData::getWayVector() const
     return wayVector;
 }
 
+
+//A partir d'ici c'est juste des tests pour communiquer entre le QML et le C++
 void RoadsData::test()
 {
     qDebug() << "test";
