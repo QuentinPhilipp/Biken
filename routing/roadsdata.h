@@ -20,6 +20,7 @@ public:
     vector<Way> getWayVector() const;
     void findRouteFrom(double lat, double lon);
 
+    //tests pour envoyer des données au qml
     Q_INVOKABLE void test();
     Q_INVOKABLE double getFromX(int i);
     Q_INVOKABLE double getFromY();
