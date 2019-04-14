@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>main.qml</file>
-        <file>helper.js</file>
-        <file>map/MyMap.qml</file>
-    </qresource>
-</RCC>
