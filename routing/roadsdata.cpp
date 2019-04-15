@@ -15,7 +15,11 @@ void RoadsData::generateWaysAndNodes(QJsonObject allRoads, DataManager db)
 
     int length = allRoads["elements"].toArray().size(); //allRoads["elements"] contains all the ways and nodes (in JSON)
     for (int i=0;i<length;i++) {
-        QJsonValue element = QJsonValue(allRoads["elements"])[i]; //contains one way OR one node (with everything that's inside it), (in JSON)
+        //For Qt 5.9
+        QJsonObject element = allRoads["elements"].toArray()[i].toObject();
+
+        //For Qt 5.10
+        //QJsonValue element = QJsonValue(allRoads["elements"])[i]; //contains one way OR one node (with everything that's inside it), (in JSON)
         if(element["type"]=="node"){
             uint64_t nodeId = static_cast<uint64_t>(element["id"].toDouble()); //it has to be uint64_t because the Id can be more than 2^32 (so uint_32_t and below won't work)
             double latitude = element["lat"].toDouble();

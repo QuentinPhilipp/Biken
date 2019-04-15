@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 
     //Pour passer du C++ au QML
     QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    //engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
 
