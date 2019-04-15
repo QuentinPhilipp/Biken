@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 
     //make a request to get all the roads around a coordinate
     RequeteAPI *requeteRoads = new RequeteAPI();
-    QString radius = "1000"; //radius in meters. Do not set the radius too high (~200km max), otherwise it will exceed the api's capacity.
+    QString radius = "10000"; //radius in meters. Do not set the radius too high (~200km max), otherwise it will exceed the api's capacity.
     QJsonObject allRoads = requeteRoads->getAllRoadsAroundThePoint("48.434420","-4.640103",radius);
 
     //create the datamanger class
