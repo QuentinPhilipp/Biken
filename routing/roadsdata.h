@@ -14,21 +14,18 @@ class RoadsData : public QObject
 {
     Q_OBJECT
 public:
-    explicit RoadsData(QObject *parent = 0);
+    explicit RoadsData(QObject *parent = nullptr);
     void generateWaysAndNodes(QJsonObject allRoads, DataManager db);
     Node getNodeFromNodeId(uint64_t nodeId, vector<Node> &nodeObjectVector);
     vector<Way> getWayVector() const;
-    void findRouteFrom(double lat, double lon);
 
     //tests pour envoyer des données au qml
-    Q_INVOKABLE void test();
-    Q_INVOKABLE double getFromX(int i);
-    Q_INVOKABLE double getFromY();
-    Q_INVOKABLE double getToX();
-    Q_INVOKABLE double getToY();
+    Q_INVOKABLE QVariantList findRouteFrom(double lat, double lon);
+    Q_INVOKABLE QVariantList requestLatLonFromNodes(QVariant idNode);
 
 private:
     vector<Way> wayVector;
+    DataManager myDb;
 
 };
 

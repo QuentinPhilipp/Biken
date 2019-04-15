@@ -56,58 +56,83 @@ Window {
         color: "#252525"
         border.color: "white"
 
+
+        //Recherche avec des coordonnées
         Text {
-            id: depart
+            id: fromCoordinateText
             anchors.left: parent.left
             anchors.leftMargin: 10
             anchors.top: parent.top
-            anchors.topMargin: 150
+            anchors.topMargin: 20
             text: qsTr("Depart")
             font.pixelSize: 12
             color:"white"
         }
-
-
         Rectangle{
-            id: departInput
-            anchors.left: depart.right
+            id: fromLatitude
+            anchors.left: fromCoordinateText.right
             anchors.leftMargin: 10
-            anchors.top: parent.top
-            anchors.topMargin: 150
-            width: 200
+            anchors.top: fromCoordinateText.top
+            width: 95
             height: 20
             color: "black"
             TextInput{
-                id: start
+                id: fromLatitudeInput
+                anchors.fill:parent
+                font.pixelSize: 12
+                color:"white"
+            }
+        }
+        Rectangle{
+            id: fromLongitude
+            anchors.left: fromLatitude.right
+            anchors.leftMargin: 10
+            anchors.top: fromCoordinateText.top
+            width: 95
+            height: 20
+            color: "black"
+            TextInput{
+                id: fromLongitudeInput
                 anchors.fill:parent
                 font.pixelSize: 12
                 color:"white"
             }
         }
 
-
         Text {
-            id: arrivee
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            anchors.top: depart.top
+            id: toCoordinateText
+            anchors.left: fromCoordinateText.left
+            anchors.top: fromCoordinateText.top
             anchors.topMargin: 30
             text: qsTr("Arrivee")
             font.pixelSize: 12
             color:"white"
         }
-
         Rectangle{
-            id: arriveeInput
-            anchors.left: depart.right
-            anchors.leftMargin: 10
-            anchors.top: departInput.bottom
+            id: toLatitude
+            anchors.left: fromLatitude.left
+            anchors.top: fromLatitude.bottom
             anchors.topMargin: 10
-            width: 200
+            width: 95
             height: 20
             color: "black"
             TextInput{
-                id: finish
+                id: toLatitudeInput
+                anchors.fill:parent
+                font.pixelSize: 12
+                color:"white"
+            }
+        }
+        Rectangle{
+            id: toLongitude
+            anchors.left: fromLongitude.left
+            anchors.top: fromLongitude.bottom
+            anchors.topMargin: 10
+            width: 95
+            height: 20
+            color: "black"
+            TextInput{
+                id: toLongitudeInput
                 anchors.fill:parent
                 font.pixelSize: 12
                 color:"white"
@@ -115,33 +140,22 @@ Window {
         }
 
         Button{
-            id: validation
-            anchors.right: arriveeInput.right
-            anchors.top: arriveeInput.bottom
+            id: validationCoordinate
+            anchors.right: toLongitude.right
+            anchors.top: toLongitude.bottom
             anchors.topMargin: 10
             width: 70
             height: 20
-
             onPressed: {
-                /*var startCoordinate = QtPositioning.coordinate(parseFloat(fromLatitude.text),
-                                                               parseFloat(fromLongitude.text));
-                var endCoordinate = QtPositioning.coordinate(parseFloat(toLatitude.text),
-                                                             parseFloat(toLongitude.text));*/
-                /*var startCoordinate = QtPositioning.coordinate(roadsData.getFromX(5), roadsData.getFromY());
-                var endCoordinate = QtPositioning.coordinate(roadsData.getToX(),roadsData.getToY());*/
-
-                var startingCoordinates = myAdress.toCoordinates(start.text);
-                var finishCoordinates = myAdress.toCoordinates(finish.text);
-
-                var startCoordinate = QtPositioning.coordinate(startingCoordinates[0],startingCoordinates[1]);
-                var endCoordinate = QtPositioning.coordinate(finishCoordinates[0],finishCoordinates[1]);
+                var startCoordinate = QtPositioning.coordinate(parseFloat(fromLatitudeInput.text),
+                                                               parseFloat(fromLongitudeInput.text));
+                var endCoordinate = QtPositioning.coordinate(parseFloat(toLatitudeInput.text),
+                                                             parseFloat(toLongitudeInput.text));
 
                 if (startCoordinate.isValid && endCoordinate.isValid) {
                     thisIsTheMap.calculateCoordinateRoute(startCoordinate,endCoordinate)
                 }
-                roadsData.test()
             }
-
             Text{
                 anchors.left: parent.left
                 anchors.leftMargin: 10
@@ -153,13 +167,123 @@ Window {
             }
         }
 
+
+        //Recherche avec une adresse
+        Text {
+            id: fromAdressText
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.top: validationCoordinate.bottom
+            anchors.topMargin: 20
+            text: qsTr("Depart")
+            font.pixelSize: 12
+            color:"white"
+        }
+        Rectangle{
+            id: fromAdress
+            anchors.left: fromAdressText.right
+            anchors.leftMargin: 10
+            anchors.top: fromAdressText.top
+            width: 200
+            height: 20
+            color: "black"
+            TextInput{
+                id: fromAdressInput
+                anchors.fill:parent
+                font.pixelSize: 12
+                color:"white"
+            }
+        }
+
+        Text {
+            id: toAdressText
+            anchors.left: fromAdressText.left
+            anchors.top: fromAdressText.top
+            anchors.topMargin: 30
+            text: qsTr("Arrivee")
+            font.pixelSize: 12
+            color:"white"
+        }
+        Rectangle{
+            id: toAdress
+            anchors.left: fromAdress.left
+            anchors.top: fromAdress.bottom
+            anchors.topMargin: 10
+            width: 200
+            height: 20
+            color: "black"
+            TextInput{
+                id: toAdressInput
+                anchors.fill:parent
+                font.pixelSize: 12
+                color:"white"
+            }
+        }
+
+        Button{
+            id: validationAdress
+            anchors.right: toAdress.right
+            anchors.top: toAdress.bottom
+            anchors.topMargin: 10
+            width: 70
+            height: 20
+            onPressed: {
+                var startingCoordinates = myAdress.toCoordinates(fromAdressInput.text);
+                var finishCoordinates = myAdress.toCoordinates(toAdressInput.text);
+
+                var startCoordinate = QtPositioning.coordinate(startingCoordinates[0],startingCoordinates[1]);
+                var endCoordinate = QtPositioning.coordinate(finishCoordinates[0],finishCoordinates[1]);
+
+                if (startCoordinate.isValid && endCoordinate.isValid) {
+                    thisIsTheMap.calculateCoordinateRoute(startCoordinate,endCoordinate)
+                }
+            }
+            Text{
+                anchors.left: parent.left
+                anchors.leftMargin: 10
+                anchors.top: parent.top
+                anchors.topMargin: 2
+                font.pixelSize: 12
+                text: "Valider"
+                color: "black"
+            }
+        }
+
+        //Test: create a route in the C++ files, receive it here and then show it on the map
+        Button{
+            id: testButton
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: validationAdress.bottom
+            anchors.topMargin: 20
+            width: 150
+            height: 20
+            onPressed: {
+                var nodes = roadsData.findRouteFrom(4.5,5.6);//random parameters, they are not used yet
+                console.log(nodes);
+
+                for(var i=0; i<nodes.length; i++){
+                    var node = roadsData.requestLatLonFromNodes(nodes[i]);
+                    console.log(node);
+                }
+
+                thisIsTheMap.calculateCoordinateRouteWithNodes(nodes)
+            }
+            Text{
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.top
+                anchors.topMargin: 2
+                font.pixelSize: 12
+                text: "TEST"
+                color: "black"
+            }
+        }
+
         Rectangle{
             width: 280
             height: 300
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            anchors.top: validation.top
-            anchors.topMargin: 30
+            anchors.left: fromAdressText.left
+            anchors.top: testButton.bottom
+            anchors.topMargin: 10
             color:"#dddddd"
             Text{
                 id: textToDisplay

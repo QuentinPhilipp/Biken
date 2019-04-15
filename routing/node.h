@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <QDebug>
+
 using namespace std;
 
 class Node

@@ -15,11 +15,7 @@ void RoadsData::generateWaysAndNodes(QJsonObject allRoads, DataManager db)
 
     int length = allRoads["elements"].toArray().size(); //allRoads["elements"] contains all the ways and nodes (in JSON)
     for (int i=0;i<length;i++) {
-        //For Qt 5.9
-        QJsonObject element = allRoads["elements"].toArray()[i].toObject();
-
-        //For Qt 5.10
-        //QJsonValue element = QJsonValue(allRoads["elements"])[i]; //contains one way OR one node (with everything that's inside it), (in JSON)
+        QJsonValue element = QJsonValue(allRoads["elements"])[i]; //contains one way OR one node (with everything that's inside it), (in JSON)
         if(element["type"]=="node"){
             uint64_t nodeId = static_cast<uint64_t>(element["id"].toDouble()); //it has to be uint64_t because the Id can be more than 2^32 (so uint_32_t and below won't work)
             double latitude = element["lat"].toDouble();
@@ -99,35 +95,14 @@ vector<Way> RoadsData::getWayVector() const
     return wayVector;
 }
 
-
-//A partir d'ici c'est juste des tests pour communiquer entre le QML et le C++
-void RoadsData::test()
+QVariantList RoadsData::findRouteFrom(double lat, double lon)
 {
-    qDebug() << "test";
+    return myDb.findRouteFrom(lat,lon);
 }
 
-double RoadsData::getFromX(int i)
+QVariantList RoadsData::requestLatLonFromNodes(QVariant idNode)
 {
-    vector<Node> wayNodes = wayVector[wayVector.size()-1].getNodes();
-    qDebug() <<  wayNodes[0].getLatitude()*i;
-    return wayNodes[0].getLatitude();
+    return myDb.requestLatLonFromNodes(idNode);
 }
 
-double RoadsData::getFromY()
-{
-    vector<Node> wayNodes = wayVector[wayVector.size()-1].getNodes();
-    return wayNodes[0].getLongitude();
-}
-
-double RoadsData::getToX()
-{
-    vector<Node> wayNodes = wayVector[wayVector.size()-1].getNodes();
-    return wayNodes[wayNodes.size()-1].getLatitude();
-}
-
-double RoadsData::getToY()
-{
-    vector<Node> wayNodes = wayVector[wayVector.size()-1].getNodes();
-    return wayNodes[wayNodes.size()-1].getLongitude();
-}
 

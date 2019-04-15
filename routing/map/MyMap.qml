@@ -26,19 +26,34 @@ Map {
         for (var i=0; i<9; i++) {
             routeQuery.setFeatureWeight(i, 0)
         }
-        //for (var i=0; i<routeDialog.features.length; i++) {
-        //    map.routeQuery.setFeatureWeight(routeDialog.features[i], RouteQuery.AvoidFeatureWeight)
-        //}
-        //! [routerequest0 feature weight]
 
-        //! [routerequest1]
         routeModel.update();
 
-        //! [routerequest1]
-        //! [routerequest2]
         // center the map on the start coord
         map.center = startCoordinate;
-        //! [routerequest2]
+    }
+    function calculateCoordinateRouteWithNodes(nodes)
+    {
+        // clear away any old data in the query
+        routeQuery.clearWaypoints();
+
+        // add the start and end coords as waypoints on the route
+        for(var i=0; i<nodes.length; i++){
+            var node = roadsData.requestLatLonFromNodes(nodes[i]);
+            var coordinate = QtPositioning.coordinate(node[0],node[1])
+            routeQuery.addWaypoint(coordinate)
+        }
+        routeQuery.travelModes = RouteQuery.BicycleTravel
+        routeQuery.routeOptimizations = RouteQuery.FastestRoute
+
+        for (var j=0; j<9; j++) {
+            routeQuery.setFeatureWeight(j, 0)
+        }
+
+        routeModel.update();
+
+        // center the map on the start coord
+        map.center = QtPositioning.coordinate(roadsData.requestLatLonFromNodes(nodes[0]),roadsData.requestLatLonFromNodes(nodes[0]));
     }
 
     function showRouteListPage()
