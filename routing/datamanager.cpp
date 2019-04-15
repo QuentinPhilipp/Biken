@@ -40,27 +40,30 @@ void DataManager::addTables()
 void DataManager::addValuesNodes(uint64_t id,double latitude,double longitude)
 {
     QSqlQuery query,queryTest;
-
     //converting to Qvariant object
     QVariant latVar = QVariant(latitude);
     QVariant lonVar = QVariant(longitude);
     QVariant idVar;
     idVar.setValue(id);
-
     //check if the node already exist in the database
-    QVariant lat,lon;
-    tie(lat,lon) = requestLatLonFromNodes(id);
-    if ((lat==latVar) && (lon==lonVar)){
-        qDebug() << "Node already in the Database";                                                     //already in
-    } else {
-        qDebug() << "New Node.. Adding it in the database";                                             //Not in
-        query.prepare("INSERT INTO nodes(id,latitude,longitude) VALUES(:id,:lat,:lon)");                //preparing the query
-
-        query.bindValue(":id",idVar);                                                                   //setting the parameters
-        query.bindValue(":lat",latitude);
-        query.bindValue(":lon",longitude);
-        if (!query.exec())                                                                              //execute
-        {qWarning() << "ERROR Inserting nodes : " << query.lastError().text();}
+    QVariantList coordinates;
+    coordinates = requestLatLonFromNodes(idVar);
+    if(!coordinates.empty()){
+        if ((coordinates[0]==latVar) && (coordinates[1]==lonVar)){
+            //qDebug() << "Node already in the Database. Nodes id: " << idVar << "  lat: " << latitude << "  lon:" << longitude;                                                   //already in
+        }
+    }
+    else {
+            //qDebug() << "New Node.. Adding it in the database.";                                             //Not in
+            query.prepare("INSERT INTO nodes(id,latitude,longitude) VALUES(:id,:lat,:lon)");                //preparing the query
+            query.bindValue(":id",idVar);                                                                   //setting the parameters
+            //qDebug() << "Nodes id: " << idVar;
+            query.bindValue(":lat",latitude);
+            //qDebug() << "lat: " << latitude;
+            query.bindValue(":lon",longitude);
+            //qDebug() << "lon:" << longitude;
+            if (!query.exec())                                                                              //execute
+            {qWarning() << "ERROR Inserting nodes : " << query.lastError().text();}
     }
 }
 
@@ -78,10 +81,10 @@ void DataManager::addValuesWays(uint64_t id,uint64_t node)                      
     vector<QVariant> nodesVector = requestNodesFromRoad(id);
     if(find(nodesVector.begin(), nodesVector.end(), nodeVar) != nodesVector.end()) {               //find search a position of an object in a vector.
         // nodesVector contains nodeVar
-        qDebug() << "Way already in the database";
+        //qDebug() << "Way already in the database";
     } else {
         // Not in the database
-        qDebug() << "New way.. Adding it in the database";
+        //qDebug() << "New way.. Adding it in the database";
         query.prepare("INSERT INTO ways(id,node) VALUES(?,?)");                                         //insert values into the ways table
 
         query.addBindValue(idVar);
@@ -231,8 +234,8 @@ QVariantList DataManager::requestLatLonFromNodes(QVariant idNode)
         QVariant lon = query.value(1);
         nodes.append(lat);
         nodes.append(lon);
-        return nodes;
     }
+    return nodes;
 }
 
 //not working yet
@@ -280,6 +283,7 @@ QVariantList DataManager::findRouteFrom(double lat, double lon)
      */
     QVariantList routeNodes;
     vector<QVariant> nodes = requestNodesFromRoad(136110431);
+    qDebug() << nodes;
     QVariant startNode = nodes[0];
     qDebug() << "findRouteFrom(): example of QVariant node: " << startNode;
     routeNodes.append(startNode);
