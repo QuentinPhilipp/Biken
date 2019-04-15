@@ -266,6 +266,7 @@ vector<QVariant> DataManager::requestNodeFromLatLon(double lat, double lon)
       qWarning() << "ERROR Finding nodes: " << query.lastError().text();
 }
 
+
 //Fonction pour trouver un itinéraire: à améliorer
 QVariantList DataManager::findRouteFrom(double lat, double lon)
 {
