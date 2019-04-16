@@ -14,107 +14,121 @@ using namespace std;
 
 DataManager::DataManager()
 {
-    // open the dataBase
-
+    // create the dataBase
     const QString DRIVER("QSQLITE");
-    if(QSqlDatabase::isDriverAvailable(DRIVER))
+    if(QSqlDatabase::isDriverAvailable(DRIVER))                                    //checking the availability of the driver
     {
-        QSqlDatabase dbase = QSqlDatabase::addDatabase(DRIVER);
-        db = dbase;                                            //store in the class
-        db.setDatabaseName("../WaysAndNodes.db");          //path for the database    |    do not create a WaysAndNodes.db, it's done automatically
+        QSqlDatabase db = QSqlDatabase::addDatabase(DRIVER);                       //Adding the driver
+        db.setDatabaseName("../WaysAndNodes.db");                                  //path for the database    |    do not create a WaysAndNodes.db, it's done automatically
+
+        //open the database
         if(!db.open())
-            qDebug() << "ERROR: ";
+        {qDebug() << "ERROR opening the database ";}
         else
-        {
-            qDebug() << "DataBase opened properly";
-            qDebug() <<"Has Feature : " <<db.driver()->hasFeature(QSqlDriver::BatchOperations);
-        }
-        addTables();    //create tables
+        {qDebug() << "DataBase opened properly";}
+
+        addTables();                                                                //create tables
     }
     else {
-        qDebug() << "ERROR isDriverAvailable";
+        qDebug() << "ERROR Driver not Available";
     }
 }
 
 void DataManager::addTables()
-{
-    //Creating tables ways and nodes
-    QSqlQuery queryways("CREATE TABLE ways (id BIGINT, node INTEGER)");
-    QSqlQuery querynodes("CREATE TABLE nodes (id BIGINT, latitude DOUBLE, longitude DOUBLE)");
-    //qDebug() << "Tables created";
+{   /* This functions create the tables
+      Tables are only created the first time. If the
+      database already exist, tables will not be created*/
+
+    //Adding the ways table
+    QSqlQuery queryways("CREATE TABLE IF NOT EXISTS ways (id BIGINT, node BIGINT)");                        //using BIGINT to fit with uint64_t
+    if(!queryways.exec())
+    {qDebug()<<"Error creating ways table"<<queryways.lastError();}
+
+
+    //Adding the node table
+    QSqlQuery querynodes("CREATE TABLE IF NOT EXISTS nodes (id BIGINT, latitude DOUBLE, longitude DOUBLE)");
+    if(!querynodes.exec())
+    {qDebug()<<"Error creating node table"<<querynodes.lastError();}
 }
 
 void DataManager::addValuesNodes(vector<Node> nodesVector)
 {
-    qDebug() << "Adding nodes ";
+    qDebug() << "\n~~ Adding nodes ~~";
+    qDebug() << "In progress...";
 
-    int cutValue = 15000;
-    int i = 0;
+    int cutValue = 15000;                                                                   //we split the queryString if there is more than n values to append
+    int i = 0;                                                                              //this help the programm to run faster
     while (!nodesVector.empty())
     {
-        i = 0;
+        i = 0;                                                                              //reset the counter
         QSqlQuery query;
-        QString queryString = "INSERT INTO nodes(id,latitude,longitude) VALUES ";
+        QString queryString = "INSERT INTO nodes(id,latitude,longitude) VALUES ";           //preparing the beginning of each query
         while (i<cutValue)
         {
             uint64_t id = nodesVector[0].getId();
-            QString add = "("+QString::fromStdString(std::to_string(id))+","+QString::fromStdString(std::to_string(nodesVector[0].getLatitude()))+","+QString::fromStdString(std::to_string(nodesVector[0].getLongitude()))+"),";
-            queryString = queryString + add;
-            nodesVector.erase(nodesVector.begin());
+            double valueAsDouble = 1.2;
+            QString valueAsString = QString::number(valueAsDouble);
+            QString add = "("+QString::fromStdString(std::to_string(id))+","+QString::number(nodesVector[0].getLatitude(),'f',8)+","+QString::number(nodesVector[0].getLongitude(),'f',8)+"),";
+            /*the string look like : "(1215779765,48.4368521,-4.6501655"
+              QString::number(aDoubleValue,'f',8) is used to cast double
+            to QString with 8 numbers precision, so we don't lose data*/
+            queryString = queryString + add;                                                //adding the string to the query
+            nodesVector.erase(nodesVector.begin());                                         //pop the first element of the vector
+
             if(nodesVector.empty()){
                 break;
             }
-            i++;
+            i++;                                                                            //increment counter to detect when we have to split the querry
 
         }
-        int pos = queryString.lastIndexOf(QChar(','));
+        int pos = queryString.lastIndexOf(QChar(','));                                      //this 2 lines help to remove the last "," in the end of the query
         queryString = queryString.left(pos);
 
-        qDebug() << "--------- queryString +++++ Node ---------\n";
-        query.prepare(queryString);
-        query.exec();
+        query.prepare(queryString);                                                         //preparing query
+
+        if(!query.exec())                                                                   //Execute
+          qWarning() << "ERROR Adding nodes: " << query.lastError().text();
     }
+    qDebug() << "~~ All nodes added ~~";
 }
-
-
-
 
 void DataManager::addValuesWays(vector<Way> wayVector)
 {
-    qDebug() << "Adding ways ";
+    qDebug() << "\n~~ Adding ways ~~";
+    qDebug() << "In progress ...";
 
-    int cutValue = 1500;
-    int i = 0;
+    int cutValue = 15000;                                                                   //we split the queryString if there is more than n values to append
+    int i = 0;                                                                              //this help the programm to run faster
     while (!wayVector.empty())
     {
-        i = 0;
+        i = 0;                                                                              //reset the counter
         QSqlQuery query;
-        QString queryString = "INSERT INTO ways(id,node) VALUES ";
+        QString queryString = "INSERT INTO ways(id,node) VALUES ";                          //preparing the beginning of each query
         while (i<cutValue)
         {
             uint64_t id = wayVector[0].getId();
-            int counter = 0;
+            int counter = 0;                                                                //to be sure to add all the node of a way, we don't split querry in a way. We wait the end
+                                                                                            //of this way. So we add a counter to add in "i" the good number
             for (auto &node : wayVector[0].getNodes()){
                 counter +=1;
                 QString add = "("+QString::fromStdString(std::to_string(id))+","+QString::fromStdString(std::to_string(node))+"),";
                 queryString = queryString + add;
             }
-            wayVector.erase(wayVector.begin());
+            wayVector.erase(wayVector.begin());                                             //pop the first element of the vector
             if(wayVector.empty()){
                 break;
             }
-            i+=counter;
+            i+=counter;                                                                     //increment counter to detect when we have to split the querry
         }
-
-        int pos = queryString.lastIndexOf(QChar(','));
+        int pos = queryString.lastIndexOf(QChar(','));                                      //this 2 lines help to remove the last "," in the end of the query
         queryString = queryString.left(pos);
 
-        qDebug() << "--------- queryString ---------\n";
+        query.prepare(queryString);                                                         //preparing query
 
-        query.prepare(queryString);
-        if(!query.exec())
+        if(!query.exec())                                                                   //Execute
           qWarning() << "ERROR Adding ways: " << query.lastError().text();
     }
+    qDebug() << "~~ Ways added ~~";
 
 
 }
@@ -224,7 +238,7 @@ DataManager::requestLatLonFromNodes(uint64_t idNode)
      QSqlQuery query;
 
      //preparing query
-     query.prepare("SELECT latitude,longitude FROM nodes WHERE id = ?");
+     query.prepare("SELECT latitude,longitude FROM nodes WHERE id=?");
      query.addBindValue(idNodeVar);
 
      //execute
@@ -238,6 +252,7 @@ DataManager::requestLatLonFromNodes(uint64_t idNode)
          QVariant lon = query.value(1);
          return make_tuple(lat,lon);
      }
+     return make_tuple(-1,-1);
 }
 
 QVariantList DataManager::requestLatLonFromNodes(QVariant idNode)
@@ -292,7 +307,6 @@ vector<QVariant> DataManager::requestNodeFromLatLon(double lat, double lon)
     if(!query.exec())
       qWarning() << "ERROR Finding nodes: " << query.lastError().text();
 }
-
 
 //Fonction pour trouver un itinéraire: à améliorer
 QVariantList DataManager::findRouteFrom(double lat, double lon)

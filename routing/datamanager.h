@@ -33,7 +33,7 @@ public:
     QVariantList findRouteFrom(double lat, double lon);
 private:
     void addTables();
-    QSqlDatabase db;
+
 };
 
 #endif // DATAMANAGER_H

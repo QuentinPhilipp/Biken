@@ -49,7 +49,7 @@ void RoadsData::generateWaysAndNodes(QJsonObject allRoads, DataManager db)
     }
     db.addValuesWays(wayObjectVector);
     db.addValuesNodes(nodeObjectVector);
-    qDebug() << "Roads are stored in the classes. OK ! ";
+
     //qDebug() << "\nAmount of nodes: " << nodeObjectVector.size();;
 }
 
