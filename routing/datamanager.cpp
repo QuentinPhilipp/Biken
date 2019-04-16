@@ -58,18 +58,19 @@ void DataManager::addValuesNodes(vector<Node> nodesVector)
         while (i<cutValue)
         {
             uint64_t id = nodesVector[0].getId();
-            int counter = 0;
             QString add = "("+QString::fromStdString(std::to_string(id))+","+QString::fromStdString(std::to_string(nodesVector[0].getLatitude()))+","+QString::fromStdString(std::to_string(nodesVector[0].getLongitude()))+"),";
             queryString = queryString + add;
             nodesVector.erase(nodesVector.begin());
             if(nodesVector.empty()){
                 break;
             }
-            i+=counter;
+            i++;
+
         }
         int pos = queryString.lastIndexOf(QChar(','));
         queryString = queryString.left(pos);
 
+        qDebug() << "--------- queryString +++++ Node ---------\n";
         query.prepare(queryString);
         query.exec();
     }
@@ -82,7 +83,7 @@ void DataManager::addValuesWays(vector<Way> wayVector)
 {
     qDebug() << "Adding ways ";
 
-    int cutValue = 15000;
+    int cutValue = 1500;
     int i = 0;
     while (!wayVector.empty())
     {
@@ -107,6 +108,8 @@ void DataManager::addValuesWays(vector<Way> wayVector)
 
         int pos = queryString.lastIndexOf(QChar(','));
         queryString = queryString.left(pos);
+
+        qDebug() << "--------- queryString ---------\n";
 
         query.prepare(queryString);
         if(!query.exec())
