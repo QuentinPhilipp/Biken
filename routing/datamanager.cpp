@@ -46,30 +46,33 @@ void DataManager::addTables()
 
 void DataManager::addValuesNodes(vector<Node> nodesVector)
 {
+    qDebug() << "Adding nodes ";
 
-    QVariantList idList;
-    QVariantList latList;
-    QVariantList lonList;
-    for (auto &node : nodesVector){
-        QVariant id,lat,lon;
-        id.setValue(node.getId());
-        lat.setValue(node.getLatitude());
-        lon.setValue(node.getLongitude());
-        idList << id;
-        latList << lat;
-        lonList << lon;
+    int cutValue = 15000;
+    int i = 0;
+    while (!nodesVector.empty())
+    {
+        i = 0;
+        QSqlQuery query;
+        QString queryString = "INSERT INTO nodes(id,latitude,longitude) VALUES ";
+        while (i<cutValue)
+        {
+            uint64_t id = nodesVector[0].getId();
+            int counter = 0;
+            QString add = "("+QString::fromStdString(std::to_string(id))+","+QString::fromStdString(std::to_string(nodesVector[0].getLatitude()))+","+QString::fromStdString(std::to_string(nodesVector[0].getLongitude()))+"),";
+            queryString = queryString + add;
+            nodesVector.erase(nodesVector.begin());
+            if(nodesVector.empty()){
+                break;
+            }
+            i+=counter;
+        }
+        int pos = queryString.lastIndexOf(QChar(','));
+        queryString = queryString.left(pos);
+
+        query.prepare(queryString);
+        query.exec();
     }
-    qDebug() << "size of node : " << idList.size();
-    QSqlQuery query;
-    QString queryString = "INSERT INTO nodes(id,latitude,longitude) VALUES ";
-    for (int i=0;i<idList.size()-1;i++) {
-        QString add = "("+idList[i].toString()+","+latList[i].toString()+","+lonList[i].toString()+"),";
-        queryString = queryString + add;
-    }
-    QString add = "("+idList.last().toString()+","+latList.last().toString()+","+lonList.last().toString()+")";
-    queryString = queryString + add;
-    query.prepare(queryString);
-    query.exec();
 }
 
 
@@ -77,7 +80,6 @@ void DataManager::addValuesNodes(vector<Node> nodesVector)
 
 void DataManager::addValuesWays(vector<Way> wayVector)
 {
-    QVariantList nodeList;
     qDebug() << "Adding ways ";
 
     int cutValue = 15000;
@@ -102,8 +104,13 @@ void DataManager::addValuesWays(vector<Way> wayVector)
             }
             i+=counter;
         }
+
+        int pos = queryString.lastIndexOf(QChar(','));
+        queryString = queryString.left(pos);
+
         query.prepare(queryString);
-        query.exec();
+        if(!query.exec())
+          qWarning() << "ERROR Adding ways: " << query.lastError().text();
     }
 
 
