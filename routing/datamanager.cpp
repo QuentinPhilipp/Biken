@@ -97,6 +97,9 @@ void DataManager::addValuesWays(vector<Way> wayVector)
                 queryString = queryString + add;
             }
             wayVector.erase(wayVector.begin());
+            if(wayVector.empty()){
+                break;
+            }
             i+=counter;
         }
         query.prepare(queryString);
