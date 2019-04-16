@@ -7,14 +7,17 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QObject>
+#include <vector>
+#include "node.h"
+#include "way.h"
 
 
 class DataManager
 {
 public:
     DataManager();
-    void addValuesNodes(uint64_t id, double latitude, double longitude);
-    void addValuesWays(uint64_t id, uint64_t node);
+    void addValuesNodes(std::vector<Node> nodesVetor);
+    void addValuesWays(std::vector<Way> wayVector);
 
     std::vector<QVariant> requestNodesFromRoad(uint64_t idRoad);
     std::vector<QVariant> requestNodesFromRoad(QVariant idRoad);
@@ -30,6 +33,7 @@ public:
     QVariantList findRouteFrom(double lat, double lon);
 private:
     void addTables();
+    QSqlDatabase db;
 };
 
 #endif // DATAMANAGER_H

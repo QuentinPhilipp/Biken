@@ -1,5 +1,5 @@
 #include "datamanager.h"
-
+#include "roadsdata.h"
 #include <string>
 #include <QDebug>
 #include <QObject>
@@ -9,23 +9,30 @@
 #include <QJsonArray>
 #include <tuple>
 
+
 using namespace std;
 
 DataManager::DataManager()
 {
     // open the dataBase
+
     const QString DRIVER("QSQLITE");
     if(QSqlDatabase::isDriverAvailable(DRIVER))
     {
-        QSqlDatabase db = QSqlDatabase::addDatabase(DRIVER);
+        QSqlDatabase dbase = QSqlDatabase::addDatabase(DRIVER);
+        db = dbase;                                            //store in the class
         db.setDatabaseName("../WaysAndNodes.db");          //path for the database    |    do not create a WaysAndNodes.db, it's done automatically
         if(!db.open())
             qDebug() << "ERROR: ";
         else
         {
             qDebug() << "DataBase opened properly";
+            qDebug() <<"Has Feature : " <<db.driver()->hasFeature(QSqlDriver::BatchOperations);
         }
         addTables();    //create tables
+    }
+    else {
+        qDebug() << "ERROR isDriverAvailable";
     }
 }
 
@@ -34,65 +41,67 @@ void DataManager::addTables()
     //Creating tables ways and nodes
     QSqlQuery queryways("CREATE TABLE ways (id BIGINT, node INTEGER)");
     QSqlQuery querynodes("CREATE TABLE nodes (id BIGINT, latitude DOUBLE, longitude DOUBLE)");
-    qDebug() << "Tables created";
+    //qDebug() << "Tables created";
 }
 
-void DataManager::addValuesNodes(uint64_t id,double latitude,double longitude)
+void DataManager::addValuesNodes(vector<Node> nodesVector)
 {
-    QSqlQuery query,queryTest;
-    //converting to Qvariant object
-    QVariant latVar = QVariant(latitude);
-    QVariant lonVar = QVariant(longitude);
-    QVariant idVar;
-    idVar.setValue(id);
-    //check if the node already exist in the database
-    QVariantList coordinates;
-    coordinates = requestLatLonFromNodes(idVar);
-    if(!coordinates.empty()){
-        if ((coordinates[0]==latVar) && (coordinates[1]==lonVar)){
-            //qDebug() << "Node already in the Database. Nodes id: " << idVar << "  lat: " << latitude << "  lon:" << longitude;                                                   //already in
+
+    QVariantList idList;
+    QVariantList latList;
+    QVariantList lonList;
+    for (auto &node : nodesVector){
+        QVariant id,lat,lon;
+        id.setValue(node.getId());
+        lat.setValue(node.getLatitude());
+        lon.setValue(node.getLongitude());
+        idList << id;
+        latList << lat;
+        lonList << lon;
+    }
+    qDebug() << "size of node : " << idList.size();
+    QSqlQuery query;
+    QString queryString = "INSERT INTO nodes(id,latitude,longitude) VALUES ";
+    for (int i=0;i<idList.size()-1;i++) {
+        QString add = "("+idList[i].toString()+","+latList[i].toString()+","+lonList[i].toString()+"),";
+        queryString = queryString + add;
+    }
+    QString add = "("+idList.last().toString()+","+latList.last().toString()+","+lonList.last().toString()+")";
+    queryString = queryString + add;
+    query.prepare(queryString);
+    query.exec();
+}
+
+
+
+
+void DataManager::addValuesWays(vector<Way> wayVector)
+{
+    QVariantList nodeList;
+    qDebug() << "Adding ways ";
+
+    int cutValue = 15000;
+    int i = 0;
+    while (!wayVector.empty())
+    {
+        i = 0;
+        QSqlQuery query;
+        QString queryString = "INSERT INTO ways(id,node) VALUES ";
+        while (i<cutValue)
+        {
+            uint64_t id = wayVector[0].getId();
+            int counter = 0;
+            for (auto &node : wayVector[0].getNodes()){
+                counter +=1;
+                QString add = "("+QString::fromStdString(std::to_string(id))+","+QString::fromStdString(std::to_string(node))+"),";
+                queryString = queryString + add;
+            }
+            wayVector.erase(wayVector.begin());
+            i+=counter;
         }
+        query.prepare(queryString);
+        query.exec();
     }
-    else {
-            //qDebug() << "New Node.. Adding it in the database.";                                             //Not in
-            query.prepare("INSERT INTO nodes(id,latitude,longitude) VALUES(:id,:lat,:lon)");                //preparing the query
-            query.bindValue(":id",idVar);                                                                   //setting the parameters
-            //qDebug() << "Nodes id: " << idVar;
-            query.bindValue(":lat",latitude);
-            //qDebug() << "lat: " << latitude;
-            query.bindValue(":lon",longitude);
-            //qDebug() << "lon:" << longitude;
-            if (!query.exec())                                                                              //execute
-            {qWarning() << "ERROR Inserting nodes : " << query.lastError().text();}
-    }
-}
-
-void DataManager::addValuesWays(uint64_t id,uint64_t node)                                               // add prevention to don't have the same data twice
-{
-    QSqlQuery query,queryTest;
-
-    //converting to Qvariant object
-    QVariant idVar;
-    QVariant nodeVar;
-    idVar.setValue(id);
-    nodeVar.setValue(node);
-
-    // Check if the way is already in the DataBase
-    vector<QVariant> nodesVector = requestNodesFromRoad(id);
-    if(find(nodesVector.begin(), nodesVector.end(), nodeVar) != nodesVector.end()) {               //find search a position of an object in a vector.
-        // nodesVector contains nodeVar
-        //qDebug() << "Way already in the database";
-    } else {
-        // Not in the database
-        //qDebug() << "New way.. Adding it in the database";
-        query.prepare("INSERT INTO ways(id,node) VALUES(?,?)");                                         //insert values into the ways table
-
-        query.addBindValue(idVar);
-        query.addBindValue(nodeVar);
-        if (!query.exec())                                                                              //execute
-        {qWarning() << "ERROR Inserting ways: " << query.lastError().text();}
-    }
-
 
 
 }
@@ -108,6 +117,7 @@ DataManager::requestNodesFromRoad(uint64_t idRoad)
      //preparing query
      query.prepare("SELECT node FROM ways WHERE id = ?");
      query.addBindValue(idRoadVar);
+
 
      //execute
      if(!query.exec())
@@ -130,6 +140,7 @@ DataManager::requestNodesFromRoad(QVariant idRoad)
      //preparing query
      query.prepare("SELECT node FROM ways WHERE id = ?");
      query.addBindValue(idRoad);
+
 
      //execute
      if(!query.exec())

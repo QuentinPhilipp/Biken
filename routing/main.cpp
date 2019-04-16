@@ -2,6 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlEngine>
 #include <QQmlContext>
+#include <QTime>
 
 #include "node.h"
 #include "way.h"
@@ -15,8 +16,14 @@ int main(int argc, char *argv[])
 
     //make a request to get all the roads around a coordinate
     RequeteAPI *requeteRoads = new RequeteAPI();
-    QString radius = "10000"; //radius in meters. Do not set the radius too high (~200km max), otherwise it will exceed the api's capacity.
+    QString radius = "1000"; //radius in meters. Do not set the radius too high (~200km max), otherwise it will exceed the api's capacity.
+
+    qDebug() << "\n\n TEST CHRONO rayon = 10km\n";
+    //chrono time
+    qDebug() << "\n TIME Before Request : " << QTime::currentTime().toString() << "\n";
     QJsonObject allRoads = requeteRoads->getAllRoadsAroundThePoint("48.434420","-4.640103",radius);
+
+    qDebug() << "\n TIME After Request : " << QTime::currentTime().toString() << "\n";
 
     //create the datamanger class
     //DataManager *db = new DataManager();
@@ -28,13 +35,17 @@ int main(int argc, char *argv[])
 
     QScopedPointer<RoadsData> roadsData(new RoadsData);
     roadsData->generateWaysAndNodes(allRoads, *db);
+
+    qDebug() << "\n TIME After Database creation : " << QTime::currentTime().toString() << "\n";
+    qDebug() << QCoreApplication::libraryPaths();
+
     vector<Way> wayVector = roadsData->getWayVector();
 
     //Verification
     qDebug() << "\nAmount of ways: " << wayVector.size() ;  //shows the amount of Way objects
-    wayVector[wayVector.size()-1].displayGPSData();         //shows the very last Way object
 
 
+    //test sur la base de données
     qDebug() << "List of the node of Road id 105576006";
         std::vector<QVariant> nodes = db->requestNodesFromRoad(105576006);
         for (auto elem : nodes)
@@ -46,6 +57,7 @@ int main(int argc, char *argv[])
         std::tie(lat,lon) = db->requestLatLonFromNodes(1215777654);
         qDebug() << "Latitude : "<<lat.toString()<<" | Longitude : "<<lon.toString();
 
+    qDebug() << "\n TIME End : " << QTime::currentTime().toString() << "\n";
 
     //Pour passer du C++ au QML
     QQmlApplicationEngine engine;
