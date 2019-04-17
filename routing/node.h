@@ -11,6 +11,7 @@ class Node
 {
 public :
   Node(uint64_t id,double lat,double lon); //constructor
+  Node();
 
   //getter (no setter bc it is read-only)
   uint64_t getId() const;

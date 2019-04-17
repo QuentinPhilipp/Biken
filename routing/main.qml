@@ -1,6 +1,6 @@
 import QtQuick 2.5
 import QtQuick.Window 2.2
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.4
 import QtLocation 5.6
 import QtPositioning 5.6
 import "helper.js" as Helper
@@ -258,15 +258,17 @@ Window {
             width: 150
             height: 20
             onPressed: {
-                var nodes = roadsData.findRouteFrom(4.5,5.6);//random parameters, they are not used yet
-                console.log(nodes);
+                var nodes = dataManager.findRouteFrom(4.5,5.6);//random parameters, they are not used yet
+                //console.log(nodes);
+                console.log("data received in QML");
 
-                for(var i=0; i<nodes.length; i++){
-                    var node = roadsData.requestLatLonFromNodes(nodes[i]);
-                    console.log(node);
-                }
-
-                thisIsTheMap.calculateCoordinateRouteWithNodes(nodes)
+//                for(var i=0; i<nodes.length; i++){
+//                    var node = dataManager.requestLatLonFromNodes(nodes[i]);
+//                    //console.log(node);
+//                }
+                console.log("Calculating route...");
+                thisIsTheMap.calculateCoordinateRouteWithNodes(nodes);
+                console.log("Done.");
             }
             Text{
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -285,11 +287,15 @@ Window {
             anchors.top: testButton.bottom
             anchors.topMargin: 10
             color:"#dddddd"
-            Text{
-                id: textToDisplay
+            ScrollView{
+                id: view
                 anchors.fill: parent
-                font.pixelSize: 12
-                color:"black"
+                TextArea{
+                    id: textToDisplay
+                    anchors.fill: parent
+                    font.pixelSize: 12
+                    color:"black"
+                }
             }
         }
     }
@@ -312,5 +318,82 @@ Window {
         anchors.bottom: parent.bottom
         color: "#252525"
         border.color: "white"
+        Rectangle{
+            anchors.right: setRadius.left
+            anchors.rightMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            width: 200
+            height: 30
+            color: "#252525"
+            Text{
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 14
+                color:"white"
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                text:"Radius (in meters):"
+            }
+        }
+        Rectangle{
+            id:setRadius
+            anchors.right: refreshDataBase.left
+            anchors.rightMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            width: 100
+            height: 30
+            color: "black"
+            TextInput{
+                id: radius
+                anchors.fill:parent
+                font.pixelSize: 14
+                color:"white"
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
+        }
+        Button{
+            id: refreshDataBase
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            width:120
+            height:40
+            onClicked: {
+                if(radius.length!=0){
+                    var radiusValue = radius.text*1;
+                    if(radiusValue<=50000 && radiusValue>=1000){
+                        displayInfos.color = "white"
+                        displayInfos.text = "Refreshing ..."
+                        dataManager.generateWaysAndNodes(radius.text);
+                        displayInfos.text = "Done."
+                    }
+                    else{
+                        displayInfos.color = "#EB6A63";
+                        displayInfos.text = "Error: Radius must be between 1000m and 50000m"
+                    }
+                }
+            }
+            Text{
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 13
+                text: "Refresh database"
+                font.bold: true
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                color: "black"
+            }
+        }
+        Text{
+            id:displayInfos
+            anchors.top: setRadius.bottom
+            anchors.topMargin: 35
+            anchors.horizontalCenter: setRadius.horizontalCenter
+            font.pixelSize: 12
+            color:"white"
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+            text:""
+        }
     }
 }
