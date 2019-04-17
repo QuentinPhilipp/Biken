@@ -9,18 +9,15 @@ using namespace std;
 class Way
 {
   public :
-    Way(uint64_t id,vector<uint64_t> nodesId,vector<Node> n);
+    Way(uint64_t id,vector<uint64_t> nodesId);
 
     void displayNode();
-    void displayGPSData();
-    void displayWay();
-
-    vector<Node> getNodes() const;
+    vector<uint64_t> getNodes() const;
+    inline uint64_t getId(){return id;}
 
 private:
     uint64_t id;
     vector<uint64_t> nodesId;
-    vector<Node> nodes;
 };
 
 

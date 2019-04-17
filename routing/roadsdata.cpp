@@ -26,7 +26,6 @@ void RoadsData::generateWaysAndNodes(QJsonObject allRoads, DataManager db)
             double longitude = element["lon"].toDouble();
             Node node = Node(nodeId,latitude,longitude); //create an object Node with the 3 parameters from above
             nodeObjectVector.emplace_back(node);
-            db.addValuesNodes(nodeId,latitude,longitude);
         }
         else if(element["type"]=="way"){
             vector<uint64_t> nodeIdVector;                                //A vector that contains all the Node objects' Id of one object Way
@@ -37,19 +36,21 @@ void RoadsData::generateWaysAndNodes(QJsonObject allRoads, DataManager db)
             {
                 uint64_t nodeId = static_cast<uint64_t>(node.toDouble());
                 nodeIdVector.emplace_back(nodeId);
-                Node wayNode = getNodeFromNodeId(nodeId, nodeObjectVector); //returns the object Node that correspond to the given nodeId
-                nodeVector.emplace_back(wayNode);
-                db.addValuesWays(id,nodeId);
+//                Node wayNode = getNodeFromNodeId(nodeId, nodeObjectVector); //returns the object Node that correspond to the given nodeId
+//                nodeVector.emplace_back(wayNode);
+//                qDebug() << "Stuck ?";
             }
             if (nodeIdVector.size()!=0) //security
             {
-                Way w = Way(id,nodeIdVector,nodeVector); //creating the way with the parameters from above
-                wayVector.emplace_back(w);
+                Way w = Way(id,nodeIdVector); //creating the way with the parameters from above
+                wayObjectVector.emplace_back(w);
             }
         }
     }
-    qDebug() << "Roads are stored in the classes. OK ! ";
-    qDebug() << "\nAmount of nodes: " << nodeObjectVector.size();;
+    db.addValuesWays(wayObjectVector);
+    db.addValuesNodes(nodeObjectVector);
+
+    //qDebug() << "\nAmount of nodes: " << nodeObjectVector.size();;
 }
 
 Node RoadsData::getNodeFromNodeId(uint64_t nodeId, vector<Node> &nodeObjectVector)
