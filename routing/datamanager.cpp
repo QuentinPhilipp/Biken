@@ -213,11 +213,9 @@ DataManager::requestRoadsFromNode(uint64_t idNode)
 
      while (query.next()) {
          uint64_t idWay = static_cast<uint64_t>(query.value(0).toDouble());
-         qDebug() << "idWay"<<idWay;
-         qDebug()<< "oldIdWay"<<lastId;
          if (idWay != lastId)
          {
-             Way w = Way(idWay,nodeIdVect,nodeVect);
+             Way w = Way(lastId,nodeIdVect,nodeVect);
              roads.emplace_back(w);
              lastId = static_cast<uint64_t>(query.value(0).toDouble());
              nodeIdVect={};
@@ -230,6 +228,8 @@ DataManager::requestRoadsFromNode(uint64_t idNode)
          nodeVect.emplace_back(n);
          nodeIdVect.emplace_back(idNode);
      }
+     Way w = Way(lastId,nodeIdVect,nodeVect);
+     roads.emplace_back(w);
      return roads;
 }
 
