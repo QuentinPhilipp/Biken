@@ -51,7 +51,7 @@ QJsonObject RequeteAPI::getAllRoadsAroundThePoint(QString lat, QString lon, QStr
         jsonObj = jsonResponse.object();
     }
 
-    //qDebug() << urlString;
+    qDebug() << urlString;
 
     manager->~QNetworkAccessManager();
 

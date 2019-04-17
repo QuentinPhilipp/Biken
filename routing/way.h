@@ -10,14 +10,17 @@ class Way
 {
   public :
     Way(uint64_t id,vector<uint64_t> nodesId);
+    Way(uint64_t id,vector<uint64_t> nodsId,vector<Node> nods);
 
     void displayNode();
-    vector<uint64_t> getNodes() const;
+    vector<uint64_t> getNodesId() const;
     inline uint64_t getId(){return id;}
+    vector<Node> getNodes() const;
 
 private:
     uint64_t id;
     vector<uint64_t> nodesId;
+    vector<Node> nodes;
 };
 
 

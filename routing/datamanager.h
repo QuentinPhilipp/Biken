@@ -19,11 +19,11 @@ public:
     void addValuesNodes(std::vector<Node> nodesVetor);
     void addValuesWays(std::vector<Way> wayVector);
 
-    std::vector<QVariant> requestNodesFromRoad(uint64_t idRoad);
-    std::vector<QVariant> requestNodesFromRoad(QVariant idRoad);
+    std::vector<Node> requestNodesFromRoad(uint64_t idRoad);
+    std::vector<Node> requestNodesFromRoad(QVariant idRoad);        //overload
 
-    std::vector<QVariant> requestRoadsFromNode(uint64_t idNode);
-    std::vector<QVariant> requestRoadsFromNode(QVariant idNode);
+    std::vector<Way> requestRoadsFromNode(uint64_t idNode);
+    std::vector<Way> requestRoadsFromNode(QVariant idNode);        //overload
 
     std::tuple<QVariant,QVariant> requestLatLonFromNodes(uint64_t idNode);
     QVariantList requestLatLonFromNodes(QVariant idNode);
