@@ -23,7 +23,6 @@ SOURCES += \
     node.cpp \
     way.cpp \
     requeteapi.cpp \
-    roadsdata.cpp \
     datamanager.cpp \
     myadress.cpp
 
@@ -44,6 +43,5 @@ HEADERS += \
     node.h \
     way.h \
     requeteapi.h \
-    roadsdata.h \
     datamanager.h \
     myadress.h

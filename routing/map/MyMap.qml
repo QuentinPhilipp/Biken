@@ -39,7 +39,7 @@ Map {
 
         // add the start and end coords as waypoints on the route
         for(var i=0; i<nodes.length; i++){
-            var node = roadsData.requestLatLonFromNodes(nodes[i]);
+            var node = dataManager.requestLatLonFromNodes(nodes[i]);
             var coordinate = QtPositioning.coordinate(node[0],node[1])
             routeQuery.addWaypoint(coordinate)
         }
@@ -53,7 +53,7 @@ Map {
         routeModel.update();
 
         // center the map on the start coord
-        map.center = QtPositioning.coordinate(roadsData.requestLatLonFromNodes(nodes[0]),roadsData.requestLatLonFromNodes(nodes[0]));
+        map.center = QtPositioning.coordinate(dataManager.requestLatLonFromNodes(nodes[0]),dataManager.requestLatLonFromNodes(nodes[0]));
     }
 
     function showRouteListPage()
@@ -62,8 +62,7 @@ Map {
             //textToDisplay.text="Itinéraire: " + routeModel.get(0).segments[1].path
             for (var i = 0; i < routeModel.get(0).segments.length; i++) {
                 textToDisplay.text+="\nInstruction: " + routeModel.get(0).segments[i].maneuver.instructionText
-                        + "\nDistance: "+Helper.formatDistance(routeModel.get(0).segments[i].maneuver.distanceToNextInstruction)
-                        + "\nDénivelé: "+routeModel.get(0).segments[i].path[0].altitude + "m\n"
+                        + "\nDistance: "+Helper.formatDistance(routeModel.get(0).segments[i].maneuver.distanceToNextInstruction)+ "\n"
             }
         }
     }

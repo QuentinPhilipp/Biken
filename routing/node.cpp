@@ -8,6 +8,11 @@ Node::Node(uint64_t id,double lat,double lon)
 
 }
 
+Node::Node()
+{
+
+}
+
 //getter (read-only)
 uint64_t Node::getId() const
 {
