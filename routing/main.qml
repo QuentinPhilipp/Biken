@@ -26,6 +26,7 @@ Window {
     minimumHeight: 400
     visible: true
 
+    //Rectangle where the map will appear
     Rectangle{
         id: mapContainer
         width: 0.8*parent.width
@@ -33,20 +34,18 @@ Window {
         anchors.right: parent.right
         anchors.top: parent.top
         color: "green"
-
-        Plugin {
+        Plugin {                                //A Plugin has to be set to create a map
             id: mapPlugin
             preferred: ["osm", "esri"]
         }
+        MyMap {                                 //permet de créer un object MyMap (défini dans le fichier "MyMap.qml")
+            id : thisIsTheMap
+            anchors.fill: mapContainer
+            plugin: mapPlugin
+        }
     }
 
-    MyMap {
-        //permet de créer un object MyMap (défini dans le fichier "MyMap.qml")
-        id : thisIsTheMap
-        anchors.fill: mapContainer
-        plugin: mapPlugin
-    }
-
+    //Rectangle where every parameter for the route can be set (position, distance...)
     Rectangle{
         id: paramContainer
         width: 0.2*parent.width
@@ -55,7 +54,6 @@ Window {
         anchors.top: parent.top
         color: "#252525"
         border.color: "white"
-
 
         //Recherche avec des coordonnées
         Text {
@@ -98,7 +96,6 @@ Window {
                 color:"white"
             }
         }
-
         Text {
             id: toCoordinateText
             anchors.left: fromCoordinateText.left
@@ -138,7 +135,6 @@ Window {
                 color:"white"
             }
         }
-
         Button{
             id: validationCoordinate
             anchors.right: toLongitude.right
@@ -194,7 +190,6 @@ Window {
                 color:"white"
             }
         }
-
         Text {
             id: toAdressText
             anchors.left: fromAdressText.left
@@ -219,7 +214,6 @@ Window {
                 color:"white"
             }
         }
-
         Button{
             id: validationAdress
             anchors.right: toAdress.right
@@ -258,15 +252,13 @@ Window {
             width: 150
             height: 20
             onPressed: {
-                var nodes = dataManager.findRouteFrom(4.5,5.6);//random parameters, they are not used yet
-                //console.log(nodes);
-                console.log("data received in QML");
-
-//                for(var i=0; i<nodes.length; i++){
-//                    var node = dataManager.requestLatLonFromNodes(nodes[i]);
-//                    //console.log(node);
-//                }
+                //Calls the function findRouteFrom(lat,lon) from datamanager in C++. It will return a list of nodes which are
+                //themself a list of 2 coordinates (latitude,longitude). Those nodes represent every node on which you change
+                //from one road to another.
                 console.log("Calculating route...");
+                var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
+                console.log("Data received in QML");
+                //Then calculate a route that goes through every of those nodes
                 thisIsTheMap.calculateCoordinateRouteWithNodes(nodes);
                 console.log("Done.");
             }
@@ -279,7 +271,6 @@ Window {
                 color: "black"
             }
         }
-
         Rectangle{
             width: 280
             height: 300
@@ -300,6 +291,7 @@ Window {
         }
     }
 
+    //Rectangle where we will display meteo information
     Rectangle{
         id: meteoContainer
         width: 0.2*parent.width
@@ -310,6 +302,7 @@ Window {
         border.color: "white"
     }
 
+    //Another rectangle, don't know what we will put in it yet
     Rectangle{
         id: overviewContainer
         width: 0.8*parent.width

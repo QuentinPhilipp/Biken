@@ -32,8 +32,10 @@ DataManager::DataManager(QObject *parent) : QObject(parent)
     }
 }
 
+//This function is called from QML
 void DataManager::generateWaysAndNodes(QVariant radius)
 {
+    //Make an API request to get all the roads around a point & calculate the time it takes to receive it.
     RequeteAPI *requeteRoads = new RequeteAPI();
     qDebug() << "\n\n TEST CHRONO rayon = " << radius.toString().toDouble() << "metres.\n";
     QDateTime beforeRequestTime = QDateTime::currentDateTime();
@@ -41,48 +43,44 @@ void DataManager::generateWaysAndNodes(QVariant radius)
     QDateTime afterRequestTime = QDateTime::currentDateTime();
     qDebug() << "\nTemps écoulé pendant la requête : "<<beforeRequestTime.secsTo(afterRequestTime)<<"secondes.";
 
-
-    vector<Way> wayObjectVector;    //A vector that contains every Way objects
-    vector<Node> nodeObjectVector;  //A vector that contains every Node objects
-
-    int length = allRoads["elements"].toArray().size(); //allRoads["elements"] contains all the ways and nodes (in JSON)
+    //Then store everything in objects
+    vector<Way> wayObjectVector;                                               //A vector that contains every Way objects
+    vector<Node> nodeObjectVector;                                             //A vector that contains every Node objects
+    int length = allRoads["elements"].toArray().size();                        //allRoads["elements"] contains all the ways and nodes (in JSON)
     for (int i=0;i<length;i++) {
-        //for Qt 5.9
-        QJsonObject element = allRoads["elements"].toArray()[i].toObject();
-
-        //for Qt 5.10
-        //QJsonValue element = QJsonValue(allRoads["elements"])[i]; //contains one way OR one node (with everything that's inside it), (in JSON)
+        QJsonObject element = allRoads["elements"].toArray()[i].toObject();    //element contains one way OR one node (with everything that's inside it), (in JSON)
         if(element["type"]=="node"){
             uint64_t nodeId = static_cast<uint64_t>(element["id"].toDouble()); //it has to be uint64_t because the Id can be more than 2^32 (so uint_32_t and below won't work)
             double latitude = element["lat"].toDouble();
             double longitude = element["lon"].toDouble();
-            Node node = Node(nodeId,latitude,longitude); //create an object Node with the 3 parameters from above
+            Node node = Node(nodeId,latitude,longitude);                       //create an object Node with the 3 parameters from above
             nodeObjectVector.emplace_back(node);
         }
         else if(element["type"]=="way"){
-            vector<uint64_t> nodeIdVector;                                //A vector that contains all the Node objects' Id of one object Way
-            vector<Node> nodeVector;                                     //A vector that contains all the Node objects of one object Way
-            uint64_t id = static_cast<uint64_t>(element["id"].toDouble()); //get the id in uint64_t (same reason as above)
-            QJsonArray nodeArray = element["nodes"].toArray();            //nodsArray contains all the node from one way (in JSON)
+            vector<uint64_t> nodeIdVector;                                     //A vector that contains all the Node objects' Id of one object Way
+            vector<Node> nodeVector;                                           //A vector that contains all the Node objects of one object Way
+            uint64_t id = static_cast<uint64_t>(element["id"].toDouble());     //get the id in uint64_t (same reason as above)
+            QJsonArray nodeArray = element["nodes"].toArray();                 //nodsArray contains all the node from one way (in JSON)
             for(auto node : nodeArray)
             {
                 uint64_t nodeId = static_cast<uint64_t>(node.toDouble());
                 nodeIdVector.emplace_back(nodeId);
-//                Node wayNode = getNodeFromNodeId(nodeId, nodeObjectVector); //returns the object Node that correspond to the given nodeId
+//                Node wayNode = getNodeFromNodeId(nodeId, nodeObjectVector);  //returns the object Node that correspond to the given nodeId
 //                nodeVector.emplace_back(wayNode);
 //                qDebug() << "Stuck ?";
             }
             if (nodeIdVector.size()!=0) //security
             {
-                Way w = Way(id,nodeIdVector); //creating the way with the parameters from above
+                Way w = Way(id,nodeIdVector);                                  //creating the way with the parameters from above
                 wayObjectVector.emplace_back(w);
             }
         }
     }
+
+    //Finally, store it in the database
     addTables();
     addValuesWays(wayObjectVector);
     addValuesNodes(nodeObjectVector);
-
     QDateTime afterDatabaseTime = QDateTime::currentDateTime();
     qDebug() << "\nTemps écoulé pendant la création de la base de donnée : "<<afterRequestTime.secsTo(afterDatabaseTime)<<"secondes\n";
 }
@@ -135,14 +133,14 @@ void DataManager::addTables()
       database already exist, tables will not be created*/
 
     //Adding the ways table
-    QSqlQuery clearWays("DELETE FROM ways");
-    QSqlQuery queryways("CREATE TABLE IF NOT EXISTS ways (id_way BIGINT, node BIGINT)");                        //using BIGINT to fit with uint64_t
+    QSqlQuery clearWays("DELETE FROM ways");                                             //clear the table first
+    QSqlQuery queryways("CREATE TABLE IF NOT EXISTS ways (id_way BIGINT, node BIGINT)"); //using BIGINT to fit with uint64_t
     if(!queryways.exec())
     {qDebug()<<"Error creating ways table"<<queryways.lastError();}
 
 
     //Adding the node table
-    QSqlQuery clearNodes("DELETE FROM nodes");
+    QSqlQuery clearNodes("DELETE FROM nodes");                                           //clear the table first
     QSqlQuery querynodes("CREATE TABLE IF NOT EXISTS nodes (id_node BIGINT, latitude DOUBLE, longitude DOUBLE)");
     if(!querynodes.exec())
     {qDebug()<<"Error creating node table"<<querynodes.lastError();}
@@ -166,7 +164,7 @@ void DataManager::addValuesNodes(vector<Node> nodesVector)
             double valueAsDouble = 1.2;
             QString valueAsString = QString::number(valueAsDouble);
             QString add = "("+QString::fromStdString(std::to_string(id))+","+QString::number(nodesVector[0].getLatitude(),'f',8)+","+QString::number(nodesVector[0].getLongitude(),'f',8)+"),";
-            /*the string look like : "(1215779765,48.4368521,-4.6501655"
+            /*the string looks like : "(1215779765,48.4368521,-4.6501655"
               QString::number(aDoubleValue,'f',8) is used to cast double
             to QString with 8 numbers precision, so we don't lose data*/
             queryString = queryString + add;                                                //adding the string to the query
@@ -372,32 +370,6 @@ DataManager::requestRoadsFromNode(QVariant idNode)
     return roads;
 }
 
-//tuple<QVariant,QVariant>
-//DataManager::requestLatLonFromNodes(uint64_t idNode)
-//{
-//     //converting
-//     QVariant idNodeVar;
-//     idNodeVar.setValue(idNode);
-//     QSqlQuery query;
-
-//     //preparing query
-//     query.prepare("SELECT latitude,longitude FROM nodes WHERE id=?");
-//     query.addBindValue(idNodeVar);
-
-//     //execute
-//     if(!query.exec())
-//       qWarning() << "ERROR Finding nodes: " << query.lastError().text();
-
-//     //returning a tuple with latitude and longitude. If it doesn't work, you don't have c++17 so look to the tie() function to get the data fro this function
-//     vector<QVariant> nodes;
-//     if (query.first()) {
-//         QVariant lat = query.value(0);
-//         QVariant lon = query.value(1);
-//         return make_tuple(lat,lon);
-//     }
-//     return make_tuple(-1,-1);
-//}
-
 QVariantList DataManager::requestLatLonFromNodes(QVariant idNode)
 {
     QSqlQuery query;
@@ -427,12 +399,11 @@ QVariantList DataManager::requestLatLonFromNodes(QVariant idNode)
 //    /*
 //     *TO DO:
 //     * - try to find a node with the exact same latitude and longitude as the coordinate(lat,lon) --- ex:(48.483652,-4.235684)
-//     * - if it doesn't exist : remove one (or more) decimal from lat and lon and try to           --- ex: between(48.4836,-4.2356)
-//     *   find a node in this range                                                                ---     and    (48.4837,-4.2357)
-//     * - remove a decimal until there is a node in the range
+//     * - if it doesn't exist : remove one (or more) decimal from lat and lon and try to           --- ex: between(48.483,-4.235)
+//     *   find a node in this range                                                                ---     and    (48.484,-4.236)
 //     *
 //     * to do that, use this method: lat=floor(lat*10000)/10000 (adjusting "10000" depending on how
-//     * many decimal you want to remove. You have to include <math.h>
+//     * many decimal you want to remove). You have to include <math.h>
 //     *
 //     */
 
