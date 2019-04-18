@@ -28,6 +28,8 @@ SOURCES += \
 
 RESOURCES += qml.qrc
 
+RC_FILE = icone.rc
+
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 
@@ -45,3 +47,6 @@ HEADERS += \
     requeteapi.h \
     datamanager.h \
     myadress.h
+
+DISTFILES += \
+    icone.rc
