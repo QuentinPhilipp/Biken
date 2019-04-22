@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
 
     //create the datamanger class
     QScopedPointer<DataManager> db(new DataManager);
+    db->requestRoads();
 
     MyAdress* myAdress = new MyAdress();
 

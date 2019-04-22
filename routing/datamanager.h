@@ -27,6 +27,9 @@ public:
 
     std::vector<Way> requestRoadsFromNode(uint64_t idNode);
     std::vector<Way> requestRoadsFromNode(QVariant idNode);         //overload
+    std::vector<Way> requestRoadsFromNode(Node node);               //overload
+
+    void requestRoads();
 
     Q_INVOKABLE QVariantList requestLatLonFromNodes(QVariant idNode);
 
@@ -37,7 +40,8 @@ private:
     void addTables();
     void addValuesNodes(std::vector<Node> nodesVetor);
     void addValuesWays(std::vector<Way> wayVector);
-
+    vector<Node> allNodes;
+    vector<Way> allWays;
 };
 
 #endif // DATAMANAGER_H
