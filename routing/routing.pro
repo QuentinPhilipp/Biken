@@ -28,6 +28,9 @@ SOURCES += \
 
 RESOURCES += qml.qrc
 
+#Additional Resource Script for the icon. In order to be fonctional, the .ico must be in the same directory and the file name must match the .rc file
+RC_FILE = icone.rc
+
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 
@@ -45,3 +48,6 @@ HEADERS += \
     requeteapi.h \
     datamanager.h \
     myadress.h
+
+DISTFILES += \
+    icone.rc
