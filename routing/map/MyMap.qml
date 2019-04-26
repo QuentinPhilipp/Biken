@@ -8,9 +8,15 @@ Map {
     id: map
     property alias routeQuery: routeQuery
     property alias routeModel: routeModel
+    property var nodes
 
     center: QtPositioning.coordinate(48.368718, -4.588330) // Plouzane
     zoomLevel: 10
+
+    function setNodes(n)
+    {
+        nodes=n;
+    }
 
     function calculateCoordinateRoute(startCoordinate, endCoordinate)
     {
@@ -32,11 +38,10 @@ Map {
         // center the map on the start coord
         map.center = startCoordinate;
     }
-    function calculateCoordinateRouteWithNodes(nodes)
+    function calculateCoordinateRouteWithNodes()
     {
         // clear away any old data in the query
         routeQuery.clearWaypoints();
-
         // add the start and end coords as waypoints on the route
         for(var i=0; i<nodes.length; i++){
             var node = dataManager.requestLatLonFromNodes(nodes[i]);
@@ -49,9 +54,7 @@ Map {
         for (var j=0; j<9; j++) {
             routeQuery.setFeatureWeight(j, 0)
         }
-
         routeModel.update();
-
         // center the map on the start coord
         map.center = QtPositioning.coordinate(dataManager.requestLatLonFromNodes(nodes[0]),dataManager.requestLatLonFromNodes(nodes[0]));
     }
@@ -64,6 +67,7 @@ Map {
                 textToDisplay.text+="\nInstruction: " + routeModel.get(0).segments[i].maneuver.instructionText
                         + "\nDistance: "+Helper.formatDistance(routeModel.get(0).segments[i].maneuver.distanceToNextInstruction)+ "\n"
             }
+            console.log("Done.");
         }
     }
 
@@ -80,6 +84,11 @@ Map {
                     map.showRouteListPage()
                     break
                 }
+            }
+            else if(status==RouteModel.Error){
+                console.log(errorString);
+                routeModel.reset();
+                calculateCoordinateRouteWithNodes();
             }
         }
     }
