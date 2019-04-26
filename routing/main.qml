@@ -308,6 +308,7 @@ Window {
         anchors.bottom: parent.bottom
         color: "#2525ff"
         border.color: "white"
+        opacity: 0.2
     }
 
     Rectangle{
