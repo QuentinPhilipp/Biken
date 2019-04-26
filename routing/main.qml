@@ -1,6 +1,6 @@
 import QtQuick 2.5
 import QtQuick.Window 2.2
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.4
 import QtLocation 5.6
 import QtPositioning 5.6
 import "helper.js" as Helper
@@ -26,6 +26,7 @@ Window {
     minimumHeight: 400
     visible: true
 
+    //Rectangle where the map will appear
     Rectangle{
         id: mapContainer
         width: 0.8*parent.width
@@ -33,20 +34,18 @@ Window {
         anchors.right: parent.right
         anchors.top: parent.top
         color: "green"
-
-        Plugin {
+        Plugin {                                //A Plugin has to be set to create a map
             id: mapPlugin
             preferred: ["osm", "esri"]
         }
+        MyMap {                                 //permet de créer un object MyMap (défini dans le fichier "MyMap.qml")
+            id : thisIsTheMap
+            anchors.fill: mapContainer
+            plugin: mapPlugin
+        }
     }
 
-    MyMap {
-        //permet de créer un object MyMap (défini dans le fichier "MyMap.qml")
-        id : thisIsTheMap
-        anchors.fill: mapContainer
-        plugin: mapPlugin
-    }
-
+    //Rectangle where every parameter for the route can be set (position, distance...)
     Rectangle{
         id: paramContainer
         width: 0.2*parent.width
@@ -55,7 +54,6 @@ Window {
         anchors.top: parent.top
         color: "#252525"
         border.color: "white"
-
 
         //Recherche avec des coordonnées
         Text {
@@ -98,7 +96,6 @@ Window {
                 color:"white"
             }
         }
-
         Text {
             id: toCoordinateText
             anchors.left: fromCoordinateText.left
@@ -138,7 +135,6 @@ Window {
                 color:"white"
             }
         }
-
         Button{
             id: validationCoordinate
             anchors.right: toLongitude.right
@@ -146,7 +142,7 @@ Window {
             anchors.topMargin: 10
             width: 70
             height: 20
-            onPressed: {
+            onClicked: {
                 var startCoordinate = QtPositioning.coordinate(parseFloat(fromLatitudeInput.text),
                                                                parseFloat(fromLongitudeInput.text));
                 var endCoordinate = QtPositioning.coordinate(parseFloat(toLatitudeInput.text),
@@ -194,7 +190,6 @@ Window {
                 color:"white"
             }
         }
-
         Text {
             id: toAdressText
             anchors.left: fromAdressText.left
@@ -219,7 +214,6 @@ Window {
                 color:"white"
             }
         }
-
         Button{
             id: validationAdress
             anchors.right: toAdress.right
@@ -227,7 +221,7 @@ Window {
             anchors.topMargin: 10
             width: 70
             height: 20
-            onPressed: {
+            onClicked: {
                 var startingCoordinates = myAdress.toCoordinates(fromAdressInput.text);
                 var finishCoordinates = myAdress.toCoordinates(toAdressInput.text);
 
@@ -257,16 +251,16 @@ Window {
             anchors.topMargin: 20
             width: 150
             height: 20
-            onPressed: {
-                var nodes = roadsData.findRouteFrom(4.5,5.6);//random parameters, they are not used yet
-                console.log(nodes);
-
-                for(var i=0; i<nodes.length; i++){
-                    var node = roadsData.requestLatLonFromNodes(nodes[i]);
-                    console.log(node);
-                }
-
-                thisIsTheMap.calculateCoordinateRouteWithNodes(nodes)
+            onClicked: {
+                //Calls the function findRouteFrom(lat,lon) from datamanager in C++. It will return a list of nodes which are
+                //themself a list of 2 coordinates (latitude,longitude). Those nodes represent every node on which you change
+                //from one road to another.
+                console.log("Calculating route...");
+                var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
+                console.log("Data received in QML");
+                //Then calculate a route that goes through every of those nodes
+                thisIsTheMap.setNodes(nodes);
+                thisIsTheMap.calculateCoordinateRouteWithNodes();
             }
             Text{
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -277,7 +271,6 @@ Window {
                 color: "black"
             }
         }
-
         Rectangle{
             width: 280
             height: 300
@@ -285,15 +278,20 @@ Window {
             anchors.top: testButton.bottom
             anchors.topMargin: 10
             color:"#dddddd"
-            Text{
-                id: textToDisplay
+            ScrollView{
+                id: view
                 anchors.fill: parent
-                font.pixelSize: 12
-                color:"black"
+                TextArea{
+                    id: textToDisplay
+                    anchors.fill: parent
+                    font.pixelSize: 12
+                    color:"black"
+                }
             }
         }
     }
 
+    //Rectangle where we will display meteo information
     Rectangle{
         id: meteoContainer
         width: 0.2*parent.width
@@ -302,8 +300,10 @@ Window {
         anchors.bottom: parent.bottom
         color: "#2525ff"
         border.color: "white"
+        opacity: 0.2
     }
 
+    //Another rectangle, don't know what we will put in it yet
     Rectangle{
         id: overviewContainer
         width: 0.8*parent.width
@@ -312,5 +312,83 @@ Window {
         anchors.bottom: parent.bottom
         color: "#252525"
         border.color: "white"
+        Rectangle{
+            anchors.right: setRadius.left
+            anchors.rightMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            width: 200
+            height: 30
+            color: "#252525"
+            Text{
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 14
+                color:"white"
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                text:"Radius (in km):"
+            }
+        }
+        Rectangle{
+            id:setRadius
+            anchors.right: refreshDataBase.left
+            anchors.rightMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            width: 100
+            height: 30
+            color: "black"
+            TextInput{
+                id: radius
+                anchors.fill:parent
+                font.pixelSize: 14
+                color:"white"
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
+        }
+        Button{
+            id: refreshDataBase
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            width:120
+            height:40
+            onClicked: {
+                if(radius.length!=0){
+                    var radiusValue = radius.text*1000;
+                    console.log(radiusValue);
+                    if(radiusValue<=50000 && radiusValue>=200){
+                        displayInfos.color = "white"
+                        displayInfos.text = "Refreshing ..."
+                        dataManager.generateWaysAndNodes(radiusValue);
+                        displayInfos.text = "Done."
+                    }
+                    else{
+                        displayInfos.color = "#EB6A63";
+                        displayInfos.text = "Error: Radius must be between 1km and 50km"
+                    }
+                }
+            }
+            Text{
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: 13
+                text: "Refresh database"
+                font.bold: true
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                color: "black"
+            }
+        }
+        Text{
+            id:displayInfos
+            anchors.top: setRadius.bottom
+            anchors.topMargin: 35
+            anchors.horizontalCenter: setRadius.horizontalCenter
+            font.pixelSize: 12
+            color:"white"
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+            text:""
+        }
     }
 }

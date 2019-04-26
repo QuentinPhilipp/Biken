@@ -6,6 +6,7 @@ QT       += core gui sql
 
 CONFIG += c++11
 
+
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Refer to the documentation for the
@@ -22,11 +23,13 @@ SOURCES += \
     node.cpp \
     way.cpp \
     requeteapi.cpp \
-    roadsdata.cpp \
     datamanager.cpp \
     myadress.cpp
 
 RESOURCES += qml.qrc
+
+#Additional Resource Script for the icon. In order to be fonctional, the .ico must be in the same directory and the file name must match the .rc file
+RC_FILE = icone.rc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -43,6 +46,8 @@ HEADERS += \
     node.h \
     way.h \
     requeteapi.h \
-    roadsdata.h \
     datamanager.h \
     myadress.h
+
+DISTFILES += \
+    icone.rc

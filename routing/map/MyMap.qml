@@ -8,9 +8,15 @@ Map {
     id: map
     property alias routeQuery: routeQuery
     property alias routeModel: routeModel
+    property var nodes
 
     center: QtPositioning.coordinate(48.368718, -4.588330) // Plouzane
     zoomLevel: 10
+
+    function setNodes(n)
+    {
+        nodes=n;
+    }
 
     function calculateCoordinateRoute(startCoordinate, endCoordinate)
     {
@@ -32,14 +38,13 @@ Map {
         // center the map on the start coord
         map.center = startCoordinate;
     }
-    function calculateCoordinateRouteWithNodes(nodes)
+    function calculateCoordinateRouteWithNodes()
     {
         // clear away any old data in the query
         routeQuery.clearWaypoints();
-
         // add the start and end coords as waypoints on the route
         for(var i=0; i<nodes.length; i++){
-            var node = roadsData.requestLatLonFromNodes(nodes[i]);
+            var node = dataManager.requestLatLonFromNodes(nodes[i]);
             var coordinate = QtPositioning.coordinate(node[0],node[1])
             routeQuery.addWaypoint(coordinate)
         }
@@ -49,11 +54,9 @@ Map {
         for (var j=0; j<9; j++) {
             routeQuery.setFeatureWeight(j, 0)
         }
-
         routeModel.update();
-
         // center the map on the start coord
-        map.center = QtPositioning.coordinate(roadsData.requestLatLonFromNodes(nodes[0]),roadsData.requestLatLonFromNodes(nodes[0]));
+        map.center = QtPositioning.coordinate(dataManager.requestLatLonFromNodes(nodes[0]),dataManager.requestLatLonFromNodes(nodes[0]));
     }
 
     function showRouteListPage()
@@ -62,9 +65,9 @@ Map {
             //textToDisplay.text="Itinéraire: " + routeModel.get(0).segments[1].path
             for (var i = 0; i < routeModel.get(0).segments.length; i++) {
                 textToDisplay.text+="\nInstruction: " + routeModel.get(0).segments[i].maneuver.instructionText
-                        + "\nDistance: "+Helper.formatDistance(routeModel.get(0).segments[i].maneuver.distanceToNextInstruction)
-                        + "\nDénivelé: "+routeModel.get(0).segments[i].path[0].altitude + "m\n"
+                        + "\nDistance: "+Helper.formatDistance(routeModel.get(0).segments[i].maneuver.distanceToNextInstruction)+ "\n"
             }
+            console.log("Done.");
         }
     }
 
@@ -81,6 +84,11 @@ Map {
                     map.showRouteListPage()
                     break
                 }
+            }
+            else if(status==RouteModel.Error){
+                console.log(errorString);
+                routeModel.reset();
+                calculateCoordinateRouteWithNodes();
             }
         }
     }
