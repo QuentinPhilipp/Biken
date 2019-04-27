@@ -24,7 +24,8 @@ SOURCES += \
     way.cpp \
     requeteapi.cpp \
     datamanager.cpp \
-    myadress.cpp
+    myadress.cpp \
+    weather.cpp
 
 RESOURCES += qml.qrc
 
@@ -47,7 +48,8 @@ HEADERS += \
     way.h \
     requeteapi.h \
     datamanager.h \
-    myadress.h
+    myadress.h \
+    weather.h
 
 DISTFILES += \
     icone.rc
