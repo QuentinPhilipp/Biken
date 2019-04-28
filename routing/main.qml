@@ -300,7 +300,32 @@ Window {
         anchors.bottom: parent.bottom
         color: "#2525ff"
         border.color: "white"
-        opacity: 0.2
+        Rectangle{
+            anchors.left:parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.topMargin: 10
+            anchors.right: parent.right
+            anchors.bottomMargin: 10
+            color:"#252525"
+            Button{
+                id:testWeather
+                anchors.left: parent.left
+                anchors.leftMargin: 10
+                width: 150
+                height: 20
+                Text{
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: 2
+                    font.pixelSize: 12
+                    text: "TEST"
+                    color: "black"
+                }
+                onClicked: {
+                    weather.createForecast(48.4000000,-4.4833300);
+                }
+            }
+        }
     }
 
     //Another rectangle, don't know what we will put in it yet

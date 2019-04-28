@@ -2,7 +2,6 @@
 #define WEATHER_H
 
 #include <vector>
-#include <tuple>
 
 #include <QObject>
 
@@ -21,19 +20,39 @@ private:
 public:
     Forecast(double wDir,double wS,double temp,QString dt,QString wDes,bool active,QString code);
 
-    void swapActive();
+
+    //Accessing to forecast data
+    double getWindDirection(){return windDirection;}
+
+    double getWindSpeed(){return windSpeed;}
+
+    double getTemp(){return temperature;}
+
+    QString getDescription(){return weatherDescription;}
+
+    bool getActive(){return active;}
+    void swapActive(){active ? active = 0 : active = 1;}
+
+    QString getIcon(){return iconCode;}
 };
 
-class Weather
+class Weather: public QObject
 {
+    Q_OBJECT
+
 private:
     std::vector<Forecast> forecasts;
     double lat,lon;
 
-public:
-    Weather();
 
+public:
+    explicit Weather(QObject *parent = nullptr);
+
+signals:
+
+public slots:
     void createForecast(double lat, double lon);
+    void changeForecast(int id);
 };
 
 #endif // WEATHER_H

@@ -16,7 +16,9 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-Weather::Weather(){}
+#include <QDebug>
+
+Weather::Weather(QObject *parent) : QObject(parent) {}
 
 Forecast::Forecast(double wDir,
                    double wS,
@@ -32,14 +34,19 @@ Forecast::Forecast(double wDir,
     weatherDescription = wDes;
     this->active = active;
     iconCode = code;
+    QStringList str = dt.split(QRegExp("\\s+"));
+    //qDebug() << dt << "chaine cassee :" << str;
+    //qDebug() << "Wind : " << windDirection << "   " << windSpeed;
+    //qDebug() << temperature << "  " << weatherDescription << "with code : " << iconCode;
 }
 
 void Weather::createForecast(double lat, double lon)
 {
+    qDebug() << "Starting weather request for coord : " << lat << " , " << lon;
     this->lat = lat;
     this->lon = lon;
 
-    QString lats =  QString::number(lat,'f',6),lons =QString::number(lon,'f',6);
+    QString lats =  QString::number(lat,'f',7),lons =QString::number(lon,'f',7);
 
     QUrl url("http://api.openweathermap.org/data/2.5/forecast?lat=" + lats + "&lon=" + lons + "&units=metric&APPID=ac69ab213a56edaffaac9baa47770444");
     QNetworkRequest request(url);
@@ -66,8 +73,23 @@ void Weather::createForecast(double lat, double lon)
 
         int length = jsonObj["list"].toArray().size();
         bool a;
+        qDebug() << "length of weather list :" << length;
         for (int i=0;i<length;i++) {
             i == 0 ? a = 1 : a = 0;
+
+            qDebug() << "wind : "
+                     << QJsonValue(jsonObj["list"])[i]["main"]["wind"]["deg"].toDouble()
+                     << "  "
+                     << QJsonValue(jsonObj["list"])[i]["main"]["wind"]["speed"].toDouble();
+            qDebug() << "temp : "
+                     << QJsonValue(jsonObj["list"])[i]["main"]["temp"].toDouble();
+            qDebug() << "Date :"
+                     << QJsonValue(jsonObj["list"])[i]["main"]["dt_txt"].toString();
+            qDebug() << "Weather : "
+                     << QJsonValue(jsonObj["list"])[i]["main"]["weather"]["description"].toString()
+                    << "   icone :"
+                    << QJsonValue(jsonObj["list"])[i]["main"]["weather"]["icon"].toString();
+
             forecasts.push_back(Forecast(QJsonValue(jsonObj["list"])[i]["main"]["wind"]["deg"].toDouble(),
                     QJsonValue(jsonObj["list"])[i]["main"]["wind"]["speed"].toDouble(),
                     QJsonValue(jsonObj["list"])[i]["main"]["temp"].toDouble(),
@@ -75,12 +97,19 @@ void Weather::createForecast(double lat, double lon)
                     QJsonValue(jsonObj["list"])[i]["main"]["weather"]["description"].toString(),
                     a,
                     QJsonValue(jsonObj["list"])[i]["main"]["weather"]["icon"].toString()));
+            qDebug() << i;
         }
     }
-
 }
 
-void Forecast::swapActive()
+void Weather::changeForecast(int id)
 {
-    active ? active = 0 : active = 1;
+    for (auto &e : forecasts)
+    {
+        if (e.getActive())
+        {
+            e.swapActive();
+        }
+    }
+    forecasts[unsigned(id)].swapActive();
 }
