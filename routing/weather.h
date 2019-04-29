@@ -44,6 +44,7 @@ private:
     std::vector<Forecast> forecasts;
     double lat,lon;
 
+    int findActive();
 
 public:
     explicit Weather(QObject *parent = nullptr);
@@ -53,6 +54,8 @@ signals:
 public slots:
     void createForecast(double lat, double lon);
     void changeForecast(int id);
+
+    QString getActiveIcon();
 };
 
 #endif // WEATHER_H

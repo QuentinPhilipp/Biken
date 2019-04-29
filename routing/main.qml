@@ -298,21 +298,22 @@ Window {
         height: 0.3*parent.height
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        color: "#2525ff"
+        color: "#252525"
         border.color: "white"
         Rectangle{
             anchors.left:parent.left
             anchors.verticalCenter: parent.verticalCenter
-            anchors.topMargin: 10
             anchors.right: parent.right
-            anchors.bottomMargin: 10
+            anchors.margins: 10
             color:"#ffffff"
             Button{
                 id:testWeather
+                anchors.horizontalCenter: parent.horizontalCenter
                 anchors.left: parent.left
                 anchors.leftMargin: 10
-                width: 150
+                anchors.rightMargin: 10
                 height: 20
+                visible:true
                 Text{
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
@@ -323,7 +324,20 @@ Window {
                 }
                 onClicked: {
                     weather.createForecast(48.4000000,-4.4833300);
+                    testWeather.visible = !testWeather.visible;
+                    weatherIcon.visible = !weatherIcon.visible;
+                    weatherIcon.update();
                 }
+            }
+            Image {
+                id: weatherIcon
+                asynchronous: true
+                source: {weather.getActiveIcon();}
+                //source: "qrc:/icons/01d.png"
+                visible:false
+                anchors.top: parent.top
+                anchors.left: parent.left
+                fillMode: Image.PreserveAspectFit
             }
         }
     }

@@ -101,3 +101,26 @@ void Weather::changeForecast(int id)
     }
     forecasts[unsigned(id)].swapActive();
 }
+
+int Weather::findActive()
+{
+    int length = int(forecasts.size());
+    for (int i=0;i<length;i++){
+        if(forecasts[unsigned(i)].getActive()){return i;}
+    }
+    return 0;
+}
+
+QString Weather::getActiveIcon(){
+    int i = findActive();
+
+    if (forecasts.size() == 0){
+        qDebug() << "APPEL DU CODE ------------ aucune météo disponible";
+        return "qrc:/icons/01d.png";
+    }
+
+    QString code = forecasts[unsigned(i)].getIcon();
+    qDebug() << "APPEL DU CODE DE L'ICONE   " << code;
+    return "qrc:/icons/"+code+".png";
+
+}
