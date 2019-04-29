@@ -306,7 +306,7 @@ Window {
             anchors.topMargin: 10
             anchors.right: parent.right
             anchors.bottomMargin: 10
-            color:"#252525"
+            color:"#ffffff"
             Button{
                 id:testWeather
                 anchors.left: parent.left

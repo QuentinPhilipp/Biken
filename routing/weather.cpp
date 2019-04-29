@@ -35,9 +35,10 @@ Forecast::Forecast(double wDir,
     this->active = active;
     iconCode = code;
     QStringList str = dt.split(QRegExp("\\s+"));
-    //qDebug() << dt << "chaine cassee :" << str;
-    //qDebug() << "Wind : " << windDirection << "   " << windSpeed;
-    //qDebug() << temperature << "  " << weatherDescription << "with code : " << iconCode;
+    qDebug() << dt << "chaine cassee :" << str;
+    qDebug() << "Wind : " << windDirection << "   " << windSpeed;
+    qDebug() << temperature << "  " << weatherDescription << "with code : " << iconCode;
+    qDebug() << "active ? : " << active;
 }
 
 void Weather::createForecast(double lat, double lon)
@@ -51,15 +52,15 @@ void Weather::createForecast(double lat, double lon)
     QUrl url("http://api.openweathermap.org/data/2.5/forecast?lat=" + lats + "&lon=" + lons + "&units=metric&APPID=ac69ab213a56edaffaac9baa47770444");
     QNetworkRequest request(url);
 
-    QNetworkAccessManager *manager = new QNetworkAccessManager();
+    QNetworkAccessManager *manager2 = new QNetworkAccessManager();
 
     //In this part, we create a loop that runs until the QNetworkReply has finished processing.
     QEventLoop loop;
-    QObject::connect(manager,
+    QObject::connect(manager2,
                      SIGNAL(finished(QNetworkReply*)), //finished is a signal from the QNetworkReply Class that is emitted when the reply has finished processing.
                      &loop,
                      SLOT(quit())); //slot from QEventLoop that calls exit()
-    QNetworkReply* reply = manager->get(request);
+    QNetworkReply* reply = manager2->get(request);
     loop.exec(); //enters the loop and stays in it until loop.exit() is called
     qDebug() << reply;
 
@@ -77,26 +78,13 @@ void Weather::createForecast(double lat, double lon)
         for (int i=0;i<length;i++) {
             i == 0 ? a = 1 : a = 0;
 
-            qDebug() << "wind : "
-                     << QJsonValue(jsonObj["list"])[i]["main"]["wind"]["deg"].toDouble()
-                     << "  "
-                     << QJsonValue(jsonObj["list"])[i]["main"]["wind"]["speed"].toDouble();
-            qDebug() << "temp : "
-                     << QJsonValue(jsonObj["list"])[i]["main"]["temp"].toDouble();
-            qDebug() << "Date :"
-                     << QJsonValue(jsonObj["list"])[i]["main"]["dt_txt"].toString();
-            qDebug() << "Weather : "
-                     << QJsonValue(jsonObj["list"])[i]["main"]["weather"]["description"].toString()
-                    << "   icone :"
-                    << QJsonValue(jsonObj["list"])[i]["main"]["weather"]["icon"].toString();
-
-            forecasts.push_back(Forecast(QJsonValue(jsonObj["list"])[i]["main"]["wind"]["deg"].toDouble(),
-                    QJsonValue(jsonObj["list"])[i]["main"]["wind"]["speed"].toDouble(),
+            forecasts.push_back(Forecast(QJsonValue(jsonObj["list"])[i]["wind"]["deg"].toDouble(),
+                    QJsonValue(jsonObj["list"])[i]["wind"]["speed"].toDouble(),
                     QJsonValue(jsonObj["list"])[i]["main"]["temp"].toDouble(),
-                    QJsonValue(jsonObj["list"])[i]["main"]["dt_txt"].toString(),
-                    QJsonValue(jsonObj["list"])[i]["main"]["weather"]["description"].toString(),
+                    QJsonValue(jsonObj["list"])[i]["dt_txt"].toString(),
+                    QJsonValue(jsonObj["list"])[i]["weather"][0]["description"].toString(),
                     a,
-                    QJsonValue(jsonObj["list"])[i]["main"]["weather"]["icon"].toString()));
+                    QJsonValue(jsonObj["list"])[i]["weather"][0]["icon"].toString()));
             qDebug() << i;
         }
     }
