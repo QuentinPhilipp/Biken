@@ -3,6 +3,7 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 2.4
 import QtLocation 5.6
 import QtPositioning 5.6
+import QtQuick.Controls.Private 1.0
 import "helper.js" as Helper
 import "map"
 
@@ -306,6 +307,30 @@ Window {
             anchors.right: parent.right
             anchors.margins: 10
             color:"#ffffff"
+            ComboBox {
+                anchors.top: parent.top
+                anchors.right: parent.right
+            id: box
+            width: 200
+            model: ListModel{
+                id: forecastItem
+                ListElement{text:"Now"}
+                ListElement{text:"+03h"}
+                ListElement{text:"+06h"}
+                ListElement{text:"+09h"}
+                ListElement{text:"+12h"}
+                ListElement{text:"+15h"}
+                ListElement{text:"+18h"}
+                ListElement{text:"+21h"}
+                ListElement{text:"+24h"}
+            }
+            onCurrentIndexChanged: {
+                if (weatherIcon.visible === true){
+                    weather.changeForecast(box.currentIndex);
+                    weatherIcon.source = weather.getActiveIcon();
+                }
+            }
+            }
             Button{
                 id:testWeather
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -325,20 +350,36 @@ Window {
                 onClicked: {
                     weather.createForecast(48.4000000,-4.4833300);
                     testWeather.visible = !testWeather.visible;
+                    weatherIcon.source = weather.getActiveIcon();
                     weatherIcon.visible = !weatherIcon.visible;
-                    weatherIcon.update();
                 }
             }
             Image {
                 id: weatherIcon
                 asynchronous: true
-                source: {weather.getActiveIcon();}
-                //source: "qrc:/icons/01d.png"
                 visible:false
-                anchors.top: parent.top
-                anchors.left: parent.left
+                anchors.top: testWeather.bottom
+                anchors.left: testWeather.left
                 fillMode: Image.PreserveAspectFit
             }
+
+            /*Button{
+                id:changeWeather
+                anchors.bottom: parent.bottom
+                height:20
+                anchors.left: parent.left
+                Text {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: 2
+                    font.pixelSize: 12
+                    text: "change"
+                    color: "black"
+                }
+                onClicked: {
+                    weatherIcon.source = weather.getActiveIcon();
+                }
+            }*/
         }
     }
 

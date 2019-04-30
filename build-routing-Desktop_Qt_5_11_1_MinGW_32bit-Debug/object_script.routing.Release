@@ -1,0 +1,13 @@
+INPUT(
+./release\main.o
+./release\node.o
+./release\way.o
+./release\requeteapi.o
+./release\datamanager.o
+./release\myadress.o
+./release\weather.o
+./release\qrc_qml.o
+./release\moc_datamanager.o
+./release\moc_myadress.o
+./release\moc_weather.o
+);

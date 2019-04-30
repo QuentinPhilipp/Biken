@@ -92,17 +92,19 @@ void Weather::createForecast(double lat, double lon)
 
 void Weather::changeForecast(int id)
 {
+    qDebug() << "Changement de météo active :"<< id;
     for (auto &e : forecasts)
     {
         if (e.getActive())
         {
+            qDebug() << "Reset de l'actif";
             e.swapActive();
         }
     }
     forecasts[unsigned(id)].swapActive();
 }
 
-int Weather::findActive()
+int Weather::getActive()
 {
     int length = int(forecasts.size());
     for (int i=0;i<length;i++){
@@ -111,8 +113,9 @@ int Weather::findActive()
     return 0;
 }
 
+
 QString Weather::getActiveIcon(){
-    int i = findActive();
+    int i = getActive();
 
     if (forecasts.size() == 0){
         qDebug() << "APPEL DU CODE ------------ aucune météo disponible";
