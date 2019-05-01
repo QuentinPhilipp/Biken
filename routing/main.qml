@@ -300,36 +300,51 @@ Window {
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         color: "#252525"
-        border.color: "white"
+        border.color: "#8bd8bd"
         Rectangle{
+            anchors.top: parent.top
             anchors.left:parent.left
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.margins: 10
             color:"#ffffff"
+            Text{
+                id:weatherTitle
+                anchors.top:parent.top
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Weather Forecast"
+                anchors.margins: 10
+            }
+
             ComboBox {
-                anchors.top: parent.top
-                anchors.right: parent.right
-            id: box
-            width: 200
-            model: ListModel{
-                id: forecastItem
-                ListElement{text:"Now"}
-                ListElement{text:"+03h"}
-                ListElement{text:"+06h"}
-                ListElement{text:"+09h"}
-                ListElement{text:"+12h"}
-                ListElement{text:"+15h"}
-                ListElement{text:"+18h"}
-                ListElement{text:"+21h"}
-                ListElement{text:"+24h"}
-            }
-            onCurrentIndexChanged: {
-                if (weatherIcon.visible === true){
-                    weather.changeForecast(box.currentIndex);
-                    weatherIcon.source = weather.getActiveIcon();
+                anchors.top: weatherTitle.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.margins: 10
+                id: box
+                width: 0.8*meteoContainer.width
+                model: ListModel{
+                    id: forecastItem
+                    ListElement{text:"Now"}
+                    ListElement{text:"+03h"}
+                    ListElement{text:"+06h"}
+                    ListElement{text:"+09h"}
+                    ListElement{text:"+12h"}
+                    ListElement{text:"+15h"}
+                    ListElement{text:"+18h"}
+                    ListElement{text:"+21h"}
+                    ListElement{text:"+24h"}
                 }
-            }
+                onCurrentIndexChanged: {
+                    if (weatherIcon.visible === true){
+                        weather.changeForecast(box.currentIndex);
+                        weatherIcon.source = weather.getActiveIcon();
+                    }
+
+                    if (weatherDescription.visible === true){
+                        weather.changeForecast(box.currentIndex);
+                        weatherDescription.text = weather.getActiveDescription();
+                    }
+                }
             }
             Button{
                 id:testWeather
@@ -351,16 +366,28 @@ Window {
                     weather.createForecast(48.4000000,-4.4833300);
                     testWeather.visible = !testWeather.visible;
                     weatherIcon.source = weather.getActiveIcon();
+                    weatherDescription.text = weather.getActiveDescription();
                     weatherIcon.visible = !weatherIcon.visible;
+                    weatherDescription.visible = !weatherDescription.visible;
                 }
+            }
+            Text{
+                id:weatherDescription
+                anchors.margins: 10
+                anchors.left:parent.left
+                anchors.top: box.bottom
+                visible: false
             }
             Image {
                 id: weatherIcon
                 asynchronous: true
                 visible:false
-                anchors.top: testWeather.bottom
-                anchors.left: testWeather.left
-                fillMode: Image.PreserveAspectFit
+                anchors.top: weatherDescription.bottom
+                anchors.left: parent.left
+                anchors.margins: 10
+                sourceSize.width : 0.2*meteoContainer.width
+                sourceSize.height : 0.2*meteoContainer.height
+                fillMode: Image.Stretch
             }
 
             /*Button{

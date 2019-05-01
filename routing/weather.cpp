@@ -104,7 +104,7 @@ void Weather::changeForecast(int id)
     forecasts[unsigned(id)].swapActive();
 }
 
-int Weather::getActive()
+int Weather::findActive()
 {
     int length = int(forecasts.size());
     for (int i=0;i<length;i++){
@@ -113,9 +113,52 @@ int Weather::getActive()
     return 0;
 }
 
+double Weather::getActiveWindDirection(){
+    int i = findActive();
+
+    if (forecasts.size() == 0){
+        qDebug() << "Aucune météo disponible, retour d'une valeur par défaut";
+        return 0.0;
+    }
+
+    return forecasts[unsigned(i)].getWindDirection();
+}
+
+double Weather::getActiveWindSpeed(){
+    int i = findActive();
+
+    if (forecasts.size() == 0){
+        qDebug() << "Aucune météo disponible, retour d'une valeur par défaut";
+        return 0.0;
+    }
+
+    return forecasts[unsigned(i)].getWindSpeed();
+}
+
+double Weather::getActiveTemp(){
+    int i = findActive();
+
+    if (forecasts.size() == 0){
+        qDebug() << "Aucune météo disponible, retour d'une valeur par défaut";
+        return 0.0;
+    }
+
+    return forecasts[unsigned(i)].getTemp();
+}
+
+QString Weather::getActiveDescription(){
+    int i = findActive();
+
+    if (forecasts.size() == 0){
+        qDebug() << "Aucune météo disponible, retour d'une valeur par défaut";
+        return "No Description available";
+    }
+
+    return forecasts[unsigned(i)].getDescription();
+}
 
 QString Weather::getActiveIcon(){
-    int i = getActive();
+    int i = findActive();
 
     if (forecasts.size() == 0){
         qDebug() << "APPEL DU CODE ------------ aucune météo disponible";

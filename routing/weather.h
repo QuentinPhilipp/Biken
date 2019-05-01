@@ -52,9 +52,14 @@ signals:
 public slots:
     void createForecast(double lat, double lon);
     void changeForecast(int id);
-    int getActive();
+    int findActive();
 
+    double getActiveWindDirection();
+    double getActiveWindSpeed();
+    double getActiveTemp();
+    QString getActiveDescription();
     QString getActiveIcon();
+
 };
 
 #endif // WEATHER_H
