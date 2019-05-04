@@ -3,6 +3,8 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 #include <QTime>
+#include <QUrl>
+#include <QtWebEngine>
 
 #include "node.h"
 #include "way.h"
@@ -12,6 +14,9 @@
 
 int main(int argc, char *argv[])
 {
+    //for the webengineview
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QCoreApplication::setOrganizationName("QtExamples");
     QGuiApplication app(argc, argv);
 
     //create the datamanger class
@@ -19,6 +24,9 @@ int main(int argc, char *argv[])
     db->requestRoads();
 
     MyAdress* myAdress = new MyAdress();
+
+    //Initialize the HTML code related to the map
+    QtWebEngine::initialize();
 
     //Pour passer du C++ au QML
     QQmlApplicationEngine engine;

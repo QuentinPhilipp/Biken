@@ -4,7 +4,8 @@ import QtQuick.Controls 2.4
 import QtLocation 5.6
 import QtPositioning 5.6
 import "helper.js" as Helper
-import "map"
+import"map"
+import QtWebEngine 1.7
 
 /*
   Coodrinates for the test:
@@ -34,16 +35,14 @@ ApplicationWindow {
         anchors.right: parent.right
         anchors.top: parent.top
         color: "green"
-        Plugin {                                //A Plugin has to be set to create a map
-            id: mapPlugin
-            preferred: ["osm", "esri"]
-        }
-        MyMap {                                 //permet de créer un object MyMap (défini dans le fichier "MyMap.qml")
-            id : thisIsTheMap
-            anchors.fill: mapContainer
-            plugin: mapPlugin
-        }
-    }
+        WebEngineView{
+            anchors.left:mapContainer.left
+            anchors.right:mapContainer.right
+            anchors.fill:mapContainer
+            url: "https://www.youtube.com/watch?v=SYnVYJDxu2Q"
+                     }
+
+            }
     menuBar: MenuBar { 
         Menu {
             title: "Fichier"

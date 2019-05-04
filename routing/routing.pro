@@ -1,8 +1,9 @@
-QT += quick
+QT       += quick
 QT       += core gui
-QT += network
-QT += sql
+QT       += network
+QT       += sql
 QT       += core gui sql
+QT       +=webengine
 
 CONFIG += c++11
 
