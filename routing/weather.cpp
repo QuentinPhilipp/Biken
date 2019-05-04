@@ -178,23 +178,29 @@ QString Weather::getActiveIcon(){
 void Weather::translate(){
 
     QFile file;
+    QString trad;
     file.setFileName("../routing/translation/weather_descriptions.json");
     //Attention, ce chemin correspond à un acces depuis le build,
     //il faut trouver le moyen de faire un chemin correpondant au dossier d'installation du logiciel.
-    file.open(QIODevice::ReadOnly);
+    file.open(QIODevice::ReadOnly |  QIODevice::Text);
 
     qDebug() << "Emplacement : " << QDir::currentPath();
     qDebug() << "Existence du fichier : "  << file.exists();
 
-    QString traduction = QString(file.readAll());
+    trad = file.readAll();
     file.close();
 
-    QJsonDocument translation = QJsonDocument::fromJson(traduction.toUtf8());
-    QJsonObject jsonObj = translation.object();
+//    qWarning() << trad;
+      QJsonDocument d = QJsonDocument::fromJson(trad.toUtf8());
+      QJsonObject sett2 = d.object();
+      QJsonValue value = sett2.value(QString("english"));
+      qWarning() << value["clear sky"];
+//      QJsonObject item = value.toObject();
+//      qWarning() << tr("QJsonObject of description: ") << item["clear sky"];
 
 //    for (auto &e : forecasts){
 //        e.setDescription(QJsonValue(jsonObj["english"])[0][e.getDescription()].toString());
 //    }
 
-    qDebug() << "  -  " << jsonObj.size();
+//    qDebug() << "  -  " << jsonObj.size();
 }

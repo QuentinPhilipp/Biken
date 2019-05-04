@@ -45,10 +45,11 @@ private:
     std::vector<Forecast> forecasts;
     double lat,lon;
 
-    void translate();
+
 
 public:
     explicit Weather(QObject *parent = nullptr);
+    void translate();
 
 signals:
 
