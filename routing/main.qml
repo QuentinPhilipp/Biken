@@ -39,7 +39,7 @@ ApplicationWindow {
             anchors.left:mapContainer.left
             anchors.right:mapContainer.right
             anchors.fill:mapContainer
-            url: "https://www.youtube.com/watch?v=SYnVYJDxu2Q"
+            url: "file:///home/beuzet/Documents/projets6/routing/maCartecolor.html"
                      }
 
             }
