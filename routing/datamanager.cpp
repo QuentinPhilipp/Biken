@@ -584,7 +584,7 @@ QVariantList DataManager::requestLatLonFromNodes(QVariant idNode)
 //      qWarning() << "ERROR Finding nodes: " << query.lastError().text();
 //}
 
-QVariantList DataManager::findRouteFrom(double lat, double lon)
+QList<int> DataManager::findRouteFrom(double lat, double lon)
 {
     /*
      * TO DO (propositions):
@@ -600,13 +600,13 @@ QVariantList DataManager::findRouteFrom(double lat, double lon)
      *
      * - attention aux oneway roads et aux roundabout ...
      */
-    QVariantList routeNodes; //what will be returned to QML
+    QList<int> routeNodes; //what will be returned to QML
     uint64_t roadId = 136110431;
     vector<Node> nodes = requestNodesFromRoad(roadId);
     Node node;
     Node previous_node = nodes[0];
     qDebug() << "findRouteFrom(): example of QVariant node: " << previous_node.getId();
-    routeNodes.append(QVariant(previous_node.getId()));
+    routeNodes.append(previous_node.getId());
     int i=0;
     while(i<100){
         bool b=0; //used later, to avoid to stay on the same node
@@ -616,7 +616,7 @@ QVariantList DataManager::findRouteFrom(double lat, double lon)
         if(requestRoadsFromNode(nodes[0]).size()>1 && nodes[0].getId()!=previous_node.getId()){
             node=nodes[0];
             vector<Way> roads = requestRoadsFromNode(node);
-            routeNodes.append(QVariant(node.getId())); //if we change of road, append the node in common of the previous and the new road
+            routeNodes.append(node.getId()); //if we change of road, append the node in common of the previous and the new road
             previous_node=node;
             uint64_t newRoadId = roads[0].getId();
             if(newRoadId!=roadId){
@@ -633,7 +633,7 @@ QVariantList DataManager::findRouteFrom(double lat, double lon)
         else if(requestRoadsFromNode(nodes[nodes.size()-1]).size()>1 && nodes[nodes.size()-1].getId()!=previous_node.getId()){
             node=nodes[nodes.size()-1];
             vector<Way> roads = requestRoadsFromNode(node);
-            routeNodes.append(QVariant(node.getId())); //if we change of road, append the node in common of the previous and the new road
+            routeNodes.append(node.getId()); //if we change of road, append the node in common of the previous and the new road
             previous_node=node;
             uint64_t newRoadId = roads[0].getId();
             if(newRoadId!=roadId){
@@ -675,7 +675,7 @@ QVariantList DataManager::findRouteFrom(double lat, double lon)
                 //At every node, check if there are any road that contains the current node (exept the one road we are currently on)
                 if(roads.size()>1 && b>=1){ //b is used to wait one node after you've changed from one road to another. Otherwise it would stay undefinitely on the same node.
                     //if we change of road, append the node in common between the previous and the new road
-                    routeNodes.append(QVariant(node.getId()));
+                    routeNodes.append(node.getId());
                     previous_node=node;
                     uint64_t newRoadId = roads[0].getId();
                     if(newRoadId!=roadId){
