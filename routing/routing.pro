@@ -52,4 +52,5 @@ HEADERS += \
     weather.h
 
 DISTFILES += \
-    icone.rc
+    icone.rc \
+    translation/weather_descriptions.json

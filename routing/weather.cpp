@@ -15,6 +15,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QFile>
+#include <QDir>
 
 #include <QDebug>
 
@@ -35,10 +37,10 @@ Forecast::Forecast(double wDir,
     this->active = active;
     iconCode = code;
     QStringList str = dt.split(QRegExp("\\s+"));
-    qDebug() << dt << "chaine cassee :" << str;
-    qDebug() << "Wind : " << windDirection << "   " << windSpeed;
-    qDebug() << temperature << "  " << weatherDescription << "with code : " << iconCode;
-    qDebug() << "active ? : " << active;
+//    qDebug() << dt << "chaine cassee :" << str;
+//    qDebug() << "Wind : " << windDirection << "   " << windSpeed;
+//    qDebug() << temperature << "  " << weatherDescription << "with code : " << iconCode;
+//    qDebug() << "active ? : " << active;
 }
 
 void Weather::createForecast(double lat, double lon)
@@ -88,6 +90,8 @@ void Weather::createForecast(double lat, double lon)
             qDebug() << i;
         }
     }
+
+    translate();
 }
 
 void Weather::changeForecast(int id)
@@ -169,4 +173,28 @@ QString Weather::getActiveIcon(){
     qDebug() << "APPEL DU CODE DE L'ICONE   " << code;
     return "qrc:/icons/"+code+".png";
 
+}
+
+void Weather::translate(){
+
+    QFile file;
+    file.setFileName("../routing/translation/weather_descriptions.json");
+    //Attention, ce chemin correspond à un acces depuis le build,
+    //il faut trouver le moyen de faire un chemin correpondant au dossier d'installation du logiciel.
+    file.open(QIODevice::ReadOnly);
+
+    qDebug() << "Emplacement : " << QDir::currentPath();
+    qDebug() << "Existence du fichier : "  << file.exists();
+
+    QString traduction = QString(file.readAll());
+    file.close();
+
+    QJsonDocument translation = QJsonDocument::fromJson(traduction.toUtf8());
+    QJsonObject jsonObj = translation.object();
+
+//    for (auto &e : forecasts){
+//        e.setDescription(QJsonValue(jsonObj["english"])[0][e.getDescription()].toString());
+//    }
+
+    qDebug() << "  -  " << jsonObj.size();
 }

@@ -29,6 +29,7 @@ public:
     double getTemp(){return temperature;}
 
     QString getDescription(){return weatherDescription;}
+    void setDescription(QString des){weatherDescription = des;}
 
     bool getActive(){return active;}
     void swapActive(){active ? active = 0 : active = 1;}
@@ -43,6 +44,8 @@ class Weather: public QObject
 private:
     std::vector<Forecast> forecasts;
     double lat,lon;
+
+    void translate();
 
 public:
     explicit Weather(QObject *parent = nullptr);
