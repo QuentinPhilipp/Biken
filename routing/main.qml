@@ -322,17 +322,36 @@ Window {
                 anchors.margins: 10
                 id: box
                 width: 0.8*meteoContainer.width
+                visible: false
+
                 model: ListModel{
+
                     id: forecastItem
                     ListElement{text:"Now"}
-                    ListElement{text:"+03h"}
-                    ListElement{text:"+06h"}
-                    ListElement{text:"+09h"}
-                    ListElement{text:"+12h"}
-                    ListElement{text:"+15h"}
-                    ListElement{text:"+18h"}
-                    ListElement{text:"+21h"}
-                    ListElement{text:"+24h"}
+                    ListElement{text:"+ 3 heures"}
+                    ListElement{text:"+ 6 heures"}
+                    ListElement{text:"+ 9 heures"}
+                    ListElement{text:"+ 12 heures"}
+                    ListElement{text:"+ 15 heures"}
+                    ListElement{text:"+ 18 heures"}
+                    ListElement{text:"+ 21 heures"}
+                    ListElement{text:"+ 24 heures"}
+                    ListElement{text:"+ 1 jour et 3 heures"}
+                    ListElement{text:"+ 1 jour et 06 heures"}
+                    ListElement{text:"+ 1 jour et 09 heures"}
+                    ListElement{text:"+ 1 jour et 12 heures"}
+                    ListElement{text:"+ 1 jour et 15 heures"}
+                    ListElement{text:"+ 1 jour et 18 heures"}
+                    ListElement{text:"+ 1 jour et 21 heures"}
+                    ListElement{text:"+ 2 jours"}
+                    ListElement{text:"+ 2 jours et 03 heures"}
+                    ListElement{text:"+ 2 jours et 06 heures"}
+                    ListElement{text:"+ 2 jours et 09 heures"}
+                    ListElement{text:"+ 2 jours et 12 heures"}
+                    ListElement{text:"+ 2 jours et 15 heures"}
+                    ListElement{text:"+ 2 jours et 18 heures"}
+                    ListElement{text:"+ 2 jours et 21 heures"}
+                    ListElement{text:"+ 3 jours"}
                 }
                 onCurrentIndexChanged: {
                     if (weatherIcon.visible === true){
@@ -341,7 +360,6 @@ Window {
                     }
 
                     if (weatherDescription.visible === true){
-                        weather.changeForecast(box.currentIndex);
                         weatherDescription.text = weather.getActiveDescription();
                     }
                 }
@@ -364,17 +382,27 @@ Window {
                 }
                 onClicked: {
                     weather.createForecast(48.4000000,-4.4833300);
-                    testWeather.visible = !testWeather.visible;
-                    weatherIcon.source = weather.getActiveIcon();
-                    weatherDescription.text = weather.getActiveDescription();
-                    weatherIcon.visible = !weatherIcon.visible;
-                    weatherDescription.visible = !weatherDescription.visible;
+                    if(!weather.getError()){
+                        testWeather.visible = !testWeather.visible;
+                        weatherIcon.source = weather.getActiveIcon();
+                        weatherDescription.text = weather.getActiveDescription();
+                        weatherIcon.visible = !weatherIcon.visible;
+                        weatherDescription.visible = !weatherDescription.visible;
+                        box.visible = !box.visible;
+                        errorDescription.visible = false
+                        errorIcon.visible = false
+                    }
+                    else{
+                        errorDescription.text = weather.getError();
+                        errorDescription.visible = true;
+                        errorIcon.visible = true;
+                    }
                 }
             }
             Text{
                 id:weatherDescription
                 anchors.margins: 10
-                anchors.left:parent.left
+                anchors.left:box.left
                 anchors.top: box.bottom
                 visible: false
             }
@@ -383,30 +411,31 @@ Window {
                 asynchronous: true
                 visible:false
                 anchors.top: weatherDescription.bottom
-                anchors.left: parent.left
+                anchors.left: box.left
                 anchors.margins: 10
                 sourceSize.width : 0.2*meteoContainer.width
                 sourceSize.height : 0.2*meteoContainer.height
                 fillMode: Image.Stretch
             }
-
-            /*Button{
-                id:changeWeather
-                anchors.bottom: parent.bottom
-                height:20
-                anchors.left: parent.left
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.top: parent.top
-                    anchors.topMargin: 2
-                    font.pixelSize: 12
-                    text: "change"
-                    color: "black"
-                }
-                onClicked: {
-                    weatherIcon.source = weather.getActiveIcon();
-                }
-            }*/
+            Text{
+                id:errorDescription
+                anchors.margins: 10
+                anchors.horizontalCenter: testWeather.horizontalCenter
+                anchors.top: box.bottom
+                visible: false
+            }
+            Image{
+                id :errorIcon
+                asynchronous: true
+                visible: false
+                anchors.top: weatherDescription.bottom
+                anchors.horizontalCenter: testWeather.horizontalCenter
+                anchors.margins:10
+                sourceSize.width : 0.3*meteoContainer.width
+                sourceSize.height : 0.3*meteoContainer.height
+                fillMode: Image.Stretch
+                source: "qrc:/icons/connexion.png"
+            }
         }
     }
 

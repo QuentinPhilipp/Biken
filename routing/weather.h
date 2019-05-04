@@ -44,12 +44,12 @@ class Weather: public QObject
 private:
     std::vector<Forecast> forecasts;
     double lat,lon;
+    QString error;
 
-
+    void translate();
 
 public:
     explicit Weather(QObject *parent = nullptr);
-    void translate();
 
 signals:
 
@@ -63,6 +63,7 @@ public slots:
     double getActiveTemp();
     QString getActiveDescription();
     QString getActiveIcon();
+    QString getError(){return error;}
 
 };
 

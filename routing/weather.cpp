@@ -18,8 +18,6 @@
 #include <QFile>
 #include <QDir>
 
-#include <QDebug>
-
 Weather::Weather(QObject *parent) : QObject(parent) {}
 
 Forecast::Forecast(double wDir,
@@ -37,10 +35,6 @@ Forecast::Forecast(double wDir,
     this->active = active;
     iconCode = code;
     QStringList str = dt.split(QRegExp("\\s+"));
-//    qDebug() << dt << "chaine cassee :" << str;
-//    qDebug() << "Wind : " << windDirection << "   " << windSpeed;
-//    qDebug() << temperature << "  " << weatherDescription << "with code : " << iconCode;
-//    qDebug() << "active ? : " << active;
 }
 
 void Weather::createForecast(double lat, double lon)
@@ -87,25 +81,32 @@ void Weather::createForecast(double lat, double lon)
                     QJsonValue(jsonObj["list"])[i]["weather"][0]["description"].toString(),
                     a,
                     QJsonValue(jsonObj["list"])[i]["weather"][0]["icon"].toString()));
-            qDebug() << i;
         }
+
+        translate();
+        error.clear();
+    }
+    else {
+        error = reply->errorString();
     }
 
-    translate();
+
 }
 
 void Weather::changeForecast(int id)
 {
-    qDebug() << "Changement de météo active :"<< id;
-    for (auto &e : forecasts)
-    {
-        if (e.getActive())
+    unsigned index = unsigned(id);
+    if (index <= forecasts.size()){
+        qDebug() << "Changement de météo active :"<< id;
+        for (auto &e : forecasts)
         {
-            qDebug() << "Reset de l'actif";
-            e.swapActive();
+            if (e.getActive())
+            {
+                e.swapActive();
+            }
         }
+        forecasts[index].swapActive();
     }
-    forecasts[unsigned(id)].swapActive();
 }
 
 int Weather::findActive()
@@ -170,7 +171,6 @@ QString Weather::getActiveIcon(){
     }
 
     QString code = forecasts[unsigned(i)].getIcon();
-    qDebug() << "APPEL DU CODE DE L'ICONE   " << code;
     return "qrc:/icons/"+code+".png";
 
 }
@@ -184,23 +184,20 @@ void Weather::translate(){
     //il faut trouver le moyen de faire un chemin correpondant au dossier d'installation du logiciel.
     file.open(QIODevice::ReadOnly |  QIODevice::Text);
 
-    qDebug() << "Emplacement : " << QDir::currentPath();
-    qDebug() << "Existence du fichier : "  << file.exists();
-
     trad = file.readAll();
     file.close();
 
-//    qWarning() << trad;
-      QJsonDocument d = QJsonDocument::fromJson(trad.toUtf8());
-      QJsonObject sett2 = d.object();
-      QJsonValue value = sett2.value(QString("english"));
-      qWarning() << value["clear sky"];
-//      QJsonObject item = value.toObject();
-//      qWarning() << tr("QJsonObject of description: ") << item["clear sky"];
+    QJsonDocument doc = QJsonDocument::fromJson(trad.toUtf8());
+    QJsonObject jsonobj = doc.object();
+    QJsonValue traduction = jsonobj.value(QString("french"));
 
-//    for (auto &e : forecasts){
-//        e.setDescription(QJsonValue(jsonObj["english"])[0][e.getDescription()].toString());
-//    }
+    for (auto &e : forecasts){
+        QString save = e.getDescription();
+        e.setDescription(traduction[e.getDescription()].toString());
+        if (e.getDescription().isEmpty()){
+            e.setDescription("Translation error : " + save);
+        }
 
-//    qDebug() << "  -  " << jsonObj.size();
+    }
+
 }
