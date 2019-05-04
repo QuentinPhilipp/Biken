@@ -1,6 +1,6 @@
 #include "node.h"
 
-Node::Node(uint64_t id,double lat,double lon)
+Node::Node(unsigned long long id,double lat,double lon)
     : id{id}
     ,latitude{lat}
     ,longitude{lon}
@@ -14,7 +14,7 @@ Node::Node()
 }
 
 //getter (read-only)
-uint64_t Node::getId() const
+unsigned long long Node::getId() const
 {
   return this->id;
 }

@@ -50,21 +50,21 @@ void DataManager::generateWaysAndNodes(QVariant radius)
     for (int i=0;i<length;i++) {
         QJsonObject element = allRoads["elements"].toArray()[i].toObject();    //element contains one way OR one node (with everything that's inside it), (in JSON)
         if(element["type"]=="node"){
-            uint64_t nodeId = static_cast<uint64_t>(element["id"].toDouble()); //it has to be uint64_t because the Id can be more than 2^32 (so uint_32_t and below won't work)
+            unsigned long long nodeId = static_cast<unsigned long long>(element["id"].toDouble()); //it has to be unsigned long long because the Id can be more than 2^32 (so uint_32_t and below won't work)
             double latitude = element["lat"].toDouble();
             double longitude = element["lon"].toDouble();
             Node node = Node(nodeId,latitude,longitude);                       //create an object Node with the 3 parameters from above
             nodeObjectVector.emplace_back(node);
         }
         else if(element["type"]=="way"){
-            vector<uint64_t> nodeIdVector;                                     //A vector that contains all the Node objects' Id of one object Way                                      //A vector that contains all the Node objects of one object Way
-            uint64_t id = static_cast<uint64_t>(element["id"].toDouble());     //get the id in uint64_t (same reason as above)
-            uint64_t centerNodeId;
+            vector<unsigned long long> nodeIdVector;                                     //A vector that contains all the Node objects' Id of one object Way                                      //A vector that contains all the Node objects of one object Way
+            unsigned long long id = static_cast<unsigned long long>(element["id"].toDouble());     //get the id in unsigned long long (same reason as above)
+            unsigned long long centerNodeId;
             QJsonArray nodeArray = element["nodes"].toArray();                 //nodsArray contains all the node from one way (in JSON)
             int i=0;
             for(auto node : nodeArray)
             {
-                uint64_t nodeId = static_cast<uint64_t>(node.toDouble());
+                unsigned long long nodeId = static_cast<unsigned long long>(node.toDouble());
                 nodeIdVector.emplace_back(nodeId);
                 if(i==nodeArray.size()/2){
                     centerNodeId = nodeId;
@@ -90,7 +90,7 @@ void DataManager::generateWaysAndNodes(QVariant radius)
     qDebug() << "\nTemps écoulé pendant la création de nodes : "<<afterRequestTime.secsTo(afterDatabaseTime)<<"secondes\n";
 }
 
-Node DataManager::getNodeFromNodeId(uint64_t nodeId, vector<Node> &nodeObjectVector)
+Node DataManager::getNodeFromNodeId(unsigned long long nodeId, vector<Node> &nodeObjectVector)
 {
     /*
      * Ici, pour parcourir tous les objects node (sachant qu'il y en a énormément), j'utilise la méthode du juste prix:
@@ -98,7 +98,7 @@ Node DataManager::getNodeFromNodeId(uint64_t nodeId, vector<Node> &nodeObjectVec
      */
     uint i = nodeObjectVector.size()-1;
     Node node = nodeObjectVector[i];
-    uint64_t id;
+    unsigned long long id;
     uint prev_i=0;
     uint temporaryValue=0;
     uint valueToSubstract;
@@ -139,7 +139,7 @@ void DataManager::addTables()
 
     //Adding the ways table
     QSqlQuery clearWays("DELETE FROM ways");                                             //clear the table first
-    QSqlQuery queryways("CREATE TABLE IF NOT EXISTS ways (id_way BIGINT, centerLat DOUBLE, centerLon DOUBLE, node BIGINT)"); //using BIGINT to fit with uint64_t
+    QSqlQuery queryways("CREATE TABLE IF NOT EXISTS ways (id_way BIGINT, centerLat DOUBLE, centerLon DOUBLE, node BIGINT)"); //using BIGINT to fit with unsigned long long
     if(!queryways.exec())
     {qDebug()<<"Error creating ways table"<<queryways.lastError();}
 
@@ -165,7 +165,7 @@ void DataManager::addValuesNodes(vector<Node> nodesVector)
         QString queryString = "INSERT INTO nodes(id_node,latitude,longitude) VALUES ";           //preparing the beginning of each query
         while (i<cutValue)
         {
-            uint64_t id = nodesVector[0].getId();
+            unsigned long long id = nodesVector[0].getId();
             double valueAsDouble = 1.2;
             QString valueAsString = QString::number(valueAsDouble);
             QString add = "("+QString::fromStdString(std::to_string(id))+","+QString::number(nodesVector[0].getLatitude(),'f',8)+","+QString::number(nodesVector[0].getLongitude(),'f',8)+"),";
@@ -206,7 +206,7 @@ void DataManager::addValuesWays(vector<Way> wayVector)
         QString queryString = "INSERT INTO ways(id_way,centerLat,centerLon,node) VALUES ";                          //preparing the beginning of each query
         while (i<cutValue)
         {
-            uint64_t id = wayVector[0].getId();
+            unsigned long long id = wayVector[0].getId();
             Node centerNode = wayVector[0].getCenterNode();
             int counter = 0;                                                                //to be sure to add all the node of a way, we don't split querry in a way. We wait the end
                                                                                             //of this way. So we add a counter to add in "i" the good number
@@ -236,7 +236,7 @@ void DataManager::addValuesWays(vector<Way> wayVector)
 }
 
 vector<Node>
-DataManager::requestNodesFromRoad(uint64_t idRoad)
+DataManager::requestNodesFromRoad(unsigned long long idRoad)
 {
      //converting
      QVariant idRoadVar;
@@ -255,7 +255,7 @@ DataManager::requestNodesFromRoad(uint64_t idRoad)
      //add all the nodes of the result in a vector
      vector<Node> nodes;
      while (query.next()) {
-         uint64_t id = static_cast<uint64_t>(query.value(0).toDouble());
+         unsigned long long id = static_cast<unsigned long long>(query.value(0).toDouble());
          double lat = query.value(1).toDouble();
          double lon = query.value(2).toDouble();
          Node n = Node(id,lat,lon);
@@ -281,7 +281,7 @@ DataManager::requestNodesFromRoad(QVariant idRoad)
      //add all the nodes of the result in a vector
      vector<Node> nodes;
      while (query.next()) {
-         uint64_t id = static_cast<uint64_t>(query.value(0).toDouble());
+         unsigned long long id = static_cast<unsigned long long>(query.value(0).toDouble());
          double lat = query.value(1).toDouble();
          double lon = query.value(2).toDouble();
          Node n = Node(id,lat,lon);
@@ -291,7 +291,7 @@ DataManager::requestNodesFromRoad(QVariant idRoad)
 }
 
 vector<Way>
-DataManager::requestRoadsFromNode(uint64_t idNode)
+DataManager::requestRoadsFromNode(unsigned long long idNode)
 {
      //converting
      QVariant idNodeVar;
@@ -309,21 +309,21 @@ DataManager::requestRoadsFromNode(uint64_t idNode)
      query.first();
      //add all the nodes of the result in a vector
      vector<Way> roads;
-     uint64_t lastId = static_cast<uint64_t>(query.value(0).toDouble());
+     unsigned long long lastId = static_cast<unsigned long long>(query.value(0).toDouble());
      vector<Node> nodeVect;
-     vector<uint64_t> nodeIdVect;
+     vector<unsigned long long> nodeIdVect;
 
      while (query.next()) {
-         uint64_t idWay = static_cast<uint64_t>(query.value(0).toDouble());
+         unsigned long long idWay = static_cast<unsigned long long>(query.value(0).toDouble());
          if (idWay != lastId)
          {
              Way w = Way(lastId,nodeIdVect,nodeVect);
              roads.emplace_back(w);
-             lastId = static_cast<uint64_t>(query.value(0).toDouble());
+             lastId = static_cast<unsigned long long>(query.value(0).toDouble());
              nodeIdVect={};
              nodeVect={};
          }
-         uint64_t idNode = static_cast<uint64_t>(query.value(1).toDouble());
+         unsigned long long idNode = static_cast<unsigned long long>(query.value(1).toDouble());
          double lat = query.value(2).toDouble();
          double lon = query.value(3).toDouble();
          Node n = Node(idNode,lat,lon);
@@ -351,21 +351,21 @@ DataManager::requestRoadsFromNode(QVariant idNode)
     query.first();
     //add all the nodes of the result in a vector
     vector<Way> roads;
-    uint64_t lastId = static_cast<uint64_t>(query.value(0).toDouble());
+    unsigned long long lastId = static_cast<unsigned long long>(query.value(0).toDouble());
     vector<Node> nodeVect;
-    vector<uint64_t> nodeIdVect;
+    vector<unsigned long long> nodeIdVect;
 
     while (query.next()) {
-        uint64_t idWay = static_cast<uint64_t>(query.value(0).toDouble());
+        unsigned long long idWay = static_cast<unsigned long long>(query.value(0).toDouble());
         if (idWay != lastId)
         {
             Way w = Way(lastId,nodeIdVect,nodeVect);
             roads.emplace_back(w);
-            lastId = static_cast<uint64_t>(query.value(0).toDouble());
+            lastId = static_cast<unsigned long long>(query.value(0).toDouble());
             nodeIdVect={};
             nodeVect={};
         }
-        uint64_t idNode = static_cast<uint64_t>(query.value(1).toDouble());
+        unsigned long long idNode = static_cast<unsigned long long>(query.value(1).toDouble());
         double lat = query.value(2).toDouble();
         double lon = query.value(3).toDouble();
         Node n = Node(idNode,lat,lon);
@@ -468,7 +468,7 @@ DataManager::requestRoadsFromNode(Node node)
     //contains the wanted Node. If so, we add this way in the list "roadsAtThatNode".
     double lon;
     double wantedLon=node.getLongitude();
-    uint64_t wantedId = node.getId();
+    unsigned long long wantedId = node.getId();
     vector<Way> roadsAtThatNode;
     for(auto &road:roadsInLat){
         lon =road.getCenterNode().getLongitude();
@@ -501,22 +501,22 @@ void DataManager::requestRoads()
     query.first();
     //add all the nodes of the result in a vector
     vector<Way> roads;
-    uint64_t lastId = static_cast<uint64_t>(query.value(0).toDouble());
+    unsigned long long lastId = static_cast<unsigned long long>(query.value(0).toDouble());
     vector<Node> nodeVect;
-    vector<uint64_t> nodeIdVect;
+    vector<unsigned long long> nodeIdVect;
     Node centerNode;
 
     while (query.next()) {
-        uint64_t idWay = static_cast<uint64_t>(query.value(0).toDouble());
+        unsigned long long idWay = static_cast<unsigned long long>(query.value(0).toDouble());
         if (idWay != lastId)
         {
             Way w = Way(lastId,nodeIdVect,nodeVect,centerNode);
             roads.emplace_back(w);
-            lastId = static_cast<uint64_t>(query.value(0).toDouble());
+            lastId = static_cast<unsigned long long>(query.value(0).toDouble());
             nodeIdVect={};
             nodeVect={};
         }
-        uint64_t idNode = static_cast<uint64_t>(query.value(3).toDouble());
+        unsigned long long idNode = static_cast<unsigned long long>(query.value(3).toDouble());
         double lat = query.value(4).toDouble();
         double lon = query.value(5).toDouble();
         if(lat>=query.value(1).toDouble()-0.00001 && lat<=query.value(1).toDouble()+0.00001 && lon>=query.value(2).toDouble()-0.00001 && lon<=query.value(2).toDouble()+0.00001){ // comparing double with == didn't work
@@ -584,7 +584,7 @@ QVariantList DataManager::requestLatLonFromNodes(QVariant idNode)
 //      qWarning() << "ERROR Finding nodes: " << query.lastError().text();
 //}
 
-QList<int> DataManager::findRouteFrom(double lat, double lon)
+QVariantList DataManager::findRouteFrom(double lat, double lon)
 {
     /*
      * TO DO (propositions):
@@ -600,13 +600,13 @@ QList<int> DataManager::findRouteFrom(double lat, double lon)
      *
      * - attention aux oneway roads et aux roundabout ...
      */
-    QList<int> routeNodes; //what will be returned to QML
-    uint64_t roadId = 136110431;
+    QVariantList routeNodes; //what will be returned to QML
+    unsigned long long roadId = 136110431;
     vector<Node> nodes = requestNodesFromRoad(roadId);
     Node node;
     Node previous_node = nodes[0];
     qDebug() << "findRouteFrom(): example of QVariant node: " << previous_node.getId();
-    routeNodes.append(previous_node.getId());
+    routeNodes.append(QVariant(previous_node.getId()));
     int i=0;
     while(i<100){
         bool b=0; //used later, to avoid to stay on the same node
@@ -616,9 +616,9 @@ QList<int> DataManager::findRouteFrom(double lat, double lon)
         if(requestRoadsFromNode(nodes[0]).size()>1 && nodes[0].getId()!=previous_node.getId()){
             node=nodes[0];
             vector<Way> roads = requestRoadsFromNode(node);
-            routeNodes.append(node.getId()); //if we change of road, append the node in common of the previous and the new road
+            routeNodes.append(QVariant(node.getId())); //if we change of road, append the node in common of the previous and the new road
             previous_node=node;
-            uint64_t newRoadId = roads[0].getId();
+            unsigned long long newRoadId = roads[0].getId();
             if(newRoadId!=roadId){
                 nodes = requestNodesFromRoad(newRoadId);
                 roadId=newRoadId;
@@ -633,9 +633,9 @@ QList<int> DataManager::findRouteFrom(double lat, double lon)
         else if(requestRoadsFromNode(nodes[nodes.size()-1]).size()>1 && nodes[nodes.size()-1].getId()!=previous_node.getId()){
             node=nodes[nodes.size()-1];
             vector<Way> roads = requestRoadsFromNode(node);
-            routeNodes.append(node.getId()); //if we change of road, append the node in common of the previous and the new road
+            routeNodes.append(QVariant(node.getId())); //if we change of road, append the node in common of the previous and the new road
             previous_node=node;
-            uint64_t newRoadId = roads[0].getId();
+            unsigned long long newRoadId = roads[0].getId();
             if(newRoadId!=roadId){
                 nodes = requestNodesFromRoad(newRoadId);
                 roadId=newRoadId;
@@ -675,9 +675,9 @@ QList<int> DataManager::findRouteFrom(double lat, double lon)
                 //At every node, check if there are any road that contains the current node (exept the one road we are currently on)
                 if(roads.size()>1 && b>=1){ //b is used to wait one node after you've changed from one road to another. Otherwise it would stay undefinitely on the same node.
                     //if we change of road, append the node in common between the previous and the new road
-                    routeNodes.append(node.getId());
+                    routeNodes.append(QVariant(node.getId()));
                     previous_node=node;
-                    uint64_t newRoadId = roads[0].getId();
+                    unsigned long long newRoadId = roads[0].getId();
                     if(newRoadId!=roadId){
                         nodes = requestNodesFromRoad(newRoadId);
                         roadId=newRoadId;
