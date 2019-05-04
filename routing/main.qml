@@ -15,7 +15,7 @@ import "map"
   -4.658547
 */
 
-Window {
+ApplicationWindow {
     id: mainWaindow
 
     property var map
@@ -44,17 +44,35 @@ Window {
             plugin: mapPlugin
         }
     }
+    menuBar: MenuBar { 
+        Menu {
+            title: "Fichier"
+            MenuItem { text: "Open" }
+            MenuItem { text: "Close" }
+        }
+
+        Menu {
+            title: "Paramètres"
+        }
+        Menu {
+            title: "Export"
+        }
+        Menu {
+            title: "Credit"
+        }
+    }
 
     //Rectangle where every parameter for the route can be set (position, distance...)
+
     Rectangle{
         id: paramContainer
         width: 0.2*parent.width
         height: 0.7*parent.height
         anchors.right: mapContainer.left
         anchors.top: parent.top
-        color: "#252525"
-        border.color: "white"
-
+        color: "#8bd8bd"
+        border.color: "blue"
+        /*
         //Recherche avec des coordonnées
         Text {
             id: fromCoordinateText
@@ -96,6 +114,7 @@ Window {
                 color:"white"
             }
         }
+
         Text {
             id: toCoordinateText
             anchors.left: fromCoordinateText.left
@@ -105,6 +124,7 @@ Window {
             font.pixelSize: 12
             color:"white"
         }
+
         Rectangle{
             id: toLatitude
             anchors.left: fromLatitude.left
@@ -127,20 +147,22 @@ Window {
             anchors.topMargin: 10
             width: 95
             height: 20
-            color: "black"
+            color: "white"
             TextInput{
                 id: toLongitudeInput
                 anchors.fill:parent
                 font.pixelSize: 12
-                color:"white"
+                color:"black"
             }
         }
+
         Button{
             id: validationCoordinate
+            anchors.left: parent.left
             anchors.right: toLongitude.right
             anchors.top: toLongitude.bottom
             anchors.topMargin: 10
-            width: 70
+            width: 20
             height: 20
             onClicked: {
                 var startCoordinate = QtPositioning.coordinate(parseFloat(fromLatitudeInput.text),
@@ -162,32 +184,33 @@ Window {
                 color: "black"
             }
         }
-
+        */
 
         //Recherche avec une adresse
         Text {
             id: fromAdressText
             anchors.left: parent.left
-            anchors.leftMargin: 10
+            anchors.leftMargin: 5
             anchors.top: validationCoordinate.bottom
             anchors.topMargin: 20
             text: qsTr("Depart")
             font.pixelSize: 12
-            color:"white"
+            color:"black"
         }
         Rectangle{
             id: fromAdress
             anchors.left: fromAdressText.right
-            anchors.leftMargin: 10
+            anchors.leftMargin: 25
             anchors.top: fromAdressText.top
-            width: 200
+            anchors.right: mapContainer.left
+            width: 0.6*parent.width
             height: 20
-            color: "black"
+            color: "white"
             TextInput{
                 id: fromAdressInput
                 anchors.fill:parent
                 font.pixelSize: 12
-                color:"white"
+                color:"black"
             }
         }
         Text {
@@ -197,28 +220,55 @@ Window {
             anchors.topMargin: 30
             text: qsTr("Arrivee")
             font.pixelSize: 12
-            color:"white"
+            color:"black"
         }
         Rectangle{
             id: toAdress
             anchors.left: fromAdress.left
             anchors.top: fromAdress.bottom
             anchors.topMargin: 10
-            width: 200
+            width: 0.6*parent.width
             height: 20
-            color: "black"
+            color: "white"
             TextInput{
                 id: toAdressInput
                 anchors.fill:parent
                 font.pixelSize: 12
-                color:"white"
+                color:"black"
             }
         }
+
+        //Recherche avec un nombre précis de kilomètres
+        Text {
+            id: kmDesiredText
+            anchors.left: fromAdressText.left
+            anchors.top: fromAdressText.top
+            anchors.topMargin: 60
+            text: qsTr("km désirés")
+            font.pixelSize: 12
+            color:"black"
+        }
+        Rectangle{
+            id: kmDesired
+            anchors.left: fromAdress.left
+            anchors.top: fromAdress.bottom
+            anchors.topMargin: 40
+            width: 0.6*parent.width
+            height: 20
+            color: "white"
+            TextInput{
+                id: kmDesiredInput
+                font.pixelSize: 12
+                anchors.fill:parent
+                color:"black"
+            }
+        }
+
         Button{
             id: validationAdress
             anchors.right: toAdress.right
             anchors.top: toAdress.bottom
-            anchors.topMargin: 10
+            anchors.topMargin: 40
             width: 70
             height: 20
             onClicked: {
@@ -272,24 +322,28 @@ Window {
             }
         }
         Rectangle{
-            width: 280
-            height: 300
+            width: 0.95*parent.width
+            height: 0.4*parent.height
             anchors.left: fromAdressText.left
             anchors.top: testButton.bottom
+            anchors.right: mapContainer.left
             anchors.topMargin: 10
-            color:"#dddddd"
+            color:"#243665"
+            border.color: "blue"
             ScrollView{
                 id: view
                 anchors.fill: parent
                 TextArea{
                     id: textToDisplay
+                    width: 0.95*parent.width
+                    height: 0.4*parent.height
                     anchors.fill: parent
                     font.pixelSize: 12
-                    color:"black"
+                    color:"white"
                 }
             }
         }
-    }
+     }
 
     //Rectangle where we will display meteo information
     Rectangle{
@@ -299,7 +353,7 @@ Window {
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         color: "#2525ff"
-        border.color: "white"
+        border.color: "blue"
         opacity: 0.2
     }
 
@@ -310,20 +364,20 @@ Window {
         height: 0.3*parent.height
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        color: "#252525"
-        border.color: "white"
+        color: "#8bd8bd"
+        border.color: "blue"
         Rectangle{
             anchors.right: setRadius.left
             anchors.rightMargin: 10
             anchors.verticalCenter: parent.verticalCenter
-            width: 200
+            width: 50
             height: 30
-            color: "#252525"
+            color: "#8bd8bd"
             Text{
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 14
-                color:"white"
+                color:"black"
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 text:"Radius (in km):"
@@ -334,14 +388,14 @@ Window {
             anchors.right: refreshDataBase.left
             anchors.rightMargin: 10
             anchors.verticalCenter: parent.verticalCenter
-            width: 100
+            width: 50
             height: 30
-            color: "black"
+            color: "white"
             TextInput{
                 id: radius
                 anchors.fill:parent
                 font.pixelSize: 14
-                color:"white"
+                color:"black"
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
             }
@@ -389,6 +443,7 @@ Window {
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             text:""
+            }
         }
     }
-}
+
