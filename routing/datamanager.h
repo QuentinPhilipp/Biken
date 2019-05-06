@@ -19,17 +19,17 @@ class DataManager: public QObject                                   //DataManage
     Q_OBJECT                                                        //This macro is needed
 public:
     explicit DataManager(QObject *parent = nullptr);
-    Q_INVOKABLE void generateWaysAndNodes(QVariant radius);         //Q_INVOKABLE allows the function to be called from QML
-    Node getNodeFromNodeId(uint64_t nodeId, vector<Node> &nodeObjectVector);
+    //Q_INVOKABLE void generateWaysAndNodes(QVariant radius);         //Q_INVOKABLE allows the function to be called from QML
+    Node getNodeFromNodeId(unsigned long long nodeId, vector<Node> &nodeObjectVector);
 
-    std::vector<Node> requestNodesFromRoad(uint64_t idRoad);
+    std::vector<Node> requestNodesFromRoad(unsigned long long idRoad);
     std::vector<Node> requestNodesFromRoad(QVariant idRoad);        //overload
 
-    std::vector<Way> requestRoadsFromNode(uint64_t idNode);
+    std::vector<Way> requestRoadsFromNode(unsigned long long idNode);
     std::vector<Way> requestRoadsFromNode(QVariant idNode);         //overload
     std::vector<Way> requestRoadsFromNode(Node node);               //overload
 
-    void requestRoads();
+    void requestRoads(double lat,double lon,double rad);
 
     Q_INVOKABLE QVariantList requestLatLonFromNodes(QVariant idNode);
 
