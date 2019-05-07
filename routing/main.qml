@@ -83,8 +83,8 @@ ApplicationWindow {
                     source: "logogrand.png"
                     Layout.fillHeight: true
                     Layout.fillWidth: true
-                    Layout.preferredWidth: 240
-                    Layout.preferredHeight: 130
+                    Layout.preferredWidth: 1000
+                    Layout.preferredHeight: 1000
                     Layout.alignment: Qt.AlignCenter
                 }
 
