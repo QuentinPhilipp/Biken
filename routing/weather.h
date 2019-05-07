@@ -58,9 +58,10 @@ public slots:
     void changeForecast(int id);
     int findActive();
 
-    double getActiveWindDirection();
-    double getActiveWindSpeed();
+    double getActiveDirection();
+    QString getActiveWindSpeed();
     double getActiveTemp();
+    QString getActiveWindStrength();
     QString getActiveDescription();
     QString getActiveIcon();
     QString getError(){return error;}

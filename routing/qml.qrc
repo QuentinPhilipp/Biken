@@ -22,5 +22,9 @@
         <file>icons/50d.png</file>
         <file>icons/50n.png</file>
         <file>icons/connexion.png</file>
+        <file>weatherAddon/WeatherAddon.qml</file>
+        <file>icons/windSpeed1.png</file>
+        <file>icons/windSpeed2.png</file>
+        <file>icons/windSpeed3.png</file>
     </qresource>
 </RCC>

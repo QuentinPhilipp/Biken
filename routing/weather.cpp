@@ -118,26 +118,35 @@ int Weather::findActive()
     return 0;
 }
 
-double Weather::getActiveWindDirection(){
+double Weather::getActiveDirection(){
     int i = findActive();
+    double dir;
 
     if (forecasts.size() == 0){
-        qDebug() << "Aucune météo disponible, retour d'une valeur par défaut";
         return 0.0;
     }
 
-    return forecasts[unsigned(i)].getWindDirection();
+    if(forecasts[unsigned(i)].getWindDirection()-56.0 < 0.0){
+        dir = 360.0 - (forecasts[unsigned(i)].getWindDirection() - 56.0);
+    }
+    else {
+        dir = forecasts[unsigned(i)].getWindDirection() - 56.0;
+    }
+
+    return dir;
 }
 
-double Weather::getActiveWindSpeed(){
+QString Weather::getActiveWindSpeed(){
     int i = findActive();
 
     if (forecasts.size() == 0){
         qDebug() << "Aucune météo disponible, retour d'une valeur par défaut";
-        return 0.0;
+        return "";
     }
 
-    return forecasts[unsigned(i)].getWindSpeed();
+    QString speed = QString::number(forecasts[unsigned(i)].getWindSpeed());
+
+    return speed + " km/h";
 }
 
 double Weather::getActiveTemp(){
@@ -149,6 +158,28 @@ double Weather::getActiveTemp(){
     }
 
     return forecasts[unsigned(i)].getTemp();
+}
+
+QString Weather::getActiveWindStrength(){
+    int i = findActive();
+
+    if (forecasts.size() == 0){
+        qDebug() << "Aucune météo disponible, retour d'une valeur par défaut";
+        return "No Wind available";
+    }
+
+    double speed = forecasts[unsigned(i)].getWindSpeed() * 3.6;
+
+    if (speed < 20.0){
+        return "qrc:/icons/windSpeed1.png";
+    }
+    else if (speed < 50.0) {
+        return "qrc:/icons/windSpeed2.png";
+    }
+    else {
+        return "qrc:/icons/windSpeed3.png";
+    }
+
 }
 
 QString Weather::getActiveDescription(){
