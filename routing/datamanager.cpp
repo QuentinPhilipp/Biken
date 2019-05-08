@@ -20,7 +20,7 @@ DataManager::DataManager(QObject *parent) : QObject(parent)
     if(QSqlDatabase::isDriverAvailable(DRIVER))                                    //checking the availability of the driver
     {
         QSqlDatabase db = QSqlDatabase::addDatabase(DRIVER);                       //Adding the driver
-        db.setDatabaseName("../Database.db");                                  //path for the database    |    do not create a WaysAndNodes.db, it's done automatically
+        db.setDatabaseName("../Data/Database.db");                                  //path for the database    |    do not create a WaysAndNodes.db, it's done automatically
 
         //open the database
         if(!db.open())
@@ -242,7 +242,7 @@ void DataManager::requestRoads(double lat,double lon,double rad)
 {
     QSqlQuery query;
 
-    double radNode = rad +15.0;               //increasing radius to be sure to have all point from big roads
+    double radNode = rad +15.0;               //increasing radius to be sure to have all node from big roads
 
     //converting
     double minLatNode = lat - radNode/111.11;
@@ -252,9 +252,9 @@ void DataManager::requestRoads(double lat,double lon,double rad)
     double minLonNode,maxLonNode,minLon,maxLon;
     if (lon >= 0)
     {
-        minLonNode = lon - radNode/(111.11*cos(lat));           //Pour la longitude il faut faire * cos(latitude) car 1° =111.11 a l'equateur mais pas partout
+        minLonNode = lon - radNode/(111.11*cos(lat));           //for longitude radius * cos(latitude) bc 1° =111.11 at ecuador
         maxLonNode = lon + radNode/(111.11*cos(lat));
-        minLon = lon - rad/(111.11*cos(lat));           //Pour la longitude il faut faire * cos(latitude) car 1° =111.11 a l'equateur mais pas partout
+        minLon = lon - rad/(111.11*cos(lat));
         maxLon = lon + rad/(111.11*cos(lat));
     }
     else {
@@ -264,8 +264,8 @@ void DataManager::requestRoads(double lat,double lon,double rad)
         maxLon = lon - rad/(111.11*cos(lat));
     }
 
-    allNodes= createNodeObject(query,minLatNode,maxLatNode,minLonNode,maxLonNode);
-    allWays= createWayObject(query,minLat,maxLat,minLon,maxLon,getAllNodes());
+    allNodes= createNodeObject(query,minLatNode,maxLatNode,minLonNode,maxLonNode);          //create nodes
+    allWays= createWayObject(query,minLat,maxLat,minLon,maxLon,getAllNodes());              //create ways
     qDebug() << "Allways size : "<<allWays.size();
     qDebug() << "AllNodes size : "<<allNodes.size();
 
@@ -273,23 +273,22 @@ void DataManager::requestRoads(double lat,double lon,double rad)
 
 vector<Node> DataManager::createNodeObject(QSqlQuery query,double minLat,double maxLat,double minLon,double maxLon){
     query.prepare("SELECT DISTINCT id_node,latitude,longitude FROM roads WHERE ((:minLat<=centerLat) and (centerLat<=:maxLat) and (:minLon<=centerLon) and (centerLon<=:maxLon)) ORDER BY id_node");
-    query.bindValue(":minLat",minLat);
+    query.bindValue(":minLat",minLat);  // this query get all the node with their id,latitude and longitude
     query.bindValue(":maxLat",maxLat);
     query.bindValue(":minLon",minLon);
-    query.bindValue(":maxLon",maxLon);
+    query.bindValue(":maxLon",maxLon); // binding all the values
 
     if(!query.exec()){
         qWarning() << "ERROR Finding roads in RequestRoad: " << query.lastError().text();
     }
 
     qDebug() << "Query Node finish";
-    query.first();
     vector<Node> nodeVect;
     while (query.next()) {
-        unsigned long long idNode = static_cast<unsigned long long>(query.value(0).toDouble());
-        double lat = query.value(1).toDouble();
-        double lon = query.value(2).toDouble();
-        Node n = Node(idNode,lat,lon);
+        unsigned long long idNode = static_cast<unsigned long long>(query.value(0).toDouble());     //get id
+        double lat = query.value(1).toDouble();             // get latitude
+        double lon = query.value(2).toDouble();             // get longitude
+        Node n = Node(idNode,lat,lon);                      //create Node
         nodeVect.emplace_back(n);
     }
     qDebug() << "Node created : "<< nodeVect.size();
@@ -299,10 +298,10 @@ vector<Node> DataManager::createNodeObject(QSqlQuery query,double minLat,double 
 vector<Way> DataManager::createWayObject(QSqlQuery query,double minLat,double maxLat,double minLon,double maxLon,std::vector<Node> nodeVect){
     //preparing query
     query.prepare("SELECT DISTINCT id_way,centerLat,centerLon,id_node,oneway,roundabout,maxspeed,type,latitude,longitude FROM roads WHERE ((:minLat<=centerLat) and (centerLat<=:maxLat) and (:minLon<=centerLon) and (centerLon<=:maxLon)) ORDER BY centerLat,id_way");
-    query.bindValue(":minLat",minLat);
+    query.bindValue(":minLat",minLat);  //This request get all the data from the database within a certain range defined by the radius
     query.bindValue(":maxLat",maxLat);
     query.bindValue(":minLon",minLon);
-    query.bindValue(":maxLon",maxLon); // JOIN nodes ON ways.node = nodes.id_node
+    query.bindValue(":maxLon",maxLon); // Binding all the values to the SQL query
 
     //execute
     if(!query.exec()){
@@ -314,32 +313,35 @@ vector<Way> DataManager::createWayObject(QSqlQuery query,double minLat,double ma
 
     query.first();
     //add all the nodes of the result in a vector
-    vector<Node> wayNodes;
-    vector<Way> wayVector;
+    vector<Node> wayNodes;              //vector containing all the node in a way
+    vector<Way> wayVector;              //vector containing all the way
+
+
+    //first iteration is done outside of the while
     unsigned long long lastId = static_cast<unsigned long long>(query.value(0).toDouble());
     Node centerNode;
-    bool oneway = false;
+    bool oneway = false;                //didn't need to get oneway,roundabout maxspeed and type bc it will only be used in the while()
     bool roundabout = false;
     int maxspeed = 0;
     QString type;
-    unsigned long long idNode = static_cast<unsigned long long>(query.value(3).toDouble());
+    unsigned long long idNode = static_cast<unsigned long long>(query.value(3).toDouble());     //get the id of the node
 
     if ((query.value(8).toDouble()-0.00001<query.value(1).toDouble() && query.value(1).toDouble()<query.value(8).toDouble()+0.00001) && (query.value(9).toDouble()-0.00001<query.value(2).toDouble() && query.value(2).toDouble()<query.value(9).toDouble()+0.00001)) //comparaison == impossible with double     //current Node is the CenterNode
     {
-        centerNode = getNodeFromNodeId(idNode,nodeVect);
+        centerNode = getNodeFromNodeId(idNode,nodeVect);                // if the node is in the center of the way
     }
 
     Node n = getNodeFromNodeId(idNode,nodeVect);                        // add the first Node
-    wayNodes.emplace_back(n);
+    wayNodes.emplace_back(n);                                           //add to the vector containing all the way
 
     while (query.next()) {
         unsigned long long idWay = static_cast<unsigned long long>(query.value(0).toDouble());
         if (idWay != lastId)                                                                                    // can't go there without a full circle in the while() bc way are at least 2 node long
         {
-            Way w = Way(lastId,wayNodes,centerNode,oneway,roundabout,maxspeed,type);
+            Way w = Way(lastId,wayNodes,centerNode,oneway,roundabout,maxspeed,type);                            //creating a way with all the data
             wayVector.emplace_back(w);
-            lastId = static_cast<unsigned long long>(query.value(0).toDouble());
-            wayNodes={};
+            lastId = static_cast<unsigned long long>(query.value(0).toDouble());                                //changing the lastId into the new one
+            wayNodes={};                                                                                        //cleaning the vector of node
         }
         unsigned long long idNode = static_cast<unsigned long long>(query.value(3).toDouble());
         oneway = query.value(4).toBool();
@@ -349,7 +351,7 @@ vector<Way> DataManager::createWayObject(QSqlQuery query,double minLat,double ma
 
         if ((query.value(8).toDouble()-0.00001<query.value(1).toDouble() && query.value(1).toDouble()<query.value(8).toDouble()+0.00001) && (query.value(9).toDouble()-0.00001<query.value(2).toDouble() && query.value(2).toDouble()<query.value(9).toDouble()+0.00001)) //comparaison == impossible with double     //current Node is the CenterNode
         {
-            centerNode = getNodeFromNodeId(idNode,nodeVect);
+            centerNode = getNodeFromNodeId(idNode,nodeVect);                            //if centerNode
         }
         Node n = getNodeFromNodeId(idNode,nodeVect);
         wayNodes.emplace_back(n);
