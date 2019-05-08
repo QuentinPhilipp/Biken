@@ -5,7 +5,8 @@ import os
 c= folium.Map(location=[48.3677820, -4.7591771])
 
 #on lit le fichier pour remplir le tableau points
-with open("/home/beuzet/Documents/projets6/build-routing-Desktop_Qt_5_11_2_GCC_64bit-Debug/coordinates.txt") as file:
+path=os.getcwd()
+with open(path+"/coordinates.txt") as file:
 	lines = [line.strip('\n') for line in file.readlines()]
 	#pointsep contient chq lon et lap séparées
 	pointsep=[float(i) for i in lines]

@@ -40,7 +40,7 @@ ApplicationWindow {
             anchors.left:mapContainer.left
             anchors.right:mapContainer.right
             anchors.fill:mapContainer
-            url: "file:///home/beuzet/Documents/projets6/build-routing-Desktop_Qt_5_11_2_GCC_64bit-Debug/card.html"
+            url:"file://"+path+"/card.html"
             }
     }
     menuBar: MenuBar { 
@@ -307,7 +307,6 @@ ApplicationWindow {
                 console.log("Calculating route...");
                 var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
                 console.log("Data received in QML");
-                //Then calculate a route that goes through every of those nodes
                  maCarte.createMap();
                 console.log("Carte créée");
                 webengine.reload();

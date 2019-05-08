@@ -40,10 +40,15 @@ uint64_t Card::getId() const
 void Card::createMap()
 {
     QString program("python");
-    QStringList args = QStringList()<<"/home/beuzet/Documents/projets6/routing/CardGeneration.py";
+    QStringList args = QStringList()<<QDir::currentPath()+"/CardGeneration.py";
     QProcess p;
-    p.setWorkingDirectory("/home/beuzet/Documents/projets6/routing");
+    p.setWorkingDirectory(QDir::currentPath());
     p.execute(program, args);
+}
+
+QString Card::getCurrentPath()
+{
+    return QDir::currentPath();
 }
 
 
