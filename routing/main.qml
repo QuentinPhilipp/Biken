@@ -306,6 +306,7 @@ ApplicationWindow {
                 //from one road to another.
                 console.log("Calculating route...");
                 var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
+                maCarte.sendNodes(nodes,dataManager);
                 console.log("Data received in QML");
                  maCarte.createMap();
                 console.log("Carte créée");

@@ -1005,6 +1005,7 @@ moc_card.cpp: /opt/Qt5.11.2/5.11.2/gcc_64/include/QtCore/QProcess \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtGui/qevent.h \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtGui/qvector2d.h \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtGui/qtouchdevice.h \
+		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtCore/QObject \
 		../routing/datamanager.h \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtCore/QJsonObject \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtCore/qjsonobject.h \
@@ -1018,7 +1019,6 @@ moc_card.cpp: /opt/Qt5.11.2/5.11.2/gcc_64/include/QtCore/QProcess \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtSql/qsqlerror.h \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtSql/QSqlQuery \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtSql/qsqlquery.h \
-		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtCore/QObject \
 		../routing/requeteapi.h \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtCore/QString \
 		../routing/node.h \
@@ -1564,7 +1564,17 @@ main.o: ../routing/main.cpp /opt/Qt5.11.2/5.11.2/gcc_64/include/QtGui/QGuiApplic
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtSql/QSqlError \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtSql/qsqlerror.h \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtSql/QSqlQuery \
-		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtSql/qsqlquery.h
+		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtSql/qsqlquery.h \
+		../routing/card.h \
+		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtCore/QProcess \
+		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtCore/QFile \
+		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtWidgets/QFileDialog \
+		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtWidgets/qfiledialog.h \
+		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtWidgets/qdialog.h \
+		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtWidgets/qwidget.h \
+		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtWidgets/qsizepolicy.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../routing/main.cpp
 
 node.o: ../routing/node.cpp ../routing/node.h \
@@ -2124,6 +2134,7 @@ card.o: ../routing/card.cpp ../routing/card.h \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtGui/qevent.h \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtGui/qvector2d.h \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtGui/qtouchdevice.h \
+		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtCore/QObject \
 		../routing/datamanager.h \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtCore/QJsonObject \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtCore/qjsonobject.h \
@@ -2137,7 +2148,6 @@ card.o: ../routing/card.cpp ../routing/card.h \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtSql/qsqlerror.h \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtSql/QSqlQuery \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtSql/qsqlquery.h \
-		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtCore/QObject \
 		../routing/requeteapi.h \
 		/opt/Qt5.11.2/5.11.2/gcc_64/include/QtCore/QString \
 		../routing/node.h \

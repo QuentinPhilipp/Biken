@@ -32,6 +32,7 @@ DataManager::DataManager(QObject *parent) : QObject(parent)
     }
 }
 
+
 //This function is called from QML
 void DataManager::generateWaysAndNodes(QVariant radius)
 {

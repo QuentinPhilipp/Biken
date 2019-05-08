@@ -20,7 +20,7 @@ public:
     Q_INVOKABLE void createMap();
     uint64_t getId() const;
     Q_INVOKABLE QString getCurrentPath();
-    //Q_INVOKABLE int SendNodes(QVariantList RouteNodes, DataManager db);  //peut pas passer db en param car c'est UNIQUEMENT un objet QML
+    Q_INVOKABLE int sendNodes(QVariantList RouteNodes, DataManager *db);
 private:
     int id;
 };

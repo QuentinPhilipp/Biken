@@ -9,7 +9,7 @@ Card::Card(int identifiant)
 }
 
 //this function can be called in QML
-/*int Card::SendNodes(QVariantList RouteNodes, DataManager db)
+int Card::sendNodes(QVariantList RouteNodes, DataManager *db)
 {
     int dataLength = RouteNodes.length();
     //création d'un fichier
@@ -24,13 +24,13 @@ Card::Card(int identifiant)
     // Écriture des différentes lignes dans le fichier
     for(int i=0; i<dataLength ; ++i)
         {
-        QVariantList node =db.DataManager::requestLatLonFromNodes(RouteNodes[i]);
+        QVariantList node =db->DataManager::requestLatLonFromNodes(RouteNodes[i]);
         QString lon = node[0].toString();
         QString lat = node[1].toString();
         flux<<lon<<endl<<lat<<endl;
         }
     file.close();
-}*/
+}
 
 uint64_t Card::getId() const
 {
