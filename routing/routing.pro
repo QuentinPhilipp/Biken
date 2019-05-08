@@ -4,6 +4,8 @@ QT       += network
 QT       += sql
 QT       += core gui sql
 QT       +=webengine
+QT       +=core
+QT       +=widgets
 
 CONFIG += c++11
 
@@ -25,7 +27,8 @@ SOURCES += \
     way.cpp \
     requeteapi.cpp \
     datamanager.cpp \
-    myadress.cpp
+    myadress.cpp \
+    card.cpp
 
 RESOURCES += qml.qrc
 
@@ -48,7 +51,8 @@ HEADERS += \
     way.h \
     requeteapi.h \
     datamanager.h \
-    myadress.h
+    myadress.h \
+    card.h
 
 DISTFILES += \
     icone.rc

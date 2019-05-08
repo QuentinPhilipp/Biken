@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_DataManager_t {
-    QByteArrayData data[10];
-    char stringdata0[104];
+    QByteArrayData data[9];
+    char stringdata0[93];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -38,14 +38,13 @@ QT_MOC_LITERAL(3, 34, 6), // "radius"
 QT_MOC_LITERAL(4, 41, 22), // "requestLatLonFromNodes"
 QT_MOC_LITERAL(5, 64, 6), // "idNode"
 QT_MOC_LITERAL(6, 71, 13), // "findRouteFrom"
-QT_MOC_LITERAL(7, 85, 10), // "QList<int>"
-QT_MOC_LITERAL(8, 96, 3), // "lat"
-QT_MOC_LITERAL(9, 100, 3) // "lon"
+QT_MOC_LITERAL(7, 85, 3), // "lat"
+QT_MOC_LITERAL(8, 89, 3) // "lon"
 
     },
     "DataManager\0generateWaysAndNodes\0\0"
     "radius\0requestLatLonFromNodes\0idNode\0"
-    "findRouteFrom\0QList<int>\0lat\0lon"
+    "findRouteFrom\0lat\0lon"
 };
 #undef QT_MOC_LITERAL
 
@@ -70,7 +69,7 @@ static const uint qt_meta_data_DataManager[] = {
  // methods: parameters
     QMetaType::Void, QMetaType::QVariant,    3,
     QMetaType::QVariantList, QMetaType::QVariant,    5,
-    0x80000000 | 7, QMetaType::Double, QMetaType::Double,    8,    9,
+    QMetaType::QVariantList, QMetaType::Double, QMetaType::Double,    7,    8,
 
        0        // eod
 };
@@ -84,8 +83,8 @@ void DataManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 0: _t->generateWaysAndNodes((*reinterpret_cast< QVariant(*)>(_a[1]))); break;
         case 1: { QVariantList _r = _t->requestLatLonFromNodes((*reinterpret_cast< QVariant(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QVariantList*>(_a[0]) = std::move(_r); }  break;
-        case 2: { QList<int> _r = _t->findRouteFrom((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])));
-            if (_a[0]) *reinterpret_cast< QList<int>*>(_a[0]) = std::move(_r); }  break;
+        case 2: { QVariantList _r = _t->findRouteFrom((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])));
+            if (_a[0]) *reinterpret_cast< QVariantList*>(_a[0]) = std::move(_r); }  break;
         default: ;
         }
     }

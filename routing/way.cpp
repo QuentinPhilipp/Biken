@@ -3,19 +3,19 @@
 
 
 //constructor
-Way::Way(uint64_t id,vector<uint64_t> nodsId, Node ctrNode)
+Way::Way(unsigned long long id,vector<unsigned long long> nodsId, Node ctrNode)
     : id{id}
     ,nodesId{nodsId}
     ,centerNode{ctrNode}
 {}
 
-Way::Way(uint64_t id,vector<uint64_t> nodsId,vector<Node> nods)
+Way::Way(unsigned long long id,vector<unsigned long long> nodsId,vector<Node> nods)
     : id{id}
     ,nodesId{nodsId}
     ,nodes{nods}
 {}
 
-Way::Way(uint64_t id, vector<uint64_t> nodsId, vector<Node> nods, Node ctrNode)
+Way::Way(unsigned long long id, vector<unsigned long long> nodsId, vector<Node> nods, Node ctrNode)
     : id{id}
     ,nodesId{nodsId}
     ,nodes{nods}
@@ -31,7 +31,7 @@ void Way::displayNode()
       }
 }
 
-vector<uint64_t> Way::getNodesId() const
+vector<unsigned long long> Way::getNodesId() const
 {
     return nodesId;
 }

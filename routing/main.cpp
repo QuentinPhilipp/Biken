@@ -5,12 +5,16 @@
 #include <QTime>
 #include <QUrl>
 #include <QtWebEngine>
+#include <QString>
 
 #include "node.h"
 #include "way.h"
 #include "requeteapi.h"
 #include "myadress.h"
 #include "datamanager.h"
+#include "card.h"
+
+
 
 int main(int argc, char *argv[])
 {
@@ -25,6 +29,9 @@ int main(int argc, char *argv[])
 
     MyAdress* myAdress = new MyAdress();
 
+    //create the Map class
+    Card *carte = new Card(1);
+
     //Initialize the HTML code related to the map
     QtWebEngine::initialize();
 
@@ -35,6 +42,7 @@ int main(int argc, char *argv[])
         return -1;    
     engine.rootContext()->setContextProperty("myAdress",myAdress);      //create a variable myAdress usable in our QML code
     engine.rootContext()->setContextProperty("dataManager", db.data()); //create a variable dataManager usable in our QML code
+    engine.rootContext()->setContextProperty("maCarte",carte);
 
     return app.exec();
 }

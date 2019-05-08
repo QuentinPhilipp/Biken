@@ -36,13 +36,13 @@ ApplicationWindow {
         anchors.top: parent.top
         color: "green"
         WebEngineView{
+            id:webengine
             anchors.left:mapContainer.left
             anchors.right:mapContainer.right
             anchors.fill:mapContainer
-            url: "file:///home/beuzet/Documents/projets6/routing/maCartecolor.html"
-                     }
-
+            url: "file:///home/beuzet/Documents/projets6/build-routing-Desktop_Qt_5_11_2_GCC_64bit-Debug/card.html"
             }
+    }
     menuBar: MenuBar { 
         Menu {
             title: "Fichier"
@@ -308,8 +308,10 @@ ApplicationWindow {
                 var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
                 console.log("Data received in QML");
                 //Then calculate a route that goes through every of those nodes
-                thisIsTheMap.setNodes(nodes);
-                thisIsTheMap.calculateCoordinateRouteWithNodes();
+                 maCarte.createMap();
+                console.log("Carte créée");
+                webengine.reload();
+
             }
             Text{
                 anchors.horizontalCenter: parent.horizontalCenter
