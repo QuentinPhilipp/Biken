@@ -23,12 +23,12 @@ double Node::getLongitude() const
   return this->longitude;
 }
 
-int Node::getDistance() const
+double Node::getDistance() const
 {
     return distance;
 }
 
-void Node::setDistance(int value)
+void Node::setDistance(double value)
 {
     distance = value;
 }
