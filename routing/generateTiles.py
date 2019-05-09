@@ -1,12 +1,16 @@
+# coding: utf-8
+
 import sqlite3
 import requests
 import time
 import json
+import sys
+from math import *
 
 
 beforeData = 0
 afterData = 0
-conn = sqlite3.connect("..routing/Data/Database2.db")
+conn = sqlite3.connect("../routing/Data/RegionsData.db")
 
 requestTime = 0
 stockageTime = 0
@@ -65,7 +69,6 @@ class Node(object):
     def getLon(self):
         return self.lon
 
-
 def createTable():
     c = conn.cursor() # The database will be saved in the location where your 'py' file is saved
 
@@ -75,9 +78,10 @@ def createTable():
 
         conn.commit()
     except :
-        c.execute('''DROP TABLE roads''')
-        conn.commit()
-        createTable()
+        pass
+        # c.execute('''DROP TABLE roads''')
+        # conn.commit()
+        # createTable()
 
 def getData(lat,lon,rad):
     global requestTime,stockageTime,fetchingTime
@@ -104,7 +108,7 @@ def getData(lat,lon,rad):
             id = elem["id"]
             lat = elem["lat"]
             lon = elem["lon"]
-            n = customObject.Node(id,lat,lon)
+            n = Node(id,lat,lon)
             nodesVector.append(n)
 
 
@@ -150,7 +154,7 @@ def getData(lat,lon,rad):
                     centerNode = findNodeInNodeVector(nodeId,nodesVector)
                 i+=1
 
-            w = customObject.Way(idWay,nodeIdVector,centerNode,oneway,roundabout,maxspeed,highway)
+            w = Way(idWay,nodeIdVector,centerNode,oneway,roundabout,maxspeed,highway)
             wayVector.append(w)
 
     endFetchingTime = time.time()
@@ -212,52 +216,82 @@ def addValues(nodesVector,wayVector):
     c.executemany(sqlInsertQuery, ways)
     conn.commit()
 
-def createAllTiles():
-    with open('../routing/Data/requestPoint.json') as json_file:
-        errorCounter = 0
-        tileCounter = 0
-        errorList = []
-        data = json.load(json_file)
-        for coord in data :
-            # print "Latitude : ",coord["latitude"],"Longitude : ",coord["longitude"]
-            try:
-                print 'Adding new tile : ',coord["latitude"],'|',coord["longitude"],"           ",tileCounter,"/",len(data)
-                getData(coord["latitude"],coord["longitude"],"40000")                #71km fais un cercle qui englobe tout le carre
-                tileCounter+=1
-            except Exception as e:
-                errorCounter +=1
-                print "Error for the tile : ",coord["latitude"],"|",coord["longitude"]
-                print e
-                errorList.append((coord["latitude"],coord["longitude"]))
-
-        print "Finished with :",errorCounter,"errors"
-        string = "Finished with : "+str(errorCounter)+" errors"
-        return errorList
 
 def fixingError(errorList):
     while (len(errorList)!=0):
         print 'Still ',len(errorList),' errors'
         try:
-            getData(errorList[len(errorList)-1][0],errorList[len(errorList)-1][1],"40000")
+            getData(errorList[len(errorList)-1][0],errorList[len(errorList)-1][1],"55000")
             errorList.pop()
         except Exception as e:
             pass
 
-def start():
-    print "~~~~ Test France ~~~~\n"
-    beforeData = time.time()
-    errorList = createAllTiles()
-    fixingError(errorList)
-    afterData = time.time()
-
-    #Test
-    print "\n~~~~ Chrono creation de la base de donnee (Requetes et Stockage) ~~~~"
-    print ""+str(afterData-beforeData)+" secondes pour le programme en entier\n"
-    print "Dont : \n"+str(requestTime)+" secondes pour les requetes"
-    print ""+str(fetchingTime)+" secondes pour l'analyse des resultats de requetes\n"
-    print ""+str(stockageTime)+" secondes pour le stockage des donnees\n"
-
-
-
 createTable()
-start()
+#start()
+
+def addId(args):
+    file = open("../routing/Data/departement.txt","a")
+    for arg in sys.argv:
+        #except arg 0
+        if arg == sys.argv[0]:
+            pass
+        else :
+            file.write(str(arg)+"\n")
+
+with open('../routing/Data/regionCoord.json') as json_file:
+    distance = 25           #distance*2 = size between two requestPoint
+    errorList=[]
+    data = json.load(json_file)
+    for j in range(len(sys.argv)):
+        for i in range(len(data)):
+            if data[i]["ID"] == str(sys.argv[j]):
+                print "Nom :",data[i]["Name"]," | ID : ",data[i]["ID"]," | Coordonnées du centre : ",data[i]["Latitude"]," : ",data[i]["Longitude"]
+                lat1 = str(data[i]["Latitude"]+distance/111.11)
+                lon1 = str(data[i]["Longitude"]+distance/(111.11*cos(data[i]["Latitude"])))
+                lat2 = str(data[i]["Latitude"]-distance/111.11)
+                lon2 = str(data[i]["Longitude"]-distance/(111.11*cos(data[i]["Latitude"])))
+
+                radius = "55000"
+                try:
+                    getData(lat1,lon1,radius)                #71km fais un cercle qui englobe tout le carre
+                    print("one tile added")
+                except Exception as e:
+                    errorList.append((lat1,lon1))
+                    print e
+
+                try:
+                    getData(lat2,lon1,radius)                #71km fais un cercle qui englobe tout le carre
+                    print("one tile added")
+                except Exception as e:
+                    errorList.append((lat2,lon1))
+                    print e
+
+                try:
+                    getData(lat1,lon2,radius)                #71km fais un cercle qui englobe tout le carre
+                    print("one tile added")
+                except Exception as e:
+                    errorList.append((lat1,lon2))
+                    print e
+
+                try:
+                    getData(lat2,lon2,radius)                #71km fais un cercle qui englobe tout le carre
+                    print("one tile added")
+                except Exception as e:
+                    errorList.append((lat2,lon2))
+                    print e
+
+    fixingError(errorList)
+
+    addId(sys.argv)
+
+
+
+#creer 4 carré equidistant
+#requetes d'environ 50~60 km de rayon (il faut que les cercles se croisent assez)
+
+
+
+
+
+
+#top

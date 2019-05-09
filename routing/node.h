@@ -23,7 +23,7 @@ public :
   void setDistance(double value);
 
   unsigned long long getPrecedingNodeId() const;
-  void setPrecedingNodeId(unsigned long long value);
+  inline void setPrecedingNodeId(unsigned long long value) {precedingNodeId=value;}
 
 private :
   unsigned long long id;          //id of the Node

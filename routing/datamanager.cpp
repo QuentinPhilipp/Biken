@@ -21,7 +21,7 @@ DataManager::DataManager(QObject *parent) : QObject(parent)
     if(QSqlDatabase::isDriverAvailable(DRIVER))                                    //checking the availability of the driver
     {
         QSqlDatabase db = QSqlDatabase::addDatabase(DRIVER);                       //Adding the driver
-        db.setDatabaseName("../routing/Data/Database.db");                                  //path for the database    |    do not create a WaysAndNodes.db, it's done automatically
+        db.setDatabaseName("../routing/Data/RegionsData.db");                                  //path for the database    |    do not create a WaysAndNodes.db, it's done automatically
 
         //open the database
         if(!db.open())
