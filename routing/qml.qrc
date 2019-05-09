@@ -3,5 +3,8 @@
         <file>main.qml</file>
         <file>helper.js</file>
         <file>map/MyMap.qml</file>
+        <file>Data/.gitkeep</file>
+        <file>Data/requestPoint.json</file>
+        <file>Data/Database.db</file>
     </qresource>
 </RCC>
