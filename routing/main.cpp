@@ -6,7 +6,6 @@
 
 #include "node.h"
 #include "way.h"
-#include "requeteapi.h"
 #include "myadress.h"
 #include "datamanager.h"
 #include "weather.h"
@@ -17,7 +16,7 @@ int main(int argc, char *argv[])
 
     //create the datamanager class
     QScopedPointer<DataManager> db(new DataManager);
-    db->requestRoads();
+    db->requestRoads(48.434420,-4.640103,5);   //radius in km
 
     MyAdress* myAdress = new MyAdress();
     Weather* weather = new Weather();
