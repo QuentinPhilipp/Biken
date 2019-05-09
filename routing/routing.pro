@@ -22,7 +22,6 @@ SOURCES += \
         main.cpp \
     node.cpp \
     way.cpp \
-    requeteapi.cpp \
     datamanager.cpp \
     myadress.cpp \
     weather.cpp
@@ -46,7 +45,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     node.h \
     way.h \
-    requeteapi.h \
     datamanager.h \
     myadress.h \
     weather.h

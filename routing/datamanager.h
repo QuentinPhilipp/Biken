@@ -33,16 +33,11 @@ public:
     void requestRoads(double lat,double lon,double rad);
     Q_INVOKABLE QVariantList requestLatLonFromNodes(QVariant idNode);
     std::vector<QVariant> requestNodeFromLatLon(double lat, double lon);
-<<<<<<< routing/datamanager.h
 
-    Q_INVOKABLE QList<uint64_t> findRouteFrom(double lat, double lon);
-=======
     Q_INVOKABLE QVariantList findRouteFrom(double lat, double lon);
 
     vector<Node> findRoute();
     vector<Node> getNodesNearby(Node node);
-
->>>>>>> routing/datamanager.h
 private:
 
     //parameters
