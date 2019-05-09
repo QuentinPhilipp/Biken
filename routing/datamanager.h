@@ -36,6 +36,9 @@ public:
     std::vector<QVariant> requestNodeFromLatLon(double lat, double lon);
 
     Q_INVOKABLE QVariantList findRouteFrom(double lat, double lon);
+    vector<Node> findRoute();
+    vector<Node> getNodesNearby(Node node);
+
 private:
     void addTables();
     void addValuesNodes(std::vector<Node> nodesVetor);

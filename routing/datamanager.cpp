@@ -698,3 +698,55 @@ QVariantList DataManager::findRouteFrom(double lat, double lon)
 }
 
 
+
+vector<Node> DataManager::findRoute()
+{
+    vector<Node> nodes = requestNodesFromRoad(136110431);
+    Node start = nodes[0];
+    nodes = requestNodesFromRoad(531473973);
+    Node finish = nodes[0];
+    start.setDistance(0);
+    vector<Node> aTraiter;
+    aTraiter.emplace_back(start);
+    while(aTraiter.size()>0){
+        unsigned int idMin=0;
+        for(unsigned int i=1;i<aTraiter.size();i++){
+            if(aTraiter[i].getDistance()<aTraiter[idMin].getDistance()){
+                idMin=i;
+            }
+        }
+        Node currentNode = aTraiter[idMin];
+        aTraiter.erase(aTraiter.begin()+int(idMin));
+        vector<Node> nodesNearby = getNodesNearby(currentNode);
+    }
+}
+
+vector<Node> DataManager::getNodesNearby(Node node)
+{
+    vector<Node> nodesNearby;
+    vector<Way> ways = requestRoadsFromNode(node);
+    while(!ways.empty()){
+        vector<Node> nodes = ways[ways.size()-1].getNodes();
+        if(nodes[0].getId()==node.getId() && nodes.size()>1){
+            nodesNearby.emplace_back(nodes[1]);
+        }
+        else if(nodes[nodes.size()-1].getId()==node.getId() && nodes.size()>1){
+            nodesNearby.emplace_back(nodes[nodes.size()-2]);
+        }
+        else{
+            for(uint i=0 ; i<nodes.size()-1 ; i++){
+                if(nodes[i].getId()==node.getId()){
+                    if((int(i)-1)>=0){
+                        nodesNearby.emplace_back(nodes[i-1]);
+                    }
+                    if((i+1)<nodes.size()){
+                        nodesNearby.emplace_back(nodes[i+1]);
+                    }
+                    break;
+                }
+            }
+        }
+        ways.pop_back();
+    }
+    return nodesNearby;
+}

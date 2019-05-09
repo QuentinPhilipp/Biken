@@ -22,7 +22,17 @@ double Node::getLongitude() const
 {
   return this->longitude;
 }
+
+int Node::getDistance() const
+{
+    return distance;
+}
+
+void Node::setDistance(int value)
+{
+    distance = value;
+}
 double Node::getLatitude() const
 {
-  return this->latitude;
+    return this->latitude;
 }
