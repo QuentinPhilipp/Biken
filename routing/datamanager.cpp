@@ -10,7 +10,7 @@
 #include <QTime>
 #include <QtMath>
 
-
+#include <math.h>
 
 using namespace std;
 
@@ -35,20 +35,20 @@ DataManager::DataManager(QObject *parent) : QObject(parent)
 }
 
 
-Node DataManager::getNodeFromNodeId(unsigned long long nodeId, vector<Node> &nodeObjectVector)
+Node DataManager::getNodeFromNodeId(unsigned long long nodeId)
 {
     /*
      * Ici, pour parcourir tous les objects node (sachant qu'il y en a énormément), j'utilise la méthode du juste prix:
      * Cela permet par exemple de retrouver un élément dans une liste de 1 000 000 d'éléments en seulement une vingtaine d'opérations.
      */
-    uint i = nodeObjectVector.size()-1;
-    Node node = nodeObjectVector[i];
+    uint i = allNodes.size()-1;
+    Node node = allNodes[i];
     unsigned long long id;
     unsigned long long prev_i=0;
     unsigned long long temporaryValue=0;
     unsigned long long valueToSubstract;
     while(true){
-        node = nodeObjectVector[i];
+        node = allNodes[i];
         id =node.getId();
         if(id==nodeId){
             return node;
@@ -266,7 +266,7 @@ void DataManager::requestRoads(double lat,double lon,double rad)
     }
 
     allNodes= createNodeObject(query,minLatNode,maxLatNode,minLonNode,maxLonNode);          //create nodes
-    allWays= createWayObject(query,minLat,maxLat,minLon,maxLon,getAllNodes());              //create ways
+    allWays= createWayObject(query,minLat,maxLat,minLon,maxLon);              //create ways
     qDebug() << "Allways size : "<<allWays.size();
     qDebug() << "AllNodes size : "<<allNodes.size();
 
@@ -296,7 +296,7 @@ vector<Node> DataManager::createNodeObject(QSqlQuery query,double minLat,double 
     return nodeVect;
 }
 
-vector<Way> DataManager::createWayObject(QSqlQuery query,double minLat,double maxLat,double minLon,double maxLon,std::vector<Node> nodeVect){
+vector<Way> DataManager::createWayObject(QSqlQuery query,double minLat,double maxLat,double minLon,double maxLon){
     //preparing query
     query.prepare("SELECT DISTINCT id_way,centerLat,centerLon,id_node,oneway,roundabout,maxspeed,type,latitude,longitude FROM roads WHERE ((:minLat<=centerLat) and (centerLat<=:maxLat) and (:minLon<=centerLon) and (centerLon<=:maxLon)) ORDER BY centerLat,id_way");
     query.bindValue(":minLat",minLat);  //This request get all the data from the database within a certain range defined by the radius
@@ -329,10 +329,10 @@ vector<Way> DataManager::createWayObject(QSqlQuery query,double minLat,double ma
 
     if ((query.value(8).toDouble()-0.00001<query.value(1).toDouble() && query.value(1).toDouble()<query.value(8).toDouble()+0.00001) && (query.value(9).toDouble()-0.00001<query.value(2).toDouble() && query.value(2).toDouble()<query.value(9).toDouble()+0.00001)) //comparaison == impossible with double     //current Node is the CenterNode
     {
-        centerNode = getNodeFromNodeId(idNode,nodeVect);                // if the node is in the center of the way
+        centerNode = getNodeFromNodeId(idNode);                // if the node is in the center of the way
     }
 
-    Node n = getNodeFromNodeId(idNode,nodeVect);                        // add the first Node
+    Node n = getNodeFromNodeId(idNode);                        // add the first Node
     wayNodes.emplace_back(n);                                           //add to the vector containing all the way
 
     while (query.next()) {
@@ -352,9 +352,9 @@ vector<Way> DataManager::createWayObject(QSqlQuery query,double minLat,double ma
 
         if ((query.value(8).toDouble()-0.00001<query.value(1).toDouble() && query.value(1).toDouble()<query.value(8).toDouble()+0.00001) && (query.value(9).toDouble()-0.00001<query.value(2).toDouble() && query.value(2).toDouble()<query.value(9).toDouble()+0.00001)) //comparaison == impossible with double     //current Node is the CenterNode
         {
-            centerNode = getNodeFromNodeId(idNode,nodeVect);                            //if centerNode
+            centerNode = getNodeFromNodeId(idNode);                            //if centerNode
         }
-        Node n = getNodeFromNodeId(idNode,nodeVect);
+        Node n = getNodeFromNodeId(idNode);
         wayNodes.emplace_back(n);
     }
     Way w = Way(lastId,wayNodes,centerNode,oneway,roundabout,maxspeed,type);            // add last way
@@ -365,24 +365,12 @@ vector<Way> DataManager::createWayObject(QSqlQuery query,double minLat,double ma
 
 QVariantList DataManager::requestLatLonFromNodes(QVariant idNode)
 {
-    QSqlQuery query;
-    //preparing query
-    query.prepare("SELECT latitude,longitude FROM roads WHERE id_node = ?");
-    query.addBindValue(idNode);
-
-    //execute
-    if(!query.exec())
-        qWarning() << "ERROR Finding nodes: " << query.lastError().text();
-
-    //returning a tuple with latitude and longitude. If it doesn't work, you don't have c++17 so look to the tie() function to get the data fro this function
     QVariantList nodes;
-    if (query.first()) {
-        QVariant lat = query.value(0);
-        QVariant lon = query.value(1);
-        nodes.append(lat);
-        nodes.append(lon);
-    }
-    //qDebug() << nodes;
+    Node node = getNodeFromNodeId(static_cast<unsigned long long>(idNode.toDouble()));
+    QVariant lat = node.getLatitude();
+    QVariant lon = node.getLongitude();
+    nodes.append(lat);
+    nodes.append(lon);
     return nodes;
 }
 
@@ -432,8 +420,14 @@ QVariantList DataManager::findRouteFrom(double lat, double lon)
      * - attention aux oneway roads et aux roundabout ...
      */
     QVariantList routeNodes; //what will be returned to QML
-    unsigned long long roadId = 136110431;
-    vector<Node> nodes = requestNodesFromRoad(roadId);
+    unsigned long long startNodeId = 38582108;
+    Way road = requestRoadsFromNode(getNodeFromNodeId(startNodeId))[0];
+    //unsigned long long roadId = 136110431;
+    unsigned long long roadId = road.getId();
+    qDebug() << "0";
+    //vector<Node> nodes = requestNodesFromRoad(roadId);
+    vector<Node> nodes = road.getNodes();
+    qDebug() << "1";
     Node node;
     Node previous_node = nodes[0];
     qDebug() << "findRouteFrom(): example of QVariant node: " << previous_node.getId();
@@ -451,12 +445,12 @@ QVariantList DataManager::findRouteFrom(double lat, double lon)
             previous_node=node;
             unsigned long long newRoadId = roads[0].getId();
             if(newRoadId!=roadId){
-                nodes = requestNodesFromRoad(newRoadId);
+                nodes = roads[0].getNodes();
                 roadId=newRoadId;
             }
             else{
                 newRoadId = roads[1].getId();
-                nodes = requestNodesFromRoad(newRoadId);
+                nodes = roads[1].getNodes();
                 roadId=newRoadId;
             }
         }
@@ -468,12 +462,12 @@ QVariantList DataManager::findRouteFrom(double lat, double lon)
             previous_node=node;
             unsigned long long newRoadId = roads[0].getId();
             if(newRoadId!=roadId){
-                nodes = requestNodesFromRoad(newRoadId);
+                nodes = roads[0].getNodes();
                 roadId=newRoadId;
             }
             else{
                 newRoadId = roads[1].getId();
-                nodes = requestNodesFromRoad(newRoadId);
+                nodes = roads[1].getNodes();
                 roadId=newRoadId;
             }
         }
@@ -510,12 +504,12 @@ QVariantList DataManager::findRouteFrom(double lat, double lon)
                     previous_node=node;
                     unsigned long long newRoadId = roads[0].getId();
                     if(newRoadId!=roadId){
-                        nodes = requestNodesFromRoad(newRoadId);
+                        nodes = roads[0].getNodes();
                         roadId=newRoadId;
                     }
                     else{
                         newRoadId = roads[1].getId();
-                        nodes = requestNodesFromRoad(newRoadId);
+                        nodes = roads[1].getNodes();
                         roadId=newRoadId;
                     }
                     break;
@@ -532,10 +526,12 @@ QVariantList DataManager::findRouteFrom(double lat, double lon)
 
 vector<Node> DataManager::findRoute()
 {
-    vector<Node> nodes = requestNodesFromRoad(136110431);
-    Node start = nodes[0];
-    nodes = requestNodesFromRoad(531473973);
-    Node finish = nodes[0];
+    unsigned long long startNodeId = 38582108;
+    Node start = getNodeFromNodeId(startNodeId);
+
+    unsigned long long finishNodeId = 248015123;
+    Node finish = getNodeFromNodeId(startNodeId);
+
     start.setDistance(0);
     vector<Node> aTraiter;
     aTraiter.emplace_back(start);
@@ -549,6 +545,12 @@ vector<Node> DataManager::findRoute()
         Node currentNode = aTraiter[idMin];
         aTraiter.erase(aTraiter.begin()+int(idMin));
         vector<Node> nodesNearby = getNodesNearby(currentNode);
+        for(auto &node: nodesNearby){
+            if(node.getDistance()>currentNode.getDistance()+distanceBetween(node,currentNode)){
+                node.setDistance(currentNode.getDistance()+distanceBetween(node,currentNode));
+                node.setPrecedingNodeId(currentNode.getId());
+            }
+        }
     }
 }
 
@@ -580,4 +582,19 @@ vector<Node> DataManager::getNodesNearby(Node node)
         ways.pop_back();
     }
     return nodesNearby;
+}
+
+double DataManager::distanceBetween(Node A, Node B)
+{
+    int r=6371; //earth radius in km
+    double latA = A.getLatitude()*M_PI/180;
+    double lonA = A.getLongitude()*M_PI/180;
+    double latB = B.getLatitude()*M_PI/180;
+    double lonB = B.getLongitude()*M_PI/180;
+
+    double a = sin((latB-latA)/2)*sin((latB-latA)/2) + cos(latA)*cos(latB)*sin((lonB-lonA)/2)*sin((lonB-lonA)/2);
+    double c = 2*atan2(sqrt(a),sqrt(1-a));
+    double distance = r*c;
+
+    return distance;
 }

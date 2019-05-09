@@ -28,6 +28,5 @@
         <file>icons/windSpeed3.png</file>
         <file>Data/.gitkeep</file>
         <file>Data/requestPoint.json</file>
-        <file>Data/Database.db</file>
     </qresource>
 </RCC>
