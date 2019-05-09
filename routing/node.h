@@ -10,18 +10,23 @@ using namespace std;
 class Node
 {
 public :
-  Node(uint64_t id,double lat,double lon); //constructor
+  Node(unsigned long long id,double lat,double lon); //constructor
   Node();
 
   //getter (no setter bc it is read-only)
-  uint64_t getId() const;
+  unsigned long long getId() const;
+
   double getLatitude() const;
   double getLongitude() const;
 
+  int getDistance() const;
+  void setDistance(int value);
+
 private :
-  uint64_t id;          //id of the Node
+  unsigned long long id;          //id of the Node
   double latitude;    //latitude of the node
   double longitude;   //longitude of the node
+  int distance=999999999;
 };
 
 #endif // NODE_H
