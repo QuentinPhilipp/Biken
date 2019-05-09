@@ -11,6 +11,7 @@
 #include <QtMath>
 
 
+
 using namespace std;
 
 DataManager::DataManager(QObject *parent) : QObject(parent)
@@ -20,7 +21,7 @@ DataManager::DataManager(QObject *parent) : QObject(parent)
     if(QSqlDatabase::isDriverAvailable(DRIVER))                                    //checking the availability of the driver
     {
         QSqlDatabase db = QSqlDatabase::addDatabase(DRIVER);                       //Adding the driver
-        db.setDatabaseName("../Data/Database.db");                                  //path for the database    |    do not create a WaysAndNodes.db, it's done automatically
+        db.setDatabaseName("../routing/Data/Database.db");                                  //path for the database    |    do not create a WaysAndNodes.db, it's done automatically
 
         //open the database
         if(!db.open())
@@ -86,7 +87,7 @@ DataManager::requestNodesFromRoad(unsigned long long idRoad)
     QSqlQuery query;
 
     //preparing query
-    query.prepare("SELECT id_node,latitude,longitude FROM nodes, ways WHERE (id_node=node) and (id_way = ? )");
+     query.prepare("SELECT id_node,latitude,longitude FROM roads WHERE id_way = ? ");
     query.addBindValue(idRoadVar);
 
     //execute
@@ -111,7 +112,7 @@ DataManager::requestNodesFromRoad(QVariant idRoad)
      QSqlQuery query;
 
      //preparing query
-     query.prepare("SELECT id_node,latitude,longitude FROM nodes, ways WHERE (id_node=node) and (id_way = ? )");
+     query.prepare("SELECT id_node,latitude,longitude FROM roads WHERE id_way = ? ");
      query.addBindValue(idRoad);
 
 
@@ -366,7 +367,7 @@ QVariantList DataManager::requestLatLonFromNodes(QVariant idNode)
 {
     QSqlQuery query;
     //preparing query
-    query.prepare("SELECT latitude,longitude FROM nodes WHERE id_node = ?");
+    query.prepare("SELECT latitude,longitude FROM roads WHERE id_node = ?");
     query.addBindValue(idNode);
 
     //execute
