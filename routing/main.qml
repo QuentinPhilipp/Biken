@@ -3,8 +3,10 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 2.4
 import QtLocation 5.6
 import QtPositioning 5.6
+import QtQuick.Controls.Private 1.0
 import "helper.js" as Helper
 import "map"
+import "weatherAddon"
 
 /*
   Coodrinates for the test:
@@ -298,9 +300,13 @@ Window {
         height: 0.3*parent.height
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        color: "#2525ff"
-        border.color: "white"
-        opacity: 0.2
+        color: "#252525"
+        border.color: "#8bd8bd"
+        WeatherAddon {
+            id: weatherAddon
+            anchors.fill: parent
+        }
+
     }
 
     //Another rectangle, don't know what we will put in it yet

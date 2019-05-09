@@ -3,6 +3,29 @@
         <file>main.qml</file>
         <file>helper.js</file>
         <file>map/MyMap.qml</file>
+        <file>icons/01d.png</file>
+        <file>icons/01n.png</file>
+        <file>icons/02d.png</file>
+        <file>icons/02n.png</file>
+        <file>icons/03d.png</file>
+        <file>icons/03n.png</file>
+        <file>icons/04d.png</file>
+        <file>icons/04n.png</file>
+        <file>icons/09d.png</file>
+        <file>icons/09n.png</file>
+        <file>icons/10d.png</file>
+        <file>icons/10n.png</file>
+        <file>icons/11d.png</file>
+        <file>icons/11n.png</file>
+        <file>icons/13d.png</file>
+        <file>icons/13n.png</file>
+        <file>icons/50d.png</file>
+        <file>icons/50n.png</file>
+        <file>icons/connexion.png</file>
+        <file>weatherAddon/WeatherAddon.qml</file>
+        <file>icons/windSpeed1.png</file>
+        <file>icons/windSpeed2.png</file>
+        <file>icons/windSpeed3.png</file>
         <file>Data/.gitkeep</file>
         <file>Data/requestPoint.json</file>
         <file>Data/Database.db</file>

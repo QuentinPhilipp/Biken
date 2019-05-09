@@ -23,7 +23,8 @@ SOURCES += \
     node.cpp \
     way.cpp \
     datamanager.cpp \
-    myadress.cpp
+    myadress.cpp \
+    weather.cpp
 
 RESOURCES += qml.qrc
 
@@ -45,7 +46,9 @@ HEADERS += \
     node.h \
     way.h \
     datamanager.h \
-    myadress.h
+    myadress.h \
+    weather.h
 
 DISTFILES += \
-    icone.rc
+    icone.rc \
+    translation/weather_descriptions.json
