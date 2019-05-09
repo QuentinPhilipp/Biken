@@ -3,38 +3,47 @@
 
 
 //constructor
+<<<<<<< routing/way.cpp
+Way::Way(unsigned long long id, Node ctrNode)
+=======
 Way::Way(unsigned long long id,vector<unsigned long long> nodsId, Node ctrNode)
+>>>>>>> routing/way.cpp
     : id{id}
-    ,nodesId{nodsId}
     ,centerNode{ctrNode}
 {}
 
+<<<<<<< routing/way.cpp
+Way::Way(unsigned long long id,vector<Node> nods)
+=======
 Way::Way(unsigned long long id,vector<unsigned long long> nodsId,vector<Node> nods)
+>>>>>>> routing/way.cpp
     : id{id}
-    ,nodesId{nodsId}
     ,nodes{nods}
 {}
 
+<<<<<<< routing/way.cpp
+Way::Way(unsigned long long id, vector<Node> nods, Node centerNode,bool oneway,bool roundabout,int maxspeed,QString type)
+=======
 Way::Way(unsigned long long id, vector<unsigned long long> nodsId, vector<Node> nods, Node ctrNode)
+>>>>>>> routing/way.cpp
     : id{id}
-    ,nodesId{nodsId}
     ,nodes{nods}
-    ,centerNode{ctrNode}
+    ,centerNode{centerNode}
+    ,oneway{oneway}
+     ,roundabout{roundabout}
+    ,maxspeed{maxspeed}
+    ,type{type}
 {}
 
 
-void Way::displayNode()
-{
-    for (auto &e : nodesId)
-      {
-        qDebug() << e << "\n";
-      }
-}
 
+<<<<<<< routing/way.cpp
+=======
 vector<unsigned long long> Way::getNodesId() const
 {
     return nodesId;
 }
+>>>>>>> routing/way.cpp
 
 vector<Node> Way::getNodes() const
 {
