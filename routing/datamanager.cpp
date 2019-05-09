@@ -33,6 +33,66 @@ DataManager::DataManager(QObject *parent) : QObject(parent)
     }
 }
 
+<<<<<<< routing/datamanager.cpp
+=======
+//This function is called from QML
+void DataManager::generateWaysAndNodes(QVariant radius)
+{
+    //Make an API request to get all the roads around a point & calculate the time it takes to receive it.
+    RequeteAPI *requeteRoads = new RequeteAPI();
+    qDebug() << "\n\n TEST CHRONO rayon = " << radius.toString().toDouble() << "metres.\n";
+    QDateTime beforeRequestTime = QDateTime::currentDateTime();
+    QJsonObject allRoads = requeteRoads->getAllRoadsAroundThePoint("48.434420","-4.640103",radius.toString());
+    QDateTime afterRequestTime = QDateTime::currentDateTime();
+    qDebug() << "\nTemps écoulé pendant la requête : "<<beforeRequestTime.secsTo(afterRequestTime)<<"secondes.";
+
+    //Then store everything in objects
+    vector<Way> wayObjectVector;                                               //A vector that contains every Way objects
+    vector<Node> nodeObjectVector;                                             //A vector that contains every Node objects
+    int length = allRoads["elements"].toArray().size();                        //allRoads["elements"] contains all the ways and nodes (in JSON)
+    for (int i=0;i<length;i++) {
+        QJsonObject element = allRoads["elements"].toArray()[i].toObject();    //element contains one way OR one node (with everything that's inside it), (in JSON)
+        if(element["type"]=="node"){
+            unsigned long long nodeId = static_cast<unsigned long long>(element["id"].toDouble()); //it has to be unsigned long long because the Id can be more than 2^32 (so uint_32_t and below won't work)
+            double latitude = element["lat"].toDouble();
+            double longitude = element["lon"].toDouble();
+            Node node = Node(nodeId,latitude,longitude);                       //create an object Node with the 3 parameters from above
+            nodeObjectVector.emplace_back(node);
+        }
+        else if(element["type"]=="way"){
+            vector<unsigned long long> nodeIdVector;                                     //A vector that contains all the Node objects' Id of one object Way                                      //A vector that contains all the Node objects of one object Way
+            unsigned long long id = static_cast<unsigned long long>(element["id"].toDouble());     //get the id in unsigned long long (same reason as above)
+            unsigned long long centerNodeId;
+            QJsonArray nodeArray = element["nodes"].toArray();                 //nodsArray contains all the node from one way (in JSON)
+            int i=0;
+            for(auto node : nodeArray)
+            {
+                unsigned long long nodeId = static_cast<unsigned long long>(node.toDouble());
+                nodeIdVector.emplace_back(nodeId);
+                if(i==nodeArray.size()/2){
+                    centerNodeId = nodeId;
+                }
+                i++;
+            }
+            if (nodeIdVector.size()!=0) //security
+            {
+                Node centerNode = getNodeFromNodeId(centerNodeId, nodeObjectVector);
+                Way w = Way(id,nodeIdVector,centerNode);                                  //creating the way with the parameters from above
+                wayObjectVector.emplace_back(w);
+            }
+        }
+    }
+    allNodes=nodeObjectVector;
+    //Finally, store it in the database
+    addTables();
+    addValuesWays(wayObjectVector);
+    QDateTime deux = QDateTime::currentDateTime();
+    qDebug() << "\nTemps écoulé pendant la création de ways : "<<afterRequestTime.secsTo(deux)<<"secondes\n";
+    addValuesNodes(nodeObjectVector);
+    QDateTime afterDatabaseTime = QDateTime::currentDateTime();
+    qDebug() << "\nTemps écoulé pendant la création de nodes : "<<afterRequestTime.secsTo(afterDatabaseTime)<<"secondes\n";
+}
+>>>>>>> routing/datamanager.cpp
 
 Node DataManager::getNodeFromNodeId(unsigned long long nodeId, vector<Node> &nodeObjectVector)
 {
@@ -43,9 +103,15 @@ Node DataManager::getNodeFromNodeId(unsigned long long nodeId, vector<Node> &nod
     unsigned long long i = nodeObjectVector.size()-1;
     Node node = nodeObjectVector[i];
     unsigned long long id;
+<<<<<<< routing/datamanager.cpp
     unsigned long long prev_i=0;
     unsigned long long temporaryValue=0;
     unsigned long long valueToSubstract;
+=======
+    uint prev_i=0;
+    uint temporaryValue=0;
+    uint valueToSubstract;
+>>>>>>> routing/datamanager.cpp
     while(true){
         node = nodeObjectVector[i];
         id =node.getId();
@@ -76,6 +142,7 @@ Node DataManager::getNodeFromNodeId(unsigned long long nodeId, vector<Node> &nod
     }
 }
 
+<<<<<<< routing/datamanager.cpp
 vector<Node>
 DataManager::requestNodesFromRoad(unsigned long long idRoad)
 {
@@ -83,11 +150,102 @@ DataManager::requestNodesFromRoad(unsigned long long idRoad)
     QVariant idRoadVar;
     idRoadVar.setValue(idRoad);
     QSqlQuery query;
+=======
+void DataManager::addTables()
+{   /* This functions create the tables
+      Tables are only created the first time. If the
+      database already exist, tables will not be created*/
+
+    //Adding the ways table
+    QSqlQuery clearWays("DELETE FROM ways");                                             //clear the table first
+    QSqlQuery queryways("CREATE TABLE IF NOT EXISTS ways (id_way BIGINT, centerLat DOUBLE, centerLon DOUBLE, node BIGINT)"); //using BIGINT to fit with unsigned long long
+    if(!queryways.exec())
+    {qDebug()<<"Error creating ways table"<<queryways.lastError();}
+
+
+    //Adding the node table
+    QSqlQuery clearNodes("DELETE FROM nodes");                                           //clear the table first
+    QSqlQuery querynodes("CREATE TABLE IF NOT EXISTS nodes (id_node BIGINT, latitude DOUBLE, longitude DOUBLE)");
+    if(!querynodes.exec())
+    {qDebug()<<"Error creating node table"<<querynodes.lastError();}
+}
+
+void DataManager::addValuesNodes(vector<Node> nodesVector)
+{
+    qDebug() << "\n~~ Adding nodes ~~";
+    qDebug() << "In progress...";
+
+    int cutValue = 15000;                                                                   //we split the queryString if there is more than n values to append
+    int i = 0;                                                                              //this help the programm to run faster
+    while (!nodesVector.empty())
+    {
+        i = 0;                                                                              //reset the counter
+        QSqlQuery query;
+        QString queryString = "INSERT INTO nodes(id_node,latitude,longitude) VALUES ";           //preparing the beginning of each query
+        while (i<cutValue)
+        {
+            unsigned long long id = nodesVector[0].getId();
+            double valueAsDouble = 1.2;
+            QString valueAsString = QString::number(valueAsDouble);
+            QString add = "("+QString::fromStdString(std::to_string(id))+","+QString::number(nodesVector[0].getLatitude(),'f',8)+","+QString::number(nodesVector[0].getLongitude(),'f',8)+"),";
+            /*the string looks like : "(1215779765,48.4368521,-4.6501655"
+              QString::number(aDoubleValue,'f',8) is used to cast double
+            to QString with 8 numbers precision, so we don't lose data*/
+            queryString = queryString + add;                                                //adding the string to the query
+            nodesVector.erase(nodesVector.begin());                                         //pop the first element of the vector
+
+            if(nodesVector.empty()){
+                break;
+            }
+            i++;                                                                            //increment counter to detect when we have to split the querry
+
+        }
+        int pos = queryString.lastIndexOf(QChar(','));                                      //this 2 lines help to remove the last "," in the end of the query
+        queryString = queryString.left(pos);
+
+        query.prepare(queryString);                                                         //preparing query
+
+        if(!query.exec())                                                                   //Execute
+          qWarning() << "ERROR Adding nodes: " << query.lastError().text();
+    }
+    qDebug() << "~~ All nodes added ~~";
+}
+>>>>>>> routing/datamanager.cpp
 
     //preparing query
     query.prepare("SELECT id_node,latitude,longitude FROM nodes, ways WHERE (id_node=node) and (id_way = ? )");
     query.addBindValue(idRoadVar);
 
+<<<<<<< routing/datamanager.cpp
+=======
+    int cutValue = 15000;                                                                   //we split the queryString if there is more than n values to append
+    int i = 0;                                                                              //this help the programm to run faster
+    while (!wayVector.empty())
+    {
+        i = 0;                                                                              //reset the counter
+        QSqlQuery query;
+        QString queryString = "INSERT INTO ways(id_way,centerLat,centerLon,node) VALUES ";                          //preparing the beginning of each query
+        while (i<cutValue)
+        {
+            unsigned long long id = wayVector[0].getId();
+            Node centerNode = wayVector[0].getCenterNode();
+            int counter = 0;                                                                //to be sure to add all the node of a way, we don't split querry in a way. We wait the end
+                                                                                            //of this way. So we add a counter to add in "i" the good number
+            for (auto &node : wayVector[0].getNodesId()){
+                counter +=1;
+                QString add = "("+QString::fromStdString(std::to_string(id))+","+QString::fromStdString(std::to_string(centerNode.getLatitude()))+","
+                        +QString::fromStdString(std::to_string(centerNode.getLongitude()))+","+QString::fromStdString(std::to_string(node))+"),";
+                queryString = queryString + add;
+            }
+            wayVector.erase(wayVector.begin());                                             //pop the first element of the vector
+            if(wayVector.empty()){
+                break;
+            }
+            i+=counter;                                                                     //increment counter to detect when we have to split the querry
+        }
+        int pos = queryString.lastIndexOf(QChar(','));                                      //this 2 lines help to remove the last "," in the end of the query
+        queryString = queryString.left(pos);
+>>>>>>> routing/datamanager.cpp
 
     //execute
     if(!query.exec())
@@ -102,12 +260,121 @@ DataManager::requestNodesFromRoad(unsigned long long idRoad)
         Node n = Node(id,lat,lon);
         nodes.emplace_back(n);
     }
+<<<<<<< routing/datamanager.cpp
     return nodes;
+=======
+    qDebug() << "~~ Ways added ~~";
+
+
+}
+
+vector<Node>
+DataManager::requestNodesFromRoad(unsigned long long idRoad)
+{
+     //converting
+     QVariant idRoadVar;
+     idRoadVar.setValue(idRoad);
+     QSqlQuery query;
+
+     //preparing query
+     query.prepare("SELECT id_node,latitude,longitude FROM nodes, ways WHERE (id_node=node) and (id_way = ? )");
+     query.addBindValue(idRoadVar);
+
+
+     //execute
+     if(!query.exec())
+       qWarning() << "ERROR Finding nodes: " << query.lastError().text();
+
+     //add all the nodes of the result in a vector
+     vector<Node> nodes;
+     while (query.next()) {
+         unsigned long long id = static_cast<unsigned long long>(query.value(0).toDouble());
+         double lat = query.value(1).toDouble();
+         double lon = query.value(2).toDouble();
+         Node n = Node(id,lat,lon);
+         nodes.emplace_back(n);
+     }
+     return nodes;
+>>>>>>> routing/datamanager.cpp
 }
 
 vector<Node>    //overload
 DataManager::requestNodesFromRoad(QVariant idRoad)
 {
+<<<<<<< routing/datamanager.cpp
+=======
+     QSqlQuery query;
+
+     //preparing query
+     query.prepare("SELECT id_node,latitude,longitude FROM nodes, ways WHERE (id_node=node) and (id_way = ? )");
+     query.addBindValue(idRoad);
+
+
+     //execute
+     if(!query.exec())
+       qWarning() << "ERROR Finding nodes: " << query.lastError().text();
+
+     //add all the nodes of the result in a vector
+     vector<Node> nodes;
+     while (query.next()) {
+         unsigned long long id = static_cast<unsigned long long>(query.value(0).toDouble());
+         double lat = query.value(1).toDouble();
+         double lon = query.value(2).toDouble();
+         Node n = Node(id,lat,lon);
+         nodes.emplace_back(n);
+     }
+     return nodes;
+}
+
+vector<Way>
+DataManager::requestRoadsFromNode(unsigned long long idNode)
+{
+     //converting
+     QVariant idNodeVar;
+     idNodeVar.setValue(idNode);
+     QSqlQuery query;
+
+     //preparing query
+     query.prepare("SELECT id_way, id_node,latitude,longitude FROM nodes,ways WHERE id_way IN (SELECT id_way FROM nodes, ways WHERE (id_node = node) and (id_node=?)) and (id_node=node) ORDER BY id_way");
+     query.addBindValue(idNodeVar);
+
+     //execute
+     if(!query.exec())
+       qWarning() << "ERROR Finding roads: " << query.lastError().text();
+
+     query.first();
+     //add all the nodes of the result in a vector
+     vector<Way> roads;
+     unsigned long long lastId = static_cast<unsigned long long>(query.value(0).toDouble());
+     vector<Node> nodeVect;
+     vector<unsigned long long> nodeIdVect;
+
+     while (query.next()) {
+         unsigned long long idWay = static_cast<unsigned long long>(query.value(0).toDouble());
+         if (idWay != lastId)
+         {
+             Way w = Way(lastId,nodeIdVect,nodeVect);
+             roads.emplace_back(w);
+             lastId = static_cast<unsigned long long>(query.value(0).toDouble());
+             nodeIdVect={};
+             nodeVect={};
+         }
+         unsigned long long idNode = static_cast<unsigned long long>(query.value(1).toDouble());
+         double lat = query.value(2).toDouble();
+         double lon = query.value(3).toDouble();
+         Node n = Node(idNode,lat,lon);
+         nodeVect.emplace_back(n);
+         nodeIdVect.emplace_back(idNode);
+     }
+     Way w = Way(lastId,nodeIdVect,nodeVect);
+     roads.emplace_back(w);
+     return roads;
+}
+
+vector<Way>
+DataManager::requestRoadsFromNode(QVariant idNode)
+{
+>>>>>>> routing/datamanager.cpp
     QSqlQuery query;
 
     //preparing query
@@ -120,6 +387,7 @@ DataManager::requestNodesFromRoad(QVariant idRoad)
         qWarning() << "ERROR Finding nodes: " << query.lastError().text();
 
     //add all the nodes of the result in a vector
+<<<<<<< routing/datamanager.cpp
     vector<Node> nodes;
     while (query.next()) {
         unsigned long long id = static_cast<unsigned long long>(query.value(0).toDouble());
@@ -127,6 +395,29 @@ DataManager::requestNodesFromRoad(QVariant idRoad)
         double lon = query.value(2).toDouble();
         Node n = Node(id,lat,lon);
         nodes.emplace_back(n);
+=======
+    vector<Way> roads;
+    unsigned long long lastId = static_cast<unsigned long long>(query.value(0).toDouble());
+    vector<Node> nodeVect;
+    vector<unsigned long long> nodeIdVect;
+
+    while (query.next()) {
+        unsigned long long idWay = static_cast<unsigned long long>(query.value(0).toDouble());
+        if (idWay != lastId)
+        {
+            Way w = Way(lastId,nodeIdVect,nodeVect);
+            roads.emplace_back(w);
+            lastId = static_cast<unsigned long long>(query.value(0).toDouble());
+            nodeIdVect={};
+            nodeVect={};
+        }
+        unsigned long long idNode = static_cast<unsigned long long>(query.value(1).toDouble());
+        double lat = query.value(2).toDouble();
+        double lon = query.value(3).toDouble();
+        Node n = Node(idNode,lat,lon);
+        nodeVect.emplace_back(n);
+        nodeIdVect.emplace_back(idNode);
+>>>>>>> routing/datamanager.cpp
     }
     return nodes;
 }
@@ -313,12 +604,19 @@ vector<Way> DataManager::createWayObject(QSqlQuery query,double minLat,double ma
 
     query.first();
     //add all the nodes of the result in a vector
+<<<<<<< routing/datamanager.cpp
     vector<Node> wayNodes;              //vector containing all the node in a way
     vector<Way> wayVector;              //vector containing all the way
 
 
     //first iteration is done outside of the while
     unsigned long long lastId = static_cast<unsigned long long>(query.value(0).toDouble());
+=======
+    vector<Way> roads;
+    unsigned long long lastId = static_cast<unsigned long long>(query.value(0).toDouble());
+    vector<Node> nodeVect;
+    vector<unsigned long long> nodeIdVect;
+>>>>>>> routing/datamanager.cpp
     Node centerNode;
     bool oneway = false;                //didn't need to get oneway,roundabout maxspeed and type bc it will only be used in the while()
     bool roundabout = false;
@@ -336,6 +634,7 @@ vector<Way> DataManager::createWayObject(QSqlQuery query,double minLat,double ma
 
     while (query.next()) {
         unsigned long long idWay = static_cast<unsigned long long>(query.value(0).toDouble());
+<<<<<<< routing/datamanager.cpp
         if (idWay != lastId)                                                                                    // can't go there without a full circle in the while() bc way are at least 2 node long
         {
             Way w = Way(lastId,wayNodes,centerNode,oneway,roundabout,maxspeed,type);                            //creating a way with all the data
@@ -352,6 +651,21 @@ vector<Way> DataManager::createWayObject(QSqlQuery query,double minLat,double ma
         if ((query.value(8).toDouble()-0.00001<query.value(1).toDouble() && query.value(1).toDouble()<query.value(8).toDouble()+0.00001) && (query.value(9).toDouble()-0.00001<query.value(2).toDouble() && query.value(2).toDouble()<query.value(9).toDouble()+0.00001)) //comparaison == impossible with double     //current Node is the CenterNode
         {
             centerNode = getNodeFromNodeId(idNode,nodeVect);                            //if centerNode
+=======
+        if (idWay != lastId)
+        {
+            Way w = Way(lastId,nodeIdVect,nodeVect,centerNode);
+            roads.emplace_back(w);
+            lastId = static_cast<unsigned long long>(query.value(0).toDouble());
+            nodeIdVect={};
+            nodeVect={};
+        }
+        unsigned long long idNode = static_cast<unsigned long long>(query.value(3).toDouble());
+        double lat = query.value(4).toDouble();
+        double lon = query.value(5).toDouble();
+        if(lat>=query.value(1).toDouble()-0.00001 && lat<=query.value(1).toDouble()+0.00001 && lon>=query.value(2).toDouble()-0.00001 && lon<=query.value(2).toDouble()+0.00001){ // comparing double with == didn't work
+            centerNode=Node(idNode,lat,lon);
+>>>>>>> routing/datamanager.cpp
         }
         Node n = getNodeFromNodeId(idNode,nodeVect);
         wayNodes.emplace_back(n);
@@ -528,3 +842,55 @@ QVariantList DataManager::findRouteFrom(double lat, double lon)
 }
 
 
+
+vector<Node> DataManager::findRoute()
+{
+    vector<Node> nodes = requestNodesFromRoad(136110431);
+    Node start = nodes[0];
+    nodes = requestNodesFromRoad(531473973);
+    Node finish = nodes[0];
+    start.setDistance(0);
+    vector<Node> aTraiter;
+    aTraiter.emplace_back(start);
+    while(aTraiter.size()>0){
+        unsigned int idMin=0;
+        for(unsigned int i=1;i<aTraiter.size();i++){
+            if(aTraiter[i].getDistance()<aTraiter[idMin].getDistance()){
+                idMin=i;
+            }
+        }
+        Node currentNode = aTraiter[idMin];
+        aTraiter.erase(aTraiter.begin()+int(idMin));
+        vector<Node> nodesNearby = getNodesNearby(currentNode);
+    }
+}
+
+vector<Node> DataManager::getNodesNearby(Node node)
+{
+    vector<Node> nodesNearby;
+    vector<Way> ways = requestRoadsFromNode(node);
+    while(!ways.empty()){
+        vector<Node> nodes = ways[ways.size()-1].getNodes();
+        if(nodes[0].getId()==node.getId() && nodes.size()>1){
+            nodesNearby.emplace_back(nodes[1]);
+        }
+        else if(nodes[nodes.size()-1].getId()==node.getId() && nodes.size()>1){
+            nodesNearby.emplace_back(nodes[nodes.size()-2]);
+        }
+        else{
+            for(uint i=0 ; i<nodes.size()-1 ; i++){
+                if(nodes[i].getId()==node.getId()){
+                    if((int(i)-1)>=0){
+                        nodesNearby.emplace_back(nodes[i-1]);
+                    }
+                    if((i+1)<nodes.size()){
+                        nodesNearby.emplace_back(nodes[i+1]);
+                    }
+                    break;
+                }
+            }
+        }
+        ways.pop_back();
+    }
+    return nodesNearby;
+}
