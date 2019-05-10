@@ -19,14 +19,19 @@ public :
   double getLatitude() const;
   double getLongitude() const;
 
-  int getDistance() const;
-  void setDistance(int value);
+  double getDistance() const;
+  void setDistance(double value);
+
+
+  unsigned long long getPrecedingNodeId() const;
+  void setPrecedingNodeId(unsigned long long value);
 
 private :
   unsigned long long id;          //id of the Node
   double latitude;    //latitude of the node
   double longitude;   //longitude of the node
-  int distance=999999999;
+  double distance=999999999;
+  unsigned long long precedingNodeId;
 };
 
 #endif // NODE_H
