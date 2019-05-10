@@ -1,8 +1,11 @@
-QT += quick
+QT       += quick
 QT       += core gui
-QT += network
-QT += sql
+QT       += network
+QT       += sql
 QT       += core gui sql
+QT       +=webengine
+QT       +=core
+QT       +=widgets
 
 CONFIG += c++11
 
@@ -22,9 +25,9 @@ SOURCES += \
         main.cpp \
     node.cpp \
     way.cpp \
-    requeteapi.cpp \
     datamanager.cpp \
     myadress.cpp \
+    card.cpp \
     weather.cpp
 
 RESOURCES += qml.qrc
@@ -46,9 +49,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     node.h \
     way.h \
-    requeteapi.h \
     datamanager.h \
     myadress.h \
+    card.h \
     weather.h
 
 DISTFILES += \

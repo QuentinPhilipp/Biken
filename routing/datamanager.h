@@ -20,7 +20,7 @@ public:
     explicit DataManager(QObject *parent = nullptr);
 
     //Q_INVOKABLE allows the function to be called from QML
-    Node getNodeFromNodeId(unsigned long long nodeId, vector<Node> &nodeObjectVector);
+    Node getNodeFromNodeId(unsigned long long nodeId);
 
 
     //getter
@@ -33,16 +33,13 @@ public:
     void requestRoads(double lat,double lon,double rad);
     Q_INVOKABLE QVariantList requestLatLonFromNodes(QVariant idNode);
     std::vector<QVariant> requestNodeFromLatLon(double lat, double lon);
-<<<<<<< routing/datamanager.h
 
-    Q_INVOKABLE QList<uint64_t> findRouteFrom(double lat, double lon);
-=======
     Q_INVOKABLE QVariantList findRouteFrom(double lat, double lon);
 
     vector<Node> findRoute();
     vector<Node> getNodesNearby(Node node);
 
->>>>>>> routing/datamanager.h
+    double distanceBetween(Node A, Node B);
 private:
 
     //parameters
@@ -53,7 +50,7 @@ private:
     void addTables();
     void addValuesNodes(std::vector<Node> nodesVetor);
     void addValuesWays(std::vector<Way> wayVector);
-    vector<Way> createWayObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon, std::vector<Node> nodeVect);
+    vector<Way> createWayObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
     vector<Node> createNodeObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
 };
 
