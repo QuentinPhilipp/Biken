@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <QDebug>
+#include <QTextStream>
 
 using namespace std;
 
@@ -21,6 +22,7 @@ public :
 
   double getDistance() const;
   void setDistance(double value);
+
 
   unsigned long long getPrecedingNodeId() const;
   void setPrecedingNodeId(unsigned long long value);

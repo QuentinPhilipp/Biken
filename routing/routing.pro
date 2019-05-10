@@ -1,8 +1,11 @@
-QT += quick
+QT       += quick
 QT       += core gui
-QT += network
-QT += sql
+QT       += network
+QT       += sql
 QT       += core gui sql
+QT       +=webengine
+QT       +=core
+QT       +=widgets
 
 CONFIG += c++11
 
@@ -24,6 +27,7 @@ SOURCES += \
     way.cpp \
     datamanager.cpp \
     myadress.cpp \
+    card.cpp \
     weather.cpp
 
 RESOURCES += qml.qrc
@@ -47,6 +51,7 @@ HEADERS += \
     way.h \
     datamanager.h \
     myadress.h \
+    card.h \
     weather.h
 
 DISTFILES += \
