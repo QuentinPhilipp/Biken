@@ -3,6 +3,7 @@
 
 
 //constructor
+
 Way::Way(unsigned long long id, Node ctrNode)
     : id{id}
     ,centerNode{ctrNode}

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <QDebug>
+#include <QTextStream>
 
 using namespace std;
 
