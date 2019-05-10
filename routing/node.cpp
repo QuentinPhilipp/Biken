@@ -32,6 +32,16 @@ void Node::setDistance(double value)
 {
     distance = value;
 }
+
+unsigned long long Node::getPrecedingNodeId() const
+{
+    return precedingNodeId;
+}
+
+void Node::setPrecedingNodeId(unsigned long long value)
+{
+    precedingNodeId = value;
+}
 double Node::getLatitude() const
 {
     return this->latitude;
