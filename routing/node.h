@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <QDebug>
+#include <QTextStream>
 
 using namespace std;
 
@@ -15,7 +16,10 @@ public :
 
   //getter (no setter bc it is read-only)
   unsigned long long getId() const;
+<<<<<<< routing/node.h
+=======
 
+>>>>>>> routing/node.h
   double getLatitude() const;
   double getLongitude() const;
 
