@@ -6,30 +6,31 @@ c= folium.Map(location=[48.3677820, -4.7591771])
 
 #on lit le fichier pour remplir le tableau points
 path=os.getcwd()
-with open(path+"/coordinates.txt") as file:
+with open("../routing/Data/coordinates.txt") as file:
 	lines = [line.strip('\n') for line in file.readlines()]
 	#pointsep contient chq lon et lap séparées
 	pointsep=[float(i) for i in lines]
+	print(pointsep)
 #on remplit maintenant la liste points
 points=[]
+global a
+global b
 a=0
 b=1
-for i in xrange(len(pointsep)/2):
+for i in range(int(len(pointsep)/2)):
 	points.append([pointsep[a],pointsep[b]])
-	global a
 	a=a+2
-	global b
 	b=b+2
 print(points)
 
 for each in points:
     folium.Marker(each).add_to(c)
- 
+
 #add lines
 folium.PolyLine(points, color="red", weight=2.5, opacity=1).add_to(c)
 folium.PolyLine(points).add_to(c)
 
-c.save('card.html')
+c.save('../routing/Data/card.html')
 
 #METTRE TOUT ÇA DANS UNE FONCTION, dans un fichier au propre
 

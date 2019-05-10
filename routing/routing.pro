@@ -25,10 +25,10 @@ SOURCES += \
         main.cpp \
     node.cpp \
     way.cpp \
-    requeteapi.cpp \
     datamanager.cpp \
     myadress.cpp \
-    card.cpp
+    card.cpp \
+    weather.cpp
 
 RESOURCES += qml.qrc
 
@@ -49,10 +49,11 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     node.h \
     way.h \
-    requeteapi.h \
     datamanager.h \
     myadress.h \
-    card.h
+    card.h \
+    weather.h
 
 DISTFILES += \
-    icone.rc
+    icone.rc \
+    translation/weather_descriptions.json

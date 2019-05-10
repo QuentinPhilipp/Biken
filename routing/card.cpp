@@ -13,7 +13,7 @@ int Card::sendNodes(QVariantList RouteNodes, DataManager *db)
 {
     int dataLength = RouteNodes.length();
     //création d'un fichier
-    QFile file("coordinates.txt");
+    QFile file("../routing/Data/coordinates.txt");
     // On ouvre notre fichier en lecture seule et on vérifie l'ouverture
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
         {
@@ -30,6 +30,7 @@ int Card::sendNodes(QVariantList RouteNodes, DataManager *db)
         flux<<lon<<endl<<lat<<endl;
         }
     file.close();
+    return 0;
 }
 
 uint64_t Card::getId() const
@@ -39,10 +40,15 @@ uint64_t Card::getId() const
 
 void Card::createMap()
 {
-    QString program("python");
-    QStringList args = QStringList()<<QDir::currentPath()+"/CardGeneration.py";
+
+    QDir dir = QDir::currentPath();   //return path in the build folder
+    dir.cdUp();                         //project folder
+    dir.cd("routing");                  //routing folder
+
+    QString program("python3");
+    QStringList args = QStringList()<< dir.path()+"/CardGeneration.py";
     QProcess p;
-    p.setWorkingDirectory(QDir::currentPath());
+    p.setWorkingDirectory(dir.path());
     p.execute(program, args);
 }
 
