@@ -22,7 +22,27 @@ double Node::getLongitude() const
 {
   return this->longitude;
 }
+
+double Node::getDistance() const
+{
+    return distance;
+}
+
+void Node::setDistance(double value)
+{
+    distance = value;
+}
+
+unsigned long long Node::getPrecedingNodeId() const
+{
+    return precedingNodeId;
+}
+
+void Node::setPrecedingNodeId(unsigned long long value)
+{
+    precedingNodeId = value;
+}
 double Node::getLatitude() const
 {
-  return this->latitude;
+    return this->latitude;
 }

@@ -9,9 +9,15 @@ using namespace std;
 class Way
 {
   public :
+<<<<<<< routing/way.h
     Way(unsigned long long id,vector<unsigned long long> nodesId, Node centerNode);
     Way(unsigned long long id,vector<unsigned long long> nodsId,vector<Node> nods);
     Way(unsigned long long id, vector<unsigned long long> nodsId, vector<Node> nods, Node ctrNode);
+=======
+    Way(unsigned long long id, Node centerNode);
+    Way(unsigned long long id,vector<Node> nods);
+    Way(unsigned long long id, vector<Node> nods, Node centerNode,bool oneway,bool roundabout,int maxspeed,QString type);
+>>>>>>> routing/way.h
 
     void displayNode();
     vector<unsigned long long> getNodesId() const;
@@ -22,9 +28,16 @@ class Way
 
 private:
     unsigned long long id;
+<<<<<<< routing/way.h
     vector<unsigned long long> nodesId;
+=======
+>>>>>>> routing/way.h
     vector<Node> nodes;
     Node centerNode;
+    bool oneway;
+    bool roundabout;
+    int maxspeed;
+    QString type;
 };
 
 
