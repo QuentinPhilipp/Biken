@@ -64,34 +64,18 @@ QList<double> MyAdress::toCoordinates(QString address){
     return coord;
 }
 
-void MyAdress::downloadDataAround(QVariantList inputList){
+void MyAdress::downloadDataAround(QStringList inputList){
     QDir dir = QDir::currentPath();   //return path in the build folder
     dir.cdUp();                         //project folder
     dir.cd("routing");                  //routing folder
-
-    QStringList list = QStringList() << "57" << "56";
-    isDataAlreadyIn(list);    //return the list without the department that are already downloaded
-
-
-    QString program("python");
-    QStringList args = QStringList()<< dir.path()+"/generateTiles.py" << "29"<<"57";
+    QString program("python3");
+    qDebug() << "List : " << inputList;
+    QStringList args = QStringList()<< dir.path()+"/generateTiles.py" << inputList;
     QProcess p;
     p.setWorkingDirectory(dir.path());
-    qDebug() << dir.path();
     p.execute(program, args);
 }
 
-QVariantList MyAdress::isDataAlreadyIn(QStringList list){
-
-    //création d'un fichier
-    QFile file("departement.txt");
-    // On ouvre notre fichier en lecture seule et on vérifie l'ouverture
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-        {
-        qDebug() << "Error openning txt file";
-        }
-    file.close();
-}
 
 
 

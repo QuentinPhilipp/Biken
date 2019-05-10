@@ -18,12 +18,16 @@ int main(int argc, char *argv[])
 
 
     //create the datamanager class
-    QScopedPointer<DataManager> db(new DataManager);
-//    db->requestRoads(48.434420,-4.640103,5);   //radius in km
+    DataManager db(new DataManager);
+    db.requestRoads(48.434420,-4.640103,5);   //radius in km
 
     MyAdress* myAdress = new MyAdress();
-    QStringList list = QStringList() << "57" << "56";
-    myAdress->isDataAlreadyIn(list);
+    QStringList listDataToDownload = QStringList() << "29" << "56" << "57";
+    listDataToDownload = db.isAlreadyIn(listDataToDownload);
+
+    if(!listDataToDownload.isEmpty()){
+        myAdress->downloadDataAround(listDataToDownload);               // download the data you didn't have
+    }
     Weather* weather = new Weather();
 
     //Pour passer du C++ au QML

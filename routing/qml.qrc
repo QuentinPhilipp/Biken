@@ -27,6 +27,6 @@
         <file>icons/windSpeed2.png</file>
         <file>icons/windSpeed3.png</file>
         <file>Data/.gitkeep</file>
-        <file>Data/requestPoint.json</file>
+        <file>Data/regionCoord.json</file>
     </qresource>
 </RCC>

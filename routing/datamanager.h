@@ -33,6 +33,7 @@ public:
     void requestRoads(double lat,double lon,double rad);
     Q_INVOKABLE QVariantList requestLatLonFromNodes(QVariant idNode);
     std::vector<QVariant> requestNodeFromLatLon(double lat, double lon);
+    QStringList isAlreadyIn(QStringList list);
 
     Q_INVOKABLE QVariantList findRouteFrom(double lat, double lon);
 

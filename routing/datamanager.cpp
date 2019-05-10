@@ -21,7 +21,7 @@ DataManager::DataManager(QObject *parent) : QObject(parent)
     if(QSqlDatabase::isDriverAvailable(DRIVER))                                    //checking the availability of the driver
     {
         QSqlDatabase db = QSqlDatabase::addDatabase(DRIVER);                       //Adding the driver
-        db.setDatabaseName("../routing/Data/RegionsData.db");                                  //path for the database    |    do not create a WaysAndNodes.db, it's done automatically
+        db.setDatabaseName("../routing/Data/Database.db");                                  //path for the database    |    do not create a WaysAndNodes.db, it's done automatically
 
         //open the database
         if(!db.open())
@@ -87,7 +87,7 @@ DataManager::requestNodesFromRoad(unsigned long long idRoad)
     QSqlQuery query;
 
     //preparing query
-     query.prepare("SELECT id_node,latitude,longitude FROM roads WHERE id_way = ? ");
+    query.prepare("SELECT id_node,latitude,longitude FROM roads WHERE id_way = ? ");
     query.addBindValue(idRoadVar);
 
     //execute
@@ -109,27 +109,27 @@ DataManager::requestNodesFromRoad(unsigned long long idRoad)
 vector<Node>    //overload
 DataManager::requestNodesFromRoad(QVariant idRoad)
 {
-     QSqlQuery query;
+    QSqlQuery query;
 
-     //preparing query
-     query.prepare("SELECT id_node,latitude,longitude FROM roads WHERE id_way = ? ");
-     query.addBindValue(idRoad);
+    //preparing query
+    query.prepare("SELECT id_node,latitude,longitude FROM roads WHERE id_way = ? ");
+    query.addBindValue(idRoad);
 
 
-     //execute
-     if(!query.exec())
-       qWarning() << "ERROR Finding nodes: " << query.lastError().text();
+    //execute
+    if(!query.exec())
+        qWarning() << "ERROR Finding nodes: " << query.lastError().text();
 
-     //add all the nodes of the result in a vector
-     vector<Node> nodes;
-     while (query.next()) {
-         unsigned long long id = static_cast<unsigned long long>(query.value(0).toDouble());
-         double lat = query.value(1).toDouble();
-         double lon = query.value(2).toDouble();
-         Node n = Node(id,lat,lon);
-         nodes.emplace_back(n);
-     }
-     return nodes;
+    //add all the nodes of the result in a vector
+    vector<Node> nodes;
+    while (query.next()) {
+        unsigned long long id = static_cast<unsigned long long>(query.value(0).toDouble());
+        double lat = query.value(1).toDouble();
+        double lon = query.value(2).toDouble();
+        Node n = Node(id,lat,lon);
+        nodes.emplace_back(n);
+    }
+    return nodes;
 }
 
 vector<Way>
@@ -372,6 +372,40 @@ QVariantList DataManager::requestLatLonFromNodes(QVariant idNode)
     nodes.append(lat);
     nodes.append(lon);
     return nodes;
+}
+
+QStringList DataManager::isAlreadyIn(QStringList inputList)
+{
+    QSqlQuery query;
+    QStringList outputList;
+
+
+    query.prepare("SELECT * FROM departements");
+
+    if(!query.exec()){
+        qWarning() << "ERROR isAlreadyIn() " << query.lastError().text();
+    }
+
+    QStringList currentList;
+    while(query.next()){
+        currentList.append(query.value(0).toString());
+    }
+
+    for(auto dep : inputList){
+        bool found = (std::find(currentList.begin(), currentList.end(), dep) != currentList.end());
+        if(!found){
+            outputList.append(dep);
+        }
+    }
+    if(outputList.isEmpty()){
+        qDebug()<<"Tout les departements demandés sont déjà stockés";
+    }else {
+        qDebug()<< "Liste des departements deja dans la BDD "<<currentList;
+
+        qDebug()<<"Liste des departements a ajouter a la BDD "<<outputList;
+    }
+    return outputList;
+
 }
 
 //not working yet

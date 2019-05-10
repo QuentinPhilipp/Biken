@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QProcess>
 #include <QDir>
+#include "datamanager.h"
 
 class MyAdress : public QObject
 {
@@ -12,8 +13,7 @@ class MyAdress : public QObject
 
 public:
     explicit MyAdress(QObject *parent = nullptr);
-    void downloadDataAround(QVariantList);
-    QVariantList isDataAlreadyIn(QStringList list);
+    void downloadDataAround(QStringList list);
 
 
 signals:

@@ -1,4 +1,4 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
 
 import sqlite3
 import requests
@@ -10,7 +10,7 @@ from math import *
 
 beforeData = 0
 afterData = 0
-conn = sqlite3.connect("../routing/Data/RegionsData.db")
+conn = sqlite3.connect("../routing/Data/Database.db")
 
 requestTime = 0
 stockageTime = 0
@@ -77,6 +77,11 @@ def createTable():
         c.execute('''CREATE TABLE roads (id_way BIGINT, centerLat DOUBLE, centerLon DOUBLE, id_node BIGINT,oneway BOOL,roundabout BOOL, maxspeed INT, type TEXT,latitude DOUBLE, longitude DOUBLE)''')
 
         conn.commit()
+
+        c.execute('''CREATE TABLE departements (id TEXT)''')
+
+        conn.commit()
+
     except :
         pass
         # c.execute('''DROP TABLE roads''')
@@ -91,6 +96,7 @@ def getData(lat,lon,rad):
 
     #make the request
     r = requests.get(urlString)
+    print("Request done")
 
     endRequestTime = time.time()
     requestTime+=endRequestTime-startRequestTime         #timer
@@ -219,7 +225,7 @@ def addValues(nodesVector,wayVector):
 
 def fixingError(errorList):
     while (len(errorList)!=0):
-        print 'Still ',len(errorList),' errors'
+        print('Still ',len(errorList),' errors')
         try:
             getData(errorList[len(errorList)-1][0],errorList[len(errorList)-1][1],"55000")
             errorList.pop()
@@ -230,22 +236,29 @@ createTable()
 #start()
 
 def addId(args):
-    file = open("../routing/Data/departement.txt","a")
-    for arg in sys.argv:
-        #except arg 0
-        if arg == sys.argv[0]:
-            pass
-        else :
-            file.write(str(arg)+"\n")
+    c = conn.cursor()
+
+
+    for i in range(len(sys.argv)-1):
+            c.execute('''INSERT INTO departements (id) VALUES (?)''', (sys.argv[i+1],))
+            print("Added ",sys.argv[i+1])
+
+    conn.commit()
+
+file = open("../routing/Data/Start.txt","a")
+file.write("start program\n")
+
+
+
 
 with open('../routing/Data/regionCoord.json') as json_file:
     distance = 25           #distance*2 = size between two requestPoint
     errorList=[]
     data = json.load(json_file)
-    for j in range(len(sys.argv)):
+    for j in range(len(sys.argv)-1):
         for i in range(len(data)):
-            if data[i]["ID"] == str(sys.argv[j]):
-                print "Nom :",data[i]["Name"]," | ID : ",data[i]["ID"]," | Coordonnées du centre : ",data[i]["Latitude"]," : ",data[i]["Longitude"]
+            print(data[i]["ID"])
+            if data[i]["ID"] == str(sys.argv[j+1]):
                 lat1 = str(data[i]["Latitude"]+distance/111.11)
                 lon1 = str(data[i]["Longitude"]+distance/(111.11*cos(data[i]["Latitude"])))
                 lat2 = str(data[i]["Latitude"]-distance/111.11)
@@ -253,33 +266,33 @@ with open('../routing/Data/regionCoord.json') as json_file:
 
                 radius = "55000"
                 try:
+                    print("adding one tile")
                     getData(lat1,lon1,radius)                #71km fais un cercle qui englobe tout le carre
                     print("one tile added")
                 except Exception as e:
                     errorList.append((lat1,lon1))
-                    print e
+                    print( e)
 
                 try:
                     getData(lat2,lon1,radius)                #71km fais un cercle qui englobe tout le carre
                     print("one tile added")
                 except Exception as e:
                     errorList.append((lat2,lon1))
-                    print e
+                    print( e)
 
                 try:
                     getData(lat1,lon2,radius)                #71km fais un cercle qui englobe tout le carre
                     print("one tile added")
                 except Exception as e:
                     errorList.append((lat1,lon2))
-                    print e
+                    print( e)
 
                 try:
                     getData(lat2,lon2,radius)                #71km fais un cercle qui englobe tout le carre
                     print("one tile added")
                 except Exception as e:
                     errorList.append((lat2,lon2))
-                    print e
-
+                    print( e)
     fixingError(errorList)
 
     addId(sys.argv)
