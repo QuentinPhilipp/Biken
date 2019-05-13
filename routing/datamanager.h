@@ -20,26 +20,31 @@ public:
     explicit DataManager(QObject *parent = nullptr);
 
     //Q_INVOKABLE allows the function to be called from QML
-    Node getNodeFromNodeId(unsigned long long nodeId);
+    Node * getNodeFromNodeId(unsigned long long nodeId);
 
 
     //getter
-    inline vector<Node> getAllNodes(){return allNodes;}
+    inline vector<Node> * getAllNodes(){return &allNodes;}
+    inline vector<Way> * getAllWays() {return &allWays;}
 
     //methods
-    std::vector<Node> requestNodesFromRoad(unsigned long long idRoad);
-    std::vector<Node> requestNodesFromRoad(QVariant idRoad);        //overload
-    std::vector<Way> requestRoadsFromNode(Node node);
+    //std::vector<Node> requestNodesFromRoad(unsigned long long idRoad);
+    //std::vector<Node> requestNodesFromRoad(QVariant idRoad);        //overload
+    std::vector<Way *> requestRoadsFromNode(Node * node);
     void requestRoads(double lat,double lon,double rad);
     Q_INVOKABLE QVariantList requestLatLonFromNodes(QVariant idNode);
     std::vector<QVariant> requestNodeFromLatLon(double lat, double lon);
 
     Q_INVOKABLE QVariantList findRouteFrom(double lat, double lon);
-
-    vector<Node> findRoute();
-    vector<Node> getNodesNearby(Node node);
-
+    //vector<Node> findRoute();
+    Q_INVOKABLE QVariantList findRoute();
+    vector<Node *> getNodesNearby(Node * node);
     double distanceBetween(Node A, Node B);
+    double bearingBetween(Node A, Node B);
+    bool addNodes(QVariantList &routeNodes, unsigned long long finishNodeId);
+
+
+
 private:
 
     //parameters
