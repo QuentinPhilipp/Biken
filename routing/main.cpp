@@ -5,6 +5,7 @@
 #include <QTime>
 
 
+
 #include "node.h"
 #include "way.h"
 #include "myadress.h"
@@ -22,12 +23,12 @@ int main(int argc, char *argv[])
     db.requestRoads(48.434420,-4.640103,5);   //radius in km
 
     MyAdress* myAdress = new MyAdress();
-    QStringList listDataToDownload = QStringList() << "29" << "56" << "57";
-    listDataToDownload = db.isAlreadyIn(listDataToDownload);
+//    QStringList listDataToDownload = QStringList() << "29" << "56" << "57";
+//    listDataToDownload = db.isAlreadyIn(listDataToDownload);
 
-    if(!listDataToDownload.isEmpty()){
-        myAdress->downloadDataAround(listDataToDownload);               // download the data you didn't have
-    }
+//    if(!listDataToDownload.isEmpty()){
+//        myAdress->downloadDataAround(listDataToDownload);               // download the data you didn't have
+//    }
     Weather* weather = new Weather();
 
     //Pour passer du C++ au QML

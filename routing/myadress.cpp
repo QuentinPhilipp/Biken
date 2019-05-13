@@ -71,9 +71,15 @@ void MyAdress::downloadDataAround(QStringList inputList){
     QString program("python3");
     qDebug() << "List : " << inputList;
     QStringList args = QStringList()<< dir.path()+"/generateTiles.py" << inputList;
-    QProcess p;
-    p.setWorkingDirectory(dir.path());
-    p.execute(program, args);
+
+
+    QProcess *p = new QProcess();
+    p->setWorkingDirectory(dir.path());
+    qDebug() << "Launch script";
+    p->startDetached(program, args);
+    p->waitForFinished(-1);
+    qDebug()<<p->readAll();
+    p->close();
 }
 
 
