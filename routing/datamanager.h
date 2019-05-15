@@ -24,13 +24,14 @@ public:
 
 
     //getter
-    inline vector<Node> * getAllNodes(){return &allNodes;}
-    inline vector<Way> * getAllWays() {return &allWays;}
+    vector<Node *> getAllNodes();
 
-    //methods
-    //std::vector<Node> requestNodesFromRoad(unsigned long long idRoad);
-    //std::vector<Node> requestNodesFromRoad(QVariant idRoad);        //overload
-    std::vector<Way *> requestRoadsFromNode(Node * node);
+    vector<Way *> getAllWays();
+
+    //    //methods
+        std::vector<Node> requestNodesFromRoad(unsigned long long idRoad);
+        std::vector<Node> requestNodesFromRoad(QVariant idRoad);        //overload
+        std::vector<Way *> requestRoadsFromNode(Node * node);
     void requestRoads(double lat,double lon,double rad);
     Q_INVOKABLE QVariantList requestLatLonFromNodes(QVariant idNode);
     std::vector<QVariant> requestNodeFromLatLon(double lat, double lon);
@@ -45,6 +46,8 @@ public:
 
 
 
+
+
 private:
 
     //parameters
@@ -52,9 +55,9 @@ private:
     vector<Way> allWays;
 
     //methods
-    void addTables();
-    void addValuesNodes(std::vector<Node> nodesVetor);
-    void addValuesWays(std::vector<Way> wayVector);
+//    void addTables();
+//    void addValuesNodes(std::vector<Node> nodesVetor);
+//    void addValuesWays(std::vector<Way> wayVector);
     vector<Way> createWayObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
     vector<Node> createNodeObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
 };
