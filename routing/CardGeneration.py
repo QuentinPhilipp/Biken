@@ -19,12 +19,13 @@ a=0
 b=1
 for i in range(int(len(pointsep)/2)):
 	points.append([pointsep[a],pointsep[b]])
+	print()
 	a=a+2
 	b=b+2
 print(points)
 
-for each in points:
-    folium.Marker(each).add_to(c)
+#♦for each in points:
+#    folium.Marker(each).add_to(c)
 
 #add lines
 folium.PolyLine(points, color="red", weight=2.5, opacity=1).add_to(c)

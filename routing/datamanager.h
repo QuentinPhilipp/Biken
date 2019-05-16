@@ -24,9 +24,9 @@ public:
 
 
     //getter
-    vector<Node *> getAllNodes();
+    //vector<Node *> getAllNodes();
 
-    vector<Way *> getAllWays();
+    //vector<Way *> getAllWays();
 
     //    //methods
         std::vector<Node> requestNodesFromRoad(unsigned long long idRoad);
@@ -51,15 +51,15 @@ public:
 private:
 
     //parameters
-    vector<Node> allNodes;
-    vector<Way> allWays;
+    vector<Node *> allNodes;
+    vector<Way *> allWays;
 
     //methods
 //    void addTables();
 //    void addValuesNodes(std::vector<Node> nodesVetor);
 //    void addValuesWays(std::vector<Way> wayVector);
-    vector<Way> createWayObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
-    vector<Node> createNodeObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
+    vector<Way *> createWayObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
+    vector<Node *> createNodeObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
 };
 
 #endif // DATAMANAGER_H
