@@ -7,12 +7,14 @@
 #include <QtWebEngine>
 #include <QString>
 
+#include "utils.h"
 #include "node.h"
 #include "way.h"
 #include "myadress.h"
 #include "datamanager.h"
 #include "card.h"
 #include "weather.h"
+
 
 int main(int argc, char *argv[])
 {
@@ -23,7 +25,7 @@ int main(int argc, char *argv[])
 
     //create the datamanager class
     QScopedPointer<DataManager> db(new DataManager);
-    db->requestRoads(48.434420,-4.640103,50);   //radius in km
+    db->requestRoads(48.4256796, -4.5376689,30);   //radius in km
     //db->requestRoads(48.118463,-1.414886,15);   //radius in km
 
 //    std::vector<Node *> nodes = db->getAllNodes();
@@ -31,6 +33,8 @@ int main(int argc, char *argv[])
 //        qDebug() << elem;
 //    }
 
+    Node * close = db->findClosestNode(48.518792, -4.5211769);
+    qDebug()<< close->getId()<<close->getLatitude()<<close->getLongitude();
 
     MyAdress* myAdress = new MyAdress();
     Weather* weather = new Weather();

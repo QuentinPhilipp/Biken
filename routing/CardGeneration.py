@@ -10,7 +10,7 @@ with open("../routing/Data/coordinates.txt") as file:
 	lines = [line.strip('\n') for line in file.readlines()]
 	#pointsep contient chq lon et lap séparées
 	pointsep=[float(i) for i in lines]
-	print(pointsep)
+	# print(pointsep)
 #on remplit maintenant la liste points
 points=[]
 global a
@@ -22,9 +22,9 @@ for i in range(int(len(pointsep)/2)):
 	print()
 	a=a+2
 	b=b+2
-print(points)
+# print(points)
 
-#♦for each in points:
+# for each in points:
 #    folium.Marker(each).add_to(c)
 
 #add lines
