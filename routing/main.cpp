@@ -6,6 +6,8 @@
 #include <QUrl>
 #include <QtWebEngine>
 #include <QString>
+#include <QApplication>
+#include <QLabel>
 
 #include "utils.h"
 #include "node.h"
@@ -14,6 +16,11 @@
 #include "datamanager.h"
 #include "card.h"
 #include "weather.h"
+#include <QSplashScreen>
+
+
+//QSettings settings("config.ini", QSettings::IniFormat);
+
 
 
 int main(int argc, char *argv[])
@@ -22,19 +29,18 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QCoreApplication::setOrganizationName("QtExamples");
     QGuiApplication app(argc, argv);
+    QApplication app2(argc, argv);
 
+    QPixmap pixmap("../routing/icons/splashScreen.png");
+    QSplashScreen splash(pixmap);
+
+
+    splash.show();
+    app.processEvents();
     //create the datamanager class
     QScopedPointer<DataManager> db(new DataManager);
+
     db->requestRoads(48.4256796, -4.5376689,30);   //radius in km
-    //db->requestRoads(48.118463,-1.414886,15);   //radius in km
-
-//    std::vector<Node *> nodes = db->getAllNodes();
-//    for (auto elem : nodes) {
-//        qDebug() << elem;
-//    }
-
-    Node * close = db->findClosestNode(48.518792, -4.5211769);
-    qDebug()<< close->getId()<<close->getLatitude()<<close->getLongitude();
 
     MyAdress* myAdress = new MyAdress();
     Weather* weather = new Weather();
@@ -54,13 +60,14 @@ int main(int argc, char *argv[])
 
     //Pour passer du C++ au QML
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("path",path);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
+//    engine.rootContext()->setContextProperty("path",path);
     engine.rootContext()->setContextProperty("myAdress",myAdress);      //create a variable myAdress usable in our QML code
     engine.rootContext()->setContextProperty("dataManager", db.data()); //create a variable dataManager usable in our QML code
     engine.rootContext()->setContextProperty("maCarte",carte);
-    engine.rootContext()->setContextProperty("path",path);
     engine.rootContext()->setContextProperty("weather",weather);        //create a variable weather usable in our QML code
 
 

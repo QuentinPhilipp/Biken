@@ -10,6 +10,7 @@
 #include <QTime>
 #include <QtMath>
 
+#include <QCoreApplication>
 #include <math.h>
 #include <utils.h>
 
@@ -255,6 +256,8 @@ DataManager::requestRoadsFromNode(Node * node)
 //This function stores every roads from the database in a vector of Way
 void DataManager::requestRoads(double lat,double lon,double rad)
 {
+
+    QCoreApplication::processEvents(QEventLoop::AllEvents);
     QSqlQuery query;
 
     double radNode = rad +1;               //increasing radius to be sure to have all node from big roads
@@ -278,7 +281,6 @@ void DataManager::requestRoads(double lat,double lon,double rad)
         minLon = lon + rad/(111.11*cos(lat));
         maxLon = lon - rad/(111.11*cos(lat));
     }
-
     allNodes= createNodeObject(query,minLatNode,maxLatNode,minLonNode,maxLonNode);          //create nodes
     allWays= createWayObject(query,minLat,maxLat,minLon,maxLon);              //create ways
     qDebug() << "Allways size : "<<allWays.size();
@@ -300,6 +302,7 @@ vector<Node *> DataManager::createNodeObject(QSqlQuery query,double minLat,doubl
     qDebug() << "Query Node finish";
     vector<Node *> nodeVect;
     while (query.next()) {
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
         unsigned long long idNode = static_cast<unsigned long long>(query.value(0).toDouble());     //get id
         double lat = query.value(1).toDouble();             // get latitude
         double lon = query.value(2).toDouble();             // get longitude
@@ -353,6 +356,7 @@ vector<Way *> DataManager::createWayObject(QSqlQuery query,double minLat,double 
     int myInt=0;
 
     while (query.next()) {
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
         unsigned long long idWay = static_cast<unsigned long long>(query.value(0).toDouble());
         if (idWay != lastId)                                                                                    // can't go there without a full circle in the while() bc way are at least 2 node long
         {

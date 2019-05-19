@@ -49,7 +49,7 @@ void Card::createMap()
     QStringList args = QStringList()<< dir.path()+"/CardGeneration.py";
     QProcess p;
     p.setWorkingDirectory(dir.path());
-    qDebug() << "args : " << args << "\n dir.path : " << dir.path();
+    //qDebug() << "args : " << args << "\n dir.path : " << dir.path();
     p.execute(program, args);
 }
 

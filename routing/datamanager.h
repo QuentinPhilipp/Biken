@@ -9,6 +9,7 @@
 #include <QObject>
 #include <vector>
 
+
 #include "node.h"
 #include "way.h"
 

@@ -32,5 +32,6 @@
         <file>logogrand.png</file>
         <file>placeholder.png</file>
         <file>road.png</file>
+        <file>Splash.qml</file>
     </qresource>
 </RCC>
