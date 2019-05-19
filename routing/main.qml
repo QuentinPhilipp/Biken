@@ -72,6 +72,8 @@ ApplicationWindow {
         }
         MyMap {                                 //permet de créer un object MyMap (défini dans le fichier "MyMap.qml")
             id : thisIsTheMap
+            anchors.rightMargin: 0
+            anchors.bottomMargin: 0
             anchors.fill: mapContainer
             plugin: mapPlugin
         }
@@ -102,11 +104,11 @@ ApplicationWindow {
                 opacity: 0.2
             }
 
-//            layer.effect: DropShadow {
-//                transparentBorder: true
-//                horizontalOffset: 3
-//                verticalOffset: 3
-//            }
+            //            layer.effect: DropShadow {
+            //                transparentBorder: true
+            //                horizontalOffset: 3
+            //                verticalOffset: 3
+            //            }
             onClicked: {
                 var startingCoordinates = myAdress.toCoordinates(enterDepartInput.text);
                 var finishCoordinates = myAdress.toCoordinates(enterArriveeInput.text);
@@ -143,43 +145,46 @@ ApplicationWindow {
             width: 280
             height: 164
 
-            spacing : 2
+            spacing : 7
 
             ColumnLayout{
-                spacing: 5
+                spacing: 20
 
 
                 //icons
 
                 Image {
                     id: imageDeparture
+                    y: 9
                     width: parent.width
                     height: parent.height
                     fillMode: Image.PreserveAspectFit
-                    source: "qrc:/Images/placeholder.png"
+                    source: "qrc:/Images/logovert.png"
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                     Layout.preferredWidth: 10
-                    Layout.preferredHeight: 20
+                    Layout.preferredHeight: 10
                     Layout.alignment: Qt.AlignCenter
                 }
 
                 Image {
                     id: imageArrival
+                    y: 68
                     width: parent.width
                     height: parent.height
                     fillMode: Image.PreserveAspectFit
-                    source: "qrc:/Images/flag.png"
+                    source: "qrc:/Images/logorouge.png"
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                     Layout.preferredWidth: 10
-                    Layout.preferredHeight: 20
+                    Layout.preferredHeight: 10
                     Layout.alignment: Qt.AlignCenter
                 }
 
 
                 Image {
                     id: imageRoad
+                    y: 129
                     width: parent.width
                     height: parent.height
                     fillMode: Image.PreserveAspectFit
@@ -187,7 +192,7 @@ ApplicationWindow {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                     Layout.preferredWidth: 10
-                    Layout.preferredHeight: 20
+                    Layout.preferredHeight: 10
                     Layout.alignment: Qt.AlignCenter
                 }
 
@@ -214,9 +219,18 @@ ApplicationWindow {
                     color:"#ffffff"
                     text: "Départ"
                     font.family: comfortaalight.name
-                    horizontalAlignment: Text.AlignHCenter
+                    horizontalAlignment: Text.AlignLeft
                     background : Rectangle {
                         opacity: 0
+                    }
+
+                    Rectangle {
+                        id: rectangle1
+                        x: 0
+                        y: 46
+                        width: 208
+                        height: 3
+                        color: "#8bd8bd"
                     }
 
                 }
@@ -231,10 +245,19 @@ ApplicationWindow {
                     font.pixelSize: 20
                     color:"#ffffff"
                     text: "Arrivée"
-                    horizontalAlignment: Text.AlignHCenter
+                    horizontalAlignment: Text.AlignLeft
                     font.family: comfortaalight.name
                     background : Rectangle {
                         opacity: 0
+                    }
+
+                    Rectangle {
+                        id: rectangle
+                        x: 0
+                        y: 47
+                        width: 208
+                        height: 3
+                        color: "#8bd8bd"
                     }
 
                 }
@@ -247,15 +270,27 @@ ApplicationWindow {
                     Layout.alignment: Qt.AlignCenter
                     font.pixelSize: 20
                     color:"#ffffff"
-                    text: "0"
+                    text: "0 km"
+                    font.capitalization: Font.MixedCase
+                    font.underline: false
                     visible: true
                     font.family: comfortaalight.name
-                    horizontalAlignment: Text.AlignHCenter
+                    horizontalAlignment: Text.AlignLeft
                     background : Rectangle {
                         opacity: 0
                     }
 
+                    Rectangle {
+                        id: rectangle2
+                        x: 0
+                        y: 48
+                        width: 208
+                        height: 3
+                        color: "#8bd8bd"
+                    }
+
                 }
+
 
 
             }
@@ -299,6 +334,24 @@ ApplicationWindow {
 
 
     }
+
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/
