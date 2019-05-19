@@ -23,7 +23,14 @@ int main(int argc, char *argv[])
 
     //create the datamanager class
     QScopedPointer<DataManager> db(new DataManager);
-    db->requestRoads(48.434420,-4.640103,5);   //radius in km
+    db->requestRoads(48.434420,-4.640103,50);   //radius in km
+    //db->requestRoads(48.118463,-1.414886,15);   //radius in km
+
+//    std::vector<Node *> nodes = db->getAllNodes();
+//    for (auto elem : nodes) {
+//        qDebug() << elem;
+//    }
+
 
     MyAdress* myAdress = new MyAdress();
     Weather* weather = new Weather();

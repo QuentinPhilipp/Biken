@@ -55,13 +55,14 @@ ApplicationWindow {
             anchors.left:mapContainer.left
             anchors.right:mapContainer.right
             anchors.fill:mapContainer
-            url:"file://"+path+"/card.html"
+//            url:"file://"+path+"/card.html"
+            url:"D:/Documents/ENIB/Semestre6/CPO/0-Projet/projets6/routing/Data/card.html"
             }
       Button{
           id: testButton
           anchors.horizontalCenter: parent.horizontalCenter
-          anchors.top: validationAdress.bottom
-          anchors.topMargin: 20
+          anchors.top: parent.top
+          anchors.topMargin: 10
           width: 150
           height: 20
           onClicked: {
@@ -69,7 +70,9 @@ ApplicationWindow {
               //themself a list of 2 coordinates (latitude,longitude). Those nodes represent every node on which you change
               //from one road to another.
               console.log("Calculating route...");
-              var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
+              //var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
+              var nodes = dataManager.findRoute(); //(random parameters, they are not used yet)
+
               maCarte.sendNodes(nodes,dataManager);
               console.log("Data received in QML");
                maCarte.createMap();

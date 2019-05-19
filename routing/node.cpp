@@ -42,6 +42,16 @@ void Node::setPrecedingNodeId(unsigned long long value)
 {
     precedingNodeId = value;
 }
+
+bool Node::getMarque() const
+{
+    return marque;
+}
+
+void Node::setMarque(bool value)
+{
+    marque = value;
+}
 double Node::getLatitude() const
 {
     return this->latitude;
