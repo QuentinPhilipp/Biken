@@ -28,19 +28,21 @@ int main(int argc, char *argv[])
     //for the webengineview
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QCoreApplication::setOrganizationName("QtExamples");
-    QGuiApplication app(argc, argv);
-    QApplication app2(argc, argv);
+    QApplication app(argc, argv);
+//    QGuiApplication app1(argc, argv);
 
+    //creating splash screen
     QPixmap pixmap("../routing/icons/splashScreen.png");
     QSplashScreen splash(pixmap);
-
-
     splash.show();
     app.processEvents();
+
+
     //create the datamanager class
     QScopedPointer<DataManager> db(new DataManager);
 
     db->requestRoads(48.4256796, -4.5376689,30);   //radius in km
+
 
     MyAdress* myAdress = new MyAdress();
     Weather* weather = new Weather();
@@ -70,6 +72,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("maCarte",carte);
     engine.rootContext()->setContextProperty("weather",weather);        //create a variable weather usable in our QML code
 
-
+    splash.close();
     return app.exec();
 }

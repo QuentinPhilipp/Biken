@@ -257,7 +257,7 @@ DataManager::requestRoadsFromNode(Node * node)
 void DataManager::requestRoads(double lat,double lon,double rad)
 {
 
-    QCoreApplication::processEvents(QEventLoop::AllEvents);
+    QCoreApplication::processEvents(QEventLoop::AllEvents);         //display splash screen while loading
     QSqlQuery query;
 
     double radNode = rad +1;               //increasing radius to be sure to have all node from big roads
@@ -302,7 +302,7 @@ vector<Node *> DataManager::createNodeObject(QSqlQuery query,double minLat,doubl
     qDebug() << "Query Node finish";
     vector<Node *> nodeVect;
     while (query.next()) {
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        QCoreApplication::processEvents(QEventLoop::AllEvents);                                     //display splash screen while loading
         unsigned long long idNode = static_cast<unsigned long long>(query.value(0).toDouble());     //get id
         double lat = query.value(1).toDouble();             // get latitude
         double lon = query.value(2).toDouble();             // get longitude
@@ -356,7 +356,7 @@ vector<Way *> DataManager::createWayObject(QSqlQuery query,double minLat,double 
     int myInt=0;
 
     while (query.next()) {
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        QCoreApplication::processEvents(QEventLoop::AllEvents);                                                             //display splash screen while loading
         unsigned long long idWay = static_cast<unsigned long long>(query.value(0).toDouble());
         if (idWay != lastId)                                                                                    // can't go there without a full circle in the while() bc way are at least 2 node long
         {
@@ -644,7 +644,7 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
 QVariantList DataManager::getCircleNode(){
     unsigned long long startNodeId = 1529313453;        //Lanrivoaré
     int direction = 1;                      //0=Nord, 1=Est, 2=Sud, 3=Ouest
-    double radius = 5;
+    double radius = 5;                      //in km
     int pointsNumber = 10;
     double angleBetween = 360/pointsNumber;
 
@@ -653,7 +653,7 @@ QVariantList DataManager::getCircleNode(){
     QVariantList waypointList;
 
 
-
+    //get Node for every waypoint
     for(int i=0;i<pointsNumber;i++){
         QVariantList coord;
         coord = addKmWithAngle(centerNode,angleBetween*i,radius);
@@ -661,15 +661,14 @@ QVariantList DataManager::getCircleNode(){
         waypointList.append(waypoint->getId());
     }
 
-
-//    waypointList.append(centerNode->getId());
     QVariantList coord;
     coord = addKmWithAngle(centerNode,0,radius);
     Node * waypoint = findClosestNode(coord[0].toDouble(),coord[1].toDouble());
-    waypointList.append(waypoint->getId());            //on ajoute le noeud de start dans la liste des nodes pour finir la boucle
+    waypointList.append(waypoint->getId());            // adding startNode to close the route
 
-//    return waypointList;
+
     std::vector<Node *> waypointNodeList;
+    //create a vector of node from a vector of id
     for(auto waypnt : waypointList){
         qDebug() << waypnt;
         waypointNodeList.emplace_back(getNodeFromNodeId(static_cast<unsigned long long>(waypnt.toDouble())));
@@ -683,16 +682,17 @@ QVariantList DataManager::getCircleNode(){
 
     nodeList.append(findRoute(waypointNodeList[2]->getId(),waypointNodeList[3]->getId()));
     return nodeList;
-
 }
 
 Node *DataManager::getCircleCenter(double radius, int direction, unsigned long long startNodeId)
 {
+    //this function returns the center of a tangent circle as a function of direction
     Node * startNode = getNodeFromNodeId(startNodeId);
     double startLat = startNode->getLatitude();
     double startLon = startNode->getLongitude();
 
     double centerLat,centerLon;
+
     switch (direction) {
     case 0:    //Nord
         qDebug()<<"Creating circle to the north";
@@ -718,7 +718,7 @@ Node *DataManager::getCircleCenter(double radius, int direction, unsigned long l
         centerLon = addKmToLongitude(startLon,centerLat,-radius);
         break;
     }
-    return findClosestNode(centerLat,centerLon);
+    return findClosestNode(centerLat,centerLon);        //return the closest node from the coordinate
 }
 
 vector<Node *> DataManager::getNodesNearby(Node * node)
@@ -760,7 +760,7 @@ Node * DataManager::findClosestNode(double latitude,double longitude){
     Node * bestNode;
     for(auto node : nodes){                                     //find best node (WIP : and best node without tertiary way)
         double newDistance = distanceBetween(target,*node);
-        if(newDistance<bestDistance){
+        if(newDistance<bestDistance){                           //check every node to get the closer one
             bestDistance = newDistance;
             bestNode = node;
         }

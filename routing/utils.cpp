@@ -15,17 +15,19 @@ double addKmToLatitude(double lat,double km)                             // if k
     return latitude;
 }
 
-QVariantList addKmWithAngle(Node* center,double angle,double radius){           //angles basés sur repere trigo
+QVariantList addKmWithAngle(Node* center,double angle,double radius){           //angle based on the trigonometric circle
     QVariantList returnValues;
-    double startLat = center->getLatitude();
+    double startLat = center->getLatitude();                                    //get latitude and longitude from center
     double startLon = center->getLongitude();
 
     double addLat,addLon;
 
+
+    //calculate the km to add to latitude and longitude based on the angle
     addLat = qSin(qDegreesToRadians(angle))*radius;
     addLon = qCos(qDegreesToRadians(angle))*radius;
 
-    returnValues.append(addKmToLatitude(startLat,addLat));
+    returnValues.append(addKmToLatitude(startLat,addLat));  //add the km and put the response in the return list
     returnValues.append(addKmToLongitude(startLon,startLat,addLon));
 
     return returnValues;
