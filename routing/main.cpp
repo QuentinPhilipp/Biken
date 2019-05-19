@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
 
     //create the Map class
     Card *carte = new Card(1);
+    carte->createGeolocalisedMap();
 
     //Initialize the HTML code related to the map
     QtWebEngine::initialize();
@@ -40,6 +41,7 @@ int main(int argc, char *argv[])
     dir.cdUp();                         //project folder
     dir.cd("routing/Data");                  //routing folder
     QString path = dir.path();
+    qDebug()<<path;
 
     //Pour passer du C++ au QML
     QQmlApplicationEngine engine;
@@ -49,7 +51,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("myAdress",myAdress);      //create a variable myAdress usable in our QML code
     engine.rootContext()->setContextProperty("dataManager", db.data()); //create a variable dataManager usable in our QML code
     engine.rootContext()->setContextProperty("maCarte",carte);
-    engine.rootContext()->setContextProperty("path",path);
+    engine.rootContext()->setContextProperty("path",path);              //create a variable path and wu use it in our QML
     engine.rootContext()->setContextProperty("weather",weather);        //create a variable weather usable in our QML code
 
 

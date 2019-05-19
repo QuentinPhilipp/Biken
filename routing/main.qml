@@ -16,9 +16,9 @@ ApplicationWindow {
 
     property var map
 
-    width: 1500
+    width: 1000
     minimumWidth: 1000
-    height: 800
+    height: 500
     color: "#adb9c8"
     minimumHeight: 400
     visible: true
@@ -60,8 +60,8 @@ ApplicationWindow {
       Button{
           id: testButton
           anchors.horizontalCenter: parent.horizontalCenter
-          anchors.top: validationAdress.bottom
-          anchors.topMargin: 20
+          anchors.top: parent.top
+          anchors.topMargin: 10
           width: 150
           height: 20
           onClicked: {
@@ -70,9 +70,7 @@ ApplicationWindow {
               //from one road to another.
               console.log("Calculating route...");
               var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
-              maCarte.sendNodes(nodes,dataManager);
-              console.log("Data received in QML");
-               maCarte.createMap();
+              maCarte.createMap(nodes,dataManager);
               console.log("Carte créée");
               webengine.reload();
 
