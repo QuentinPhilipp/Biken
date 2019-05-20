@@ -692,7 +692,7 @@ QVariantList DataManager::getCircleNode(){
     QVariantList nodeList;
     for(unsigned long i=0;i<waypointNodeList.size()-1;i++){
         qDebug()<<"!!!!!!!!!!!!!!!!!!!!ITINERAIRE!!!!!!!!!!!!!!!!!" <<waypointNodeList[i]->getLatitude()<<','<<waypointNodeList[i]->getLongitude()<<"|" <<waypointNodeList[i+1]->getLatitude()<<','<<waypointNodeList[i+1]->getLongitude();
-        nodeList.append(findRoute(waypointNodeList[i]->getId(),waypointNodeList[i+1]->getId()));
+        nodeList.append(findRoute(waypointNodeList[i+1]->getId(),waypointNodeList[i]->getId()));
         for(auto node : allNodesAtCrossroads){
             node->setMarque(0);
             node->setDistance(100000);
