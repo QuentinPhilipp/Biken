@@ -41,7 +41,7 @@ uint64_t Card::getId() const
 void Card::createMap()
 {
 
-    QDir dir = QDir::currentPath();   //return path in the build folder
+    QDir dir = QDir::currentPath();     //return path in the build folder
     dir.cdUp();                         //project folder
     dir.cd("routing");                  //routing folder
 
@@ -49,6 +49,7 @@ void Card::createMap()
     QStringList args = QStringList()<< dir.path()+"/CardGeneration.py";
     QProcess p;
     p.setWorkingDirectory(dir.path());
+    //qDebug() << "args : " << args << "\n dir.path : " << dir.path();
     p.execute(program, args);
 }
 
