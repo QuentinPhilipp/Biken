@@ -340,6 +340,20 @@ ApplicationWindow {
 
 
                 }
+                //zone texte
+                Text {
+                    id: textvalider
+                    x: 0
+                    y: 0
+                    width: 99
+                    height: 24
+                    text: qsTr("Valider")
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: 15
+                    color:"black"
+                }
+
             }
 
             RowLayout {
@@ -397,6 +411,7 @@ ApplicationWindow {
                 }
                 console.log("click :)");
             }
+
         }
     }
 }
