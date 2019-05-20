@@ -47,13 +47,14 @@ public:
     double bearingBetween(Node A, Node B);
     bool addNodes(QVariantList &routeNodes, unsigned long long finishNodeId);
 
-
+    uint getPositionInWay(Node *node, Way *way);
 
     Node *findClosestNode(double latitude, double longitude);
 private:
 
     //parameters
     vector<Node *> allNodes;
+    vector<Node *> allNodesAtCrossroads;
     vector<Way *> allWays;
 
     //methods
