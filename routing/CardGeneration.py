@@ -24,7 +24,7 @@ for i in range(int(len(pointsep)/2)):
 	b=b+2
 #print(points)
 
-#♦for each in points:
+# for each in points:
 #    folium.Marker(each).add_to(c)
 
 #add lines
