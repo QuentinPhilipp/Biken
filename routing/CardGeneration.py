@@ -6,10 +6,17 @@ import sys
 
 def MapCreation(nodes):
 	c= folium.Map(location=[48.3677820, -4.7591771])
+	for each in nodes:
+		folium.Marker(each,draggable = True).add_to(c)
 	#add lines
 	folium.PolyLine(nodes, color="red", weight=2.5, opacity=1).add_to(c)
 	folium.PolyLine(nodes).add_to(c)
 	c.save('../routing/Data/card.html')
+	#ouverture du fichier créé et inclusion de notre js
+	fichier = open("../routing/Data/card.html","a")
+	fichier.write("<script src='interaction.js'></script>")
+	fichier.close()
+
 
 def toHaveNodes(*args,**kwargs):
 	points = []
