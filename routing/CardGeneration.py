@@ -5,9 +5,7 @@ import sys
 
 
 def MapCreation(nodes):
-	c= folium.Map(location=[48.3677820, -4.7591771])  
-	for each in nodes:
-		folium.Marker(each).add_to(c)
+	c= folium.Map(location=[48.3677820, -4.7591771])
 	#add lines
 	folium.PolyLine(nodes, color="red", weight=2.5, opacity=1).add_to(c)
 	folium.PolyLine(nodes).add_to(c)
