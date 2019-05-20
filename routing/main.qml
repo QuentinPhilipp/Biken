@@ -5,6 +5,7 @@ import QtLocation 5.6
 import QtPositioning 5.6
 import "helper.js" as Helper
 import "map"
+import "weatherAddon"
 import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.2
 import QtQuick.Controls.Styles 1.4
@@ -109,6 +110,11 @@ ApplicationWindow {
             }
 
         }
+
+        WeatherAddon{
+            id:element
+        }
+
         Rectangle {
             id: rectangleparameter
             x: 35

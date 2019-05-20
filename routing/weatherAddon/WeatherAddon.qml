@@ -7,6 +7,10 @@ import QtQuick.Controls.Private 1.0
 
 Rectangle {
     id : weatherAddon
+    x: 400
+    y:400
+    width:300
+    height:300
     Rectangle{
         id : weatherRec
         anchors.top: parent.top
