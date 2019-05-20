@@ -191,13 +191,9 @@ DataManager::requestRoadsFromNode(Node * node)
             }
             prev_i=temporaryValue;
         }
-<<<<<<< routing/datamanager.cpp
-        //        qDebug() << "114";
+
     }
-    //    qDebug() << "12";
-=======
-    }
->>>>>>> routing/datamanager.cpp
+
     while(true){
         //In this loop, we start from the way found in the previous loop and we go down the list "allWays" to find the Way with
         //the lowest latitude (the ways in allWays are ordered from the lowest latitude to the highest)
@@ -258,13 +254,9 @@ DataManager::requestRoadsFromNode(Node * node)
 //This function stores every roads from the database in a vector of Way
 void DataManager::requestRoads(double lat,double lon,double rad)
 {
-<<<<<<< routing/datamanager.cpp
-
     QCoreApplication::processEvents(QEventLoop::AllEvents);         //display splash screen while loading
-=======
     QTime t;
     t.start();
->>>>>>> routing/datamanager.cpp
     QSqlQuery query;
 
     double radNode = rad + 15;               //increasing radius to be sure to have all node from big roads
@@ -566,23 +558,20 @@ QVariantList DataManager::findRouteFrom(double lat, double lon)
 //vector<Node> DataManager::findRoute()
 QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long long finishNodeId)
 {
-<<<<<<< routing/datamanager.cpp
-//    unsigned long long startNodeId = 53433046;
-    Node * start = getNodeFromNodeId(startNodeId);
 
+//    unsigned long long startNodeId = 53433046;
     //unsigned long long finishNodeId = 1215779715;
 //    unsigned long long finishNodeId = 1214794223; //resid
-=======
+
     QTime t;
     t.start();
     //unsigned long long startNodeId = 38582108; //classique à saint-renan
-    unsigned long long startNodeId = 758510084;
+//    unsigned long long startNodeId = 758510084;
     Node * start = getNodeFromNodeId(startNodeId);
 
     //unsigned long long finishNodeId = 312897722;
-    unsigned long long finishNodeId = 1919242171; //resid (croisement)
+//    unsigned long long finishNodeId = 1919242171; //resid (croisement)
     //unsigned long long finishNodeId = 3169474337; //resid
->>>>>>> routing/datamanager.cpp
     Node * finish = getNodeFromNodeId(finishNodeId);
     qDebug() << "Route between node n°" << start->getId() << "and node°" << finish->getId();
     //vector<Node *> localAllNodes = getAllNodes();
@@ -600,30 +589,13 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
                 idMin=i;
             }
         }
-<<<<<<< routing/datamanager.cpp
-        //        qDebug() <<"\naTraiter :  size: " << aTraiter.size();
-        //        for(auto &elem: aTraiter){
-        //            qDebug() << elem->getId() << " --- " << elem->getMarque();
-        //        }
-        //        qDebug() << "1";
-        Node * currentNode = aTraiter[idMin];
-        //        qDebug() << "2, currentNode:" << currentNode->getId();
-        aTraiter.erase(aTraiter.begin()+int(idMin));
-        //        qDebug() << currentNode->getId();
-        vector<Node *> nodesNearby = getNodesNearby(currentNode);
 
-        //        qDebug() <<"\nnodesNearby :";
-        currentNode->setMarque(true);
-        for(auto &node: nodesNearby){
-            //            qDebug() << node->getId() << " +++ " << node->getMarque();
-=======
         Node * currentNode = aTraiter[idMin];
         aTraiter.erase(aTraiter.begin()+int(idMin));
         vector<Node *> nodesNearby = getNodesNearby(currentNode);
 
         currentNode->setMarque(true);
         for(auto &node: nodesNearby){
->>>>>>> routing/datamanager.cpp
             if(node->getMarque()==false){
                 if(node->getDistance()>currentNode->getDistance()+distanceBetween(*node,*currentNode)){
                     node->setDistance(currentNode->getDistance()+distanceBetween(*node,*currentNode));
@@ -678,10 +650,7 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
         }
     }
     else {qDebug() << "Noeud de fin pas atteint ...";}
-<<<<<<< routing/datamanager.cpp
-
-    //    QVariantList nodeList;
-    //    nodeList.append(start->getId());
+    qDebug() << "Temps pour créer l'itinéraire: " << t.elapsed() << "ms";
 
     return nodeList;
 }
@@ -717,15 +686,20 @@ QVariantList DataManager::getCircleNode(){
     for(auto waypnt : waypointList){
         qDebug() << waypnt;
         waypointNodeList.emplace_back(getNodeFromNodeId(static_cast<unsigned long long>(waypnt.toDouble())));
+
     }
 
     QVariantList nodeList;
-//    for(unsigned long i=0;i<waypointNodeList.size()-1;i++){
-//        qDebug()<<"!!!!!!!!!!!!!!!!!!!!ITINERAIRE!!!!!!!!!!!!!!!!!" <<waypointNodeList[i]->getId()<< waypointNodeList[i+1]->getId();
-//        nodeList.append(findRoute(waypointNodeList[i]->getId(),waypointNodeList[i+1]->getId()));
-//    }
+    for(unsigned long i=0;i<waypointNodeList.size()-1;i++){
+        qDebug()<<"!!!!!!!!!!!!!!!!!!!!ITINERAIRE!!!!!!!!!!!!!!!!!" <<waypointNodeList[i]->getLatitude()<<','<<waypointNodeList[i]->getLongitude()<<"|" <<waypointNodeList[i+1]->getLatitude()<<','<<waypointNodeList[i+1]->getLongitude();
+        nodeList.append(findRoute(waypointNodeList[i]->getId(),waypointNodeList[i+1]->getId()));
+        for(auto node : allNodesAtCrossroads){
+            node->setMarque(0);
+            node->setDistance(100000);
+        }
+    }
 
-    nodeList.append(findRoute(waypointNodeList[2]->getId(),waypointNodeList[3]->getId()));
+//    nodeList.append(findRoute(waypointNodeList[2]->getId(),waypointNodeList[3]->getId()));
     return nodeList;
 }
 
@@ -765,10 +739,7 @@ Node *DataManager::getCircleCenter(double radius, int direction, unsigned long l
     }
     return findClosestNode(centerLat,centerLon);        //return the closest node from the coordinate
 }
-=======
-    qDebug() << "Temps pour créer l'itinéraire: " << t.elapsed() << "ms";
-    return nodeList;
-}
+
 
 //vector<Node *> DataManager::getNodesNearby(Node * node)
 //{
@@ -801,18 +772,11 @@ Node *DataManager::getCircleCenter(double radius, int direction, unsigned long l
 //    }
 //    return nodesNearby;
 //}
->>>>>>> routing/datamanager.cpp
 
 vector<Node *> DataManager::getNodesNearby(Node * node)
 {
     vector<Node *> nodesNearby;
-<<<<<<< routing/datamanager.cpp
-    //    qDebug() << "3, node lat:" << node->getLatitude();
     vector<Way *> ways = requestRoadsFromNode(node);
-    //    qDebug() << "getNodesNearby";
-=======
-    vector<Way *> ways = requestRoadsFromNode(node);
->>>>>>> routing/datamanager.cpp
     while(!ways.empty()){
         Way *currentWay = ways[ways.size()-1];
         vector<Node *> nodes = currentWay->getNodes();
@@ -839,7 +803,7 @@ vector<Node *> DataManager::getNodesNearby(Node * node)
 }
 
 Node * DataManager::findClosestNode(double latitude,double longitude){
-    std::vector<Node *> nodes = allNodes;
+    std::vector<Node *> nodes = allNodesAtCrossroads;
     Node target = Node(1,latitude,longitude);
     double bestDistance = 100000;
     Node * bestNode;
