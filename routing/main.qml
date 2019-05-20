@@ -16,9 +16,9 @@ ApplicationWindow {
 
     property var map
 
-    width: 1500
+    width: 1000
     minimumWidth: 1000
-    height: 800
+    height: 500
     color: "#adb9c8"
     minimumHeight: 400
     visible: true
@@ -70,12 +70,8 @@ ApplicationWindow {
               //themself a list of 2 coordinates (latitude,longitude). Those nodes represent every node on which you change
               //from one road to another.
               console.log("Calculating route...");
-              //var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
-              var nodes = dataManager.getCircleNode(); //(random parameters, they are not used yet)
-
-              maCarte.sendNodes(nodes,dataManager);
-              console.log("Data received in QML");
-              maCarte.createMap();
+              var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
+              maCarte.createMap(nodes,dataManager);
               console.log("Carte créée");
               webengine.reload();
 
