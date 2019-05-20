@@ -30,6 +30,9 @@ public :
   bool getMarque() const;
   void setMarque(bool value);
 
+  int getNumberOfWays() const;
+  void setNumberOfWays(int value);
+
 private :
   unsigned long long id;          //id of the Node
   double latitude;    //latitude of the node
@@ -37,6 +40,7 @@ private :
   double distance=999999999;
   unsigned long long precedingNodeId;
   bool marque=false;
+  int numberOfWays=0;
 };
 
 #endif // NODE_H

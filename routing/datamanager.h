@@ -44,7 +44,7 @@ public:
     double bearingBetween(Node A, Node B);
     bool addNodes(QVariantList &routeNodes, unsigned long long finishNodeId);
 
-
+    uint getPositionInWay(Node *node, Way *way);
 
 
 
@@ -52,6 +52,7 @@ private:
 
     //parameters
     vector<Node *> allNodes;
+    vector<Node *> allNodesAtCrossroads;
     vector<Way *> allWays;
 
     //methods

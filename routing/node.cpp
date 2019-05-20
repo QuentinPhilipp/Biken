@@ -52,6 +52,16 @@ void Node::setMarque(bool value)
 {
     marque = value;
 }
+
+int Node::getNumberOfWays() const
+{
+    return numberOfWays;
+}
+
+void Node::setNumberOfWays(int value)
+{
+    numberOfWays = value;
+}
 double Node::getLatitude() const
 {
     return this->latitude;
