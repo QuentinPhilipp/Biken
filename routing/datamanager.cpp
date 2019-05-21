@@ -559,47 +559,45 @@ QVariantList DataManager::findRouteFrom(double lat, double lon)
 QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long long finishNodeId)
 {
 
-    //    unsigned long long startNodeId = 53433046;
-    //unsigned long long finishNodeId = 1215779715;
-    //    unsigned long long finishNodeId = 1214794223; //resid
+    //startNodeId = 38582108; //classique à saint-renan
+    //finishNodeId = 1919242171; //resid (croisement)
 
     QTime t;
     t.start();
-    //unsigned long long startNodeId = 38582108; //classique à saint-renan
-    //    unsigned long long startNodeId = 758510084;
-    Node * start = getNodeFromNodeId(startNodeId);
 
-    //unsigned long long finishNodeId = 312897722;
-    //    unsigned long long finishNodeId = 1919242171; //resid (croisement)
-    //unsigned long long finishNodeId = 3169474337; //resid
+    Node * start = getNodeFromNodeId(startNodeId);
     Node * finish = getNodeFromNodeId(finishNodeId);
+
     qDebug() << "Route between node n°" << start->getId() << "and node°" << finish->getId();
-    //vector<Node *> localAllNodes = getAllNodes();
-    uint i = allNodesAtCrossroads.size()-1;
-    Node * node = allNodesAtCrossroads[0];
+
     start->setDistance(0);
     vector<Node *> aTraiter;
     aTraiter.emplace_back(start);
     vector<Node *> nodesNearby = getNodesNearby(aTraiter[0]);
     bool exit = false;
+
+    //Dijkstra
     while(aTraiter.size()>0){
         unsigned int idMin=0;
+        //On regarde quel node est le plus proche du départ
         for(unsigned int i=1;i<aTraiter.size();i++){
             if(aTraiter[i]->getDistance()<aTraiter[idMin]->getDistance()){
                 idMin=i;
             }
         }
-
         Node * currentNode = aTraiter[idMin];
         aTraiter.erase(aTraiter.begin()+int(idMin));
+        //On récupère les nodes liés à ce node par une route (On récupère uniquement les Node qui sont des
+        //croisements = les Node qui sont communs à plusieurs routes) -> Cela permet d'optimiser le calcul d'itinéraire
         vector<Node *> nodesNearby = getNodesNearby(currentNode);
-
         currentNode->setMarque(true);
         for(auto &node: nodesNearby){
             if(node->getMarque()==false){
+                //Pour chacun de ces nodes, on regarde si la distance par rapport au départ en passant par
+                //currentNode est plus petite que l'ancienne distance par rapport au départ (stockée dans le node).
                 if(node->getDistance()>currentNode->getDistance()+distanceBetween(*node,*currentNode)){
-                    node->setDistance(currentNode->getDistance()+distanceBetween(*node,*currentNode));
-                    node->setPrecedingNodeId(currentNode->getId());
+                    node->setDistance(currentNode->getDistance()+distanceBetween(*node,*currentNode));//Si c'est le cas, on change la distance de ce node par rapport au départ
+                    node->setPrecedingNodeId(currentNode->getId());//Et on dit par quel node il faudra passer pour aller au node de départ depuis ce node.
                     node->setMarque(true);
                     aTraiter.emplace_back(node);
                     if(node->getId()==finishNodeId){
@@ -610,10 +608,11 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
         }
     }
 
+
     QVariantList nodeList;
     if(exit==true){
         qDebug() << "Noeud de fin atteint";
-        //parcours de l'arrivée au départ
+        //On fait un parcours de l'arrivée au départ (en utilisant à chaque fois precedingNode pour savoir par où passer)
         unsigned long long id = finishNodeId;
         while(id!=startNodeId){
             Node *currentNode =getNodeFromNodeId(id);
@@ -623,6 +622,7 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
             Node *precedingNode = getNodeFromNodeId(precedingNodeId);
             vector<Way *> roadsFromPrecedingNode = requestRoadsFromNode(precedingNode);
 
+            //On regarde la route en commun entre les deux Node (currentNode et precedingNode)
             Way *commonWay=roadsFromCurrentNode[0];
             for(uint i=0;i<roadsFromCurrentNode.size();i++) {
                 for(uint j=0;j<roadsFromPrecedingNode.size();j++) {
@@ -632,8 +632,14 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
                 }
             }
 
+            //Puis on récupère la position de ces 2 Node dans la route qu'ils ont en commun
             uint pos1 =getPositionInWay(currentNode,commonWay);
             uint pos2 =getPositionInWay(precedingNode,commonWay);
+
+            //Et pour finir on ajoute tous les Node qu'il y a entre ces 2 Node dans la liste à retourner
+            //Il faut faire ça car:
+            //   - il nous faut tous les nodes pour tracer un itinéraire précis
+            //   - l'itinéraire que l'on fait avant est un itinéraire de Node qui sont uniquement des croisements
             vector<Node *> nodesInCommonWay = commonWay->getNodes();
             if(pos1<pos2){
                 for (uint i=pos1 ; i<pos2 ; i++) {
@@ -659,7 +665,7 @@ QVariantList DataManager::createItinerary(){
     // get the circle
     unsigned long long startNodeId = 1529313453;        //Lanrivoaré
     int direction = 2;                      //0=Nord, 1=Est, 2=Sud, 3=Ouest
-    double radius = 6;
+    double radius = 2;
     std::vector<Node *> waypointNodeList = getCircleNode(startNodeId,direction,radius);
 
 
