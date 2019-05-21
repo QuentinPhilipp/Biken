@@ -77,7 +77,7 @@ ApplicationWindow {
                 //                        anchors.left:mapContainer.left
                 //                        anchors.right:mapContainer.right
                 anchors.fill:mapContainer
-                url:"file://"+path+"/card.html"
+                //url:"file://"+path+"/card.html"
                 //                        url:"D:/Documents/ENIB/Semestre6/CPO/0-Projet/projets6/routing/Data/card.html"
             }
             Button{
@@ -111,8 +111,18 @@ ApplicationWindow {
 
         }
 
-        WeatherAddon{
-            id:element
+        Rectangle{
+            id:meteoContainer
+            x:35
+            y:500
+            width: 350
+            height: 350
+            color: "#243665"
+            opacity: 0.9
+            radius : 20
+            WeatherAddon{
+                id:element
+            }
         }
 
         Rectangle {
