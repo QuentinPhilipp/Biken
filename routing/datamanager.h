@@ -41,7 +41,7 @@ public:
     Q_INVOKABLE QVariantList findRouteFrom(double lat, double lon);
     //vector<Node> findRoute();
     Q_INVOKABLE QVariantList findRoute(unsigned long long startNodeId,unsigned long long finishNodeId);
-    Q_INVOKABLE QVariantList getCircleNode();
+    Q_INVOKABLE std::vector<Node *> getCircleNode(unsigned long long startNodeId,int direction,double radius);
     vector<Node *> getNodesNearby(Node * node);
     double distanceBetween(Node A, Node B);
     double bearingBetween(Node A, Node B);
@@ -50,6 +50,7 @@ public:
     uint getPositionInWay(Node *node, Way *way);
 
     Node *findClosestNode(double latitude, double longitude);
+    Q_INVOKABLE QVariantList createItinerary();
 private:
 
     //parameters

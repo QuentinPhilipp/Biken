@@ -655,12 +655,47 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
     return nodeList;
 }
 
-QVariantList DataManager::getCircleNode(){
+QVariantList DataManager::createItinerary(){
+    // get the circle
     unsigned long long startNodeId = 1529313453;        //Lanrivoaré
-    int direction = 1;                      //0=Nord, 1=Est, 2=Sud, 3=Ouest
-    double radius = 8;                      //in km
-    int pointsNumber = 3;
+    int direction = 2;                      //0=Nord, 1=Est, 2=Sud, 3=Ouest
+    double radius = 6;
+    std::vector<Node *> waypointNodeList = getCircleNode(startNodeId,direction,radius);
+
+
+//    QVariantList test;                                    //enable this if you want to see the circle
+//    for(auto node : waypointNodeList){
+//        test.append(node->getId());
+//    }
+//    return test;
+
+
+    //draw the itinerary
+    QVariantList nodeList;
+    for(unsigned long i=0;i<waypointNodeList.size()-1;i++){
+        nodeList.append(findRoute(waypointNodeList[i+1]->getId(),waypointNodeList[i]->getId()));
+        qDebug() << "Done : " <<i+1<<"/"<<waypointNodeList.size()-1;
+        for(auto node : allNodesAtCrossroads){
+            node->setMarque(0);
+            node->setDistance(100000);
+        }
+    }
+    QTime chrono = QTime::currentTime();
+    QVariantList verifiedList = verifList(nodeList);
+    QTime endChrono = QTime::currentTime();
+    qDebug() << "Chrono verifying roads : " << chrono.msecsTo(endChrono);           //8 ms -> Pas nécessaire d'optimiser pour l'instant
+    return verifiedList;
+
+}
+
+std::vector<Node *> DataManager::getCircleNode(unsigned long long startNodeId,int direction,double radius){
+    int pointsNumber = 5;
     double angleBetween = 360/pointsNumber;
+    double startAngle;
+
+    (direction==0) ? (startAngle=270) : ((direction==1) ? (startAngle=180) : ((direction==2) ? (startAngle=90) : startAngle =0)); //set startAngle (180 - angle of direction)
+    /* un depart vers l'est, implique un point de depart a gauche du cercle
+     * on commence donc par ce point*/
 
     Node * centerNode = getCircleCenter(radius,direction,startNodeId);
 
@@ -670,13 +705,14 @@ QVariantList DataManager::getCircleNode(){
     //get Node for every waypoint
     for(int i=0;i<pointsNumber;i++){
         QVariantList coord;
-        coord = addKmWithAngle(centerNode,angleBetween*i,radius);
+        qDebug() << startAngle+angleBetween*i;
+        coord = addKmWithAngle(centerNode,startAngle+angleBetween*i,radius);
         Node * waypoint = findClosestNode(coord[0].toDouble(),coord[1].toDouble());
         waypointList.append(waypoint->getId());
     }
 
     QVariantList coord;
-    coord = addKmWithAngle(centerNode,0,radius);
+    coord = addKmWithAngle(centerNode,startAngle,radius);
     Node * waypoint = findClosestNode(coord[0].toDouble(),coord[1].toDouble());
     waypointList.append(waypoint->getId());            // adding startNode to close the route
 
@@ -684,28 +720,10 @@ QVariantList DataManager::getCircleNode(){
     std::vector<Node *> waypointNodeList;
     //create a vector of node from a vector of id
     for(auto waypnt : waypointList){
-        qDebug() << waypnt;
         waypointNodeList.emplace_back(getNodeFromNodeId(static_cast<unsigned long long>(waypnt.toDouble())));
 
     }
-
-    QVariantList nodeList;
-        for(unsigned long i=0;i<waypointNodeList.size()-1;i++){
-            qDebug()<<"!!!!!!!!!!!!!!!!!!!!ITINERAIRE!!!!!!!!!!!!!!!!!" <<waypointNodeList[i]->getLatitude()<<','<<waypointNodeList[i]->getLongitude()<<"|" <<waypointNodeList[i+1]->getLatitude()<<','<<waypointNodeList[i+1]->getLongitude();
-            nodeList.append(findRoute(waypointNodeList[i+1]->getId(),waypointNodeList[i]->getId()));
-            for(auto node : allNodesAtCrossroads){
-                node->setMarque(0);
-                node->setDistance(100000);
-            }
-        }
-//    nodeList.append(findRoute(waypointNodeList[2]->getId(),waypointNodeList[1]->getId()));
-//    for(auto node : allNodesAtCrossroads){
-//        node->setMarque(0);
-//        node->setDistance(100000);
-//    }
-//    nodeList.append(findRoute(waypointNodeList[3]->getId(),waypointNodeList[2]->getId()));
-    QVariantList verifiedList = verifList(nodeList);
-    return verifiedList;
+    return waypointNodeList;
 }
 
 QVariantList DataManager::verifList(QVariantList nodeList){
@@ -714,35 +732,21 @@ QVariantList DataManager::verifList(QVariantList nodeList){
             nodeList.removeAt(i);
         }
     }
-
-    bool ok = false;
-    while(ok==false){
-        ok = true;
+    bool isVerified = false;
+    while(isVerified==false){
+        isVerified = true;
         for(int i=1;i<nodeList.size();i++){
             QVariant currentValue = nodeList[i];
             if(nodeList[i-1] == nodeList[i]){
                 nodeList.removeAt(i);
                 nodeList.removeAt(i-1);
-                ok = false;
+                isVerified = false;                     // one point was remove so we have to check another time all the list
                 if(nodeList[i-1]!=nodeList[i-2]){
                     nodeList.insert(i-1,currentValue);
                 }
             }
         }
     }
-
-/*
-QVariant(qulonglong, 274434684)
-QVariant(qulonglong, 598390073)
-QVariant(qulonglong, 274434683)
-QVariant(qulonglong, 4006030248)
-QVariant(qulonglong, 433720318)
-!!!!!!!!SAME!!!!!!!!!!
-QVariant(qulonglong, 4006030248)
-QVariant(qulonglong, 274434683)
-QVariant(qulonglong, 598390073)
-*/
-
     return nodeList;
 }
 
