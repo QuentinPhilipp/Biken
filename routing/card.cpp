@@ -35,12 +35,12 @@ void Card::createMap(QVariantList RouteNodes, DataManager *db)
     dir.cdUp();                         //project folder
     dir.cd("routing");                  //routing folder
 
-    QString program("python3");
+    QString program("python");
     QStringList filepath = QStringList()<< dir.path()+"/CardGeneration.py";         //on récupére le path du fichier à éxécuter
     QStringList nodes = QStringList()<<sendNodes(RouteNodes, db);                  //on récupère les nodes a donner en paramètre à notre script de création de carte
     QStringList nodes_command;
     QStringList args = QStringList()<<filepath<<nodes;                             //création de la ligne de commande qui sera envoyée
-    qDebug()<<args;
+//    qDebug()<<args;
     QProcess p;
     p.setWorkingDirectory(dir.path());
     //qDebug() << "args : " << args << "\n dir.path : " << dir.path();

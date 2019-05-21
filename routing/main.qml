@@ -5,9 +5,11 @@ import QtLocation 5.6
 import QtPositioning 5.6
 import "helper.js" as Helper
 import "map"
+import "weatherAddon"
 import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.2
 import QtQuick.Controls.Styles 1.4
+import QtWebEngine 1.7
 
 
 ApplicationWindow {
@@ -70,18 +72,60 @@ ApplicationWindow {
             border.color: "#36e855"
             anchors.right: parent.right
             anchors.top: parent.top
-            Plugin {                                //A Plugin has to be set to create a map
-                id: mapPlugin
-                preferred: ["osm", "esri"]
+            WebEngineView{
+                id:webengine
+                //                        anchors.left:mapContainer.left
+                //                        anchors.right:mapContainer.right
+                anchors.fill:mapContainer
+                url:"file://"+path+"/card.html"
+                //url:"D:/Documents/ENIB/Semestre6/CPO/0-Projet/projets6/routing/Data/card.html"
             }
-            MyMap {                                 //permet de créer un object MyMap (défini dans le fichier "MyMap.qml")
-                id : thisIsTheMap
-                anchors.rightMargin: 0
-                anchors.bottomMargin: 0
-                anchors.fill: mapContainer
-                plugin: mapPlugin
+            Button{
+                id: testButton
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.top
+                anchors.topMargin: 10
+                width: 150
+                height: 20
+                onClicked: {
+                    //Calls the function findRouteFrom(lat,lon) from datamanager in C++. It will return a list of nodes which are
+                    //themself a list of 2 coordinates (latitude,longitude). Those nodes represent every node on which you change
+                    //from one road to another.
+                    console.log("Calculating route...");
+                    //var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
+                    var nodes = dataManager.createItinerary();
+                    maCarte.createMap(nodes,dataManager);
+                    console.log("Carte créée");
+                    webengine.reload();
+
+                }
+                Text{
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: 2
+                    font.pixelSize: 12
+                    text: "TEST"
+                    color: "black"
+                }
+            }
+
+        }
+
+
+        Rectangle{
+            id:meteoContainer
+            x:35
+            y:500
+            width: 350
+            height: 350
+            color: "#243665"
+            opacity: 0.9
+            radius : 20
+            WeatherAddon{
+                id:element
             }
         }
+
 
         Rectangle {
             id: rectangleparameter
@@ -340,20 +384,6 @@ ApplicationWindow {
 
 
                 }
-                //zone texte
-                Text {
-                    id: textvalider
-                    x: 0
-                    y: 0
-                    width: 99
-                    height: 24
-                    text: qsTr("Valider")
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: 15
-                    color:"black"
-                }
-
             }
 
             RowLayout {
@@ -394,6 +424,7 @@ ApplicationWindow {
 
 
         }
+
         Rectangle {
             id : ahbon
             x : 400
@@ -411,7 +442,6 @@ ApplicationWindow {
                 }
                 console.log("click :)");
             }
-
         }
     }
 }
