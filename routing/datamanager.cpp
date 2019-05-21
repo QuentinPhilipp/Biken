@@ -44,10 +44,10 @@ Node * DataManager::getNodeFromNodeId(unsigned long long nodeId)
      * Cela permet par exemple de retrouver un élément dans une liste de 1 000 000 d'éléments en seulement une vingtaine d'opérations.
      */
     //uint i = allNodes.size()-1;
-//    QTime t;
-//    t.start();
+    //    QTime t;
+    //    t.start();
     //vector<Node *> localAllNodes = getAllNodes();
-//    globalint+=t.elapsed();
+    //    globalint+=t.elapsed();
     uint i = allNodes.size()-1;
     Node * node = allNodes[i];
     unsigned long long id;
@@ -559,18 +559,18 @@ QVariantList DataManager::findRouteFrom(double lat, double lon)
 QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long long finishNodeId)
 {
 
-//    unsigned long long startNodeId = 53433046;
+    //    unsigned long long startNodeId = 53433046;
     //unsigned long long finishNodeId = 1215779715;
-//    unsigned long long finishNodeId = 1214794223; //resid
+    //    unsigned long long finishNodeId = 1214794223; //resid
 
     QTime t;
     t.start();
     //unsigned long long startNodeId = 38582108; //classique à saint-renan
-//    unsigned long long startNodeId = 758510084;
+    //    unsigned long long startNodeId = 758510084;
     Node * start = getNodeFromNodeId(startNodeId);
 
     //unsigned long long finishNodeId = 312897722;
-//    unsigned long long finishNodeId = 1919242171; //resid (croisement)
+    //    unsigned long long finishNodeId = 1919242171; //resid (croisement)
     //unsigned long long finishNodeId = 3169474337; //resid
     Node * finish = getNodeFromNodeId(finishNodeId);
     qDebug() << "Route between node n°" << start->getId() << "and node°" << finish->getId();
@@ -658,8 +658,8 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
 QVariantList DataManager::getCircleNode(){
     unsigned long long startNodeId = 1529313453;        //Lanrivoaré
     int direction = 1;                      //0=Nord, 1=Est, 2=Sud, 3=Ouest
-    double radius = 5;                      //in km
-    int pointsNumber = 10;
+    double radius = 8;                      //in km
+    int pointsNumber = 3;
     double angleBetween = 360/pointsNumber;
 
     Node * centerNode = getCircleCenter(radius,direction,startNodeId);
@@ -690,16 +690,59 @@ QVariantList DataManager::getCircleNode(){
     }
 
     QVariantList nodeList;
-    for(unsigned long i=0;i<waypointNodeList.size()-1;i++){
-        qDebug()<<"!!!!!!!!!!!!!!!!!!!!ITINERAIRE!!!!!!!!!!!!!!!!!" <<waypointNodeList[i]->getLatitude()<<','<<waypointNodeList[i]->getLongitude()<<"|" <<waypointNodeList[i+1]->getLatitude()<<','<<waypointNodeList[i+1]->getLongitude();
-        nodeList.append(findRoute(waypointNodeList[i+1]->getId(),waypointNodeList[i]->getId()));
-        for(auto node : allNodesAtCrossroads){
-            node->setMarque(0);
-            node->setDistance(100000);
+        for(unsigned long i=0;i<waypointNodeList.size()-1;i++){
+            qDebug()<<"!!!!!!!!!!!!!!!!!!!!ITINERAIRE!!!!!!!!!!!!!!!!!" <<waypointNodeList[i]->getLatitude()<<','<<waypointNodeList[i]->getLongitude()<<"|" <<waypointNodeList[i+1]->getLatitude()<<','<<waypointNodeList[i+1]->getLongitude();
+            nodeList.append(findRoute(waypointNodeList[i+1]->getId(),waypointNodeList[i]->getId()));
+            for(auto node : allNodesAtCrossroads){
+                node->setMarque(0);
+                node->setDistance(100000);
+            }
+        }
+//    nodeList.append(findRoute(waypointNodeList[2]->getId(),waypointNodeList[1]->getId()));
+//    for(auto node : allNodesAtCrossroads){
+//        node->setMarque(0);
+//        node->setDistance(100000);
+//    }
+//    nodeList.append(findRoute(waypointNodeList[3]->getId(),waypointNodeList[2]->getId()));
+    QVariantList verifiedList = verifList(nodeList);
+    return verifiedList;
+}
+
+QVariantList DataManager::verifList(QVariantList nodeList){
+    for(int i=1;i<nodeList.size()-1;i++){
+        if(nodeList[i-1] == nodeList[i+1]){
+            nodeList.removeAt(i);
         }
     }
 
-//    nodeList.append(findRoute(waypointNodeList[2]->getId(),waypointNodeList[3]->getId()));
+    bool ok = false;
+    while(ok==false){
+        ok = true;
+        for(int i=1;i<nodeList.size();i++){
+            QVariant currentValue = nodeList[i];
+            if(nodeList[i-1] == nodeList[i]){
+                nodeList.removeAt(i);
+                nodeList.removeAt(i-1);
+                ok = false;
+                if(nodeList[i-1]!=nodeList[i-2]){
+                    nodeList.insert(i-1,currentValue);
+                }
+            }
+        }
+    }
+
+/*
+QVariant(qulonglong, 274434684)
+QVariant(qulonglong, 598390073)
+QVariant(qulonglong, 274434683)
+QVariant(qulonglong, 4006030248)
+QVariant(qulonglong, 433720318)
+!!!!!!!!SAME!!!!!!!!!!
+QVariant(qulonglong, 4006030248)
+QVariant(qulonglong, 274434683)
+QVariant(qulonglong, 598390073)
+*/
+
     return nodeList;
 }
 
