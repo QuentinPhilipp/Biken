@@ -61,6 +61,7 @@ private:
     //    void addTables();
     //    void addValuesNodes(std::vector<Node> nodesVetor);
     //    void addValuesWays(std::vector<Way> wayVector);
+    QVariantList verifList(QVariantList nodeList);
     vector<Way *> createWayObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
     vector<Node *> createNodeObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
 
