@@ -93,7 +93,7 @@ ApplicationWindow {
                     //from one road to another.
                     console.log("Calculating route...");
                     //var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
-                    var nodes = dataManager.getCircleNode();
+                    var nodes = dataManager.createItinerary();
                     maCarte.createMap(nodes,dataManager);
                     console.log("Carte créée");
                     webengine.reload();
