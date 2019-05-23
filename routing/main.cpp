@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     //create the datamanager class
     QScopedPointer<DataManager> db(new DataManager);
 
-    db->requestRoads(48.4256796, -4.5376689,50);   //radius in km
+    db->requestRoads(48.477680, -4.526258,5);   //radius in km
 
 
     MyAdress* myAdress = new MyAdress();
@@ -65,13 +65,13 @@ int main(int argc, char *argv[])
     //Pour passer du C++ au QML
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    engine.rootContext()->setContextProperty("path",path);              //create a variable path and wu use it in our QML
     if (engine.rootObjects().isEmpty())
         return -1;
 //    engine.rootContext()->setContextProperty("path",path);
     engine.rootContext()->setContextProperty("myAdress",myAdress);      //create a variable myAdress usable in our QML code
     engine.rootContext()->setContextProperty("dataManager", db.data()); //create a variable dataManager usable in our QML code
     engine.rootContext()->setContextProperty("maCarte",carte);
-    engine.rootContext()->setContextProperty("path",path);              //create a variable path and wu use it in our QML
     engine.rootContext()->setContextProperty("weather",weather);        //create a variable weather usable in our QML code
 
     splash.close();
