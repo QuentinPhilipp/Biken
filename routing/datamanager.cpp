@@ -663,9 +663,9 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
 
 QVariantList DataManager::createItinerary(){
     // get the circle
-    unsigned long long startNodeId = 1529313453;        //Lanrivoaré
-    int direction = 2;                      //0=Nord, 1=Est, 2=Sud, 3=Ouest
-    double radius = 2;
+    unsigned long long startNodeId = 1182549307;        //Lanrivoaré
+    int direction =90;                      //Degrées (0 = Est)
+    double radius = 5;
     std::vector<Node *> waypointNodeList = getCircleNode(startNodeId,direction,radius);
 
 
@@ -689,9 +689,8 @@ QVariantList DataManager::createItinerary(){
     QTime chrono = QTime::currentTime();
     QVariantList verifiedList = verifList(nodeList);
     QTime endChrono = QTime::currentTime();
-    qDebug() << "Chrono verifying roads : " << chrono.msecsTo(endChrono);           //8 ms -> Pas nécessaire d'optimiser pour l'instant
+    qDebug() << "Chrono verifying roads : " << chrono.msecsTo(endChrono);           //qq ms -> Pas nécessaire d'optimiser pour l'instant
     return verifiedList;
-
 }
 
 std::vector<Node *> DataManager::getCircleNode(unsigned long long startNodeId,int direction,double radius){
@@ -699,7 +698,8 @@ std::vector<Node *> DataManager::getCircleNode(unsigned long long startNodeId,in
     double angleBetween = 360/pointsNumber;
     double startAngle;
 
-    (direction==0) ? (startAngle=270) : ((direction==1) ? (startAngle=180) : ((direction==2) ? (startAngle=90) : startAngle =0)); //set startAngle (180 - angle of direction)
+    startAngle = 180-direction;
+    //set startAngle (180 - angle of direction)
     /* un depart vers l'est, implique un point de depart a gauche du cercle
      * on commence donc par ce point*/
 
@@ -719,9 +719,9 @@ std::vector<Node *> DataManager::getCircleNode(unsigned long long startNodeId,in
 
     QVariantList coord;
     coord = addKmWithAngle(centerNode,startAngle,radius);
+
     Node * waypoint = findClosestNode(coord[0].toDouble(),coord[1].toDouble());
     waypointList.append(waypoint->getId());            // adding startNode to close the route
-
 
     std::vector<Node *> waypointNodeList;
     //create a vector of node from a vector of id
@@ -729,12 +729,13 @@ std::vector<Node *> DataManager::getCircleNode(unsigned long long startNodeId,in
         waypointNodeList.emplace_back(getNodeFromNodeId(static_cast<unsigned long long>(waypnt.toDouble())));
 
     }
+    qDebug() << waypointNodeList;
     return waypointNodeList;
 }
 
 QVariantList DataManager::verifList(QVariantList nodeList){
     for(int i=1;i<nodeList.size()-1;i++){
-        if(nodeList[i-1] == nodeList[i+1]){
+        if(nodeList[i-1] == nodeList[i+1]){         //verifie si il y a un noeud puis demi-tour
             nodeList.removeAt(i);
         }
     }
@@ -743,7 +744,7 @@ QVariantList DataManager::verifList(QVariantList nodeList){
         isVerified = true;
         for(int i=1;i<nodeList.size();i++){
             QVariant currentValue = nodeList[i];
-            if(nodeList[i-1] == nodeList[i]){
+            if(nodeList[i-1] == nodeList[i]){               //verifie si il y a 2 noeuds successifs
                 nodeList.removeAt(i);
                 nodeList.removeAt(i-1);
                 isVerified = false;                     // one point was remove so we have to check another time all the list
@@ -760,37 +761,11 @@ Node *DataManager::getCircleCenter(double radius, int direction, unsigned long l
 {
     //this function returns the center of a tangent circle as a function of direction
     Node * startNode = getNodeFromNodeId(startNodeId);
-    double startLat = startNode->getLatitude();
-    double startLon = startNode->getLongitude();
 
-    double centerLat,centerLon;
-
-    switch (direction) {
-    case 0:    //Nord
-        qDebug()<<"Creating circle to the north";
-        centerLat = addKmToLatitude(startLat,radius);
-        centerLon = startLon;
-        break;
-
-    case 1:    //Est
-        qDebug()<<"Creating circle to the east";
-        centerLat = startLat;
-        centerLon = addKmToLongitude(startLon,centerLat,radius);
-        break;
-
-    case 2:    //Sud
-        qDebug()<<"Creating circle to the south";
-        centerLat = addKmToLatitude(startLat,-radius);
-        centerLon = startLon;
-        break;
-
-    default:   //Ouest  (direction 3)
-        qDebug()<<"Creating circle to the west";
-        centerLat = startLat;
-        centerLon = addKmToLongitude(startLon,centerLat,-radius);
-        break;
-    }
-    return findClosestNode(centerLat,centerLon);        //return the closest node from the coordinate
+    QVariantList returnValue = addKmWithAngle(startNode,direction,radius);
+    QVariantList coord;
+    Node * n = new Node(0,returnValue[0].toDouble(),returnValue[1].toDouble());
+    return n;        //return the closest node from the coordinate
 }
 
 
