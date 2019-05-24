@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     //create the datamanager class
     QScopedPointer<DataManager> db(new DataManager);
 
-    db->requestRoads(48.477680, -4.526258,5);   //radius in km
+    db->requestRoads(48.477680, -4.526258,60);   //radius in km
 
 
     MyAdress* myAdress = new MyAdress();

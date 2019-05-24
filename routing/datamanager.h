@@ -50,7 +50,7 @@ public:
     uint getPositionInWay(Node *node, Way *way);
 
     Node *findClosestNode(double latitude, double longitude);
-    Q_INVOKABLE QVariantList createItinerary();
+    Q_INVOKABLE QVariantList createItinerary(QList<double> startCoord, QList<double> finishCoord, QVariant km);
 
 
 private:
@@ -64,7 +64,7 @@ private:
     //    void addTables();
     //    void addValuesNodes(std::vector<Node> nodesVetor);
     //    void addValuesWays(std::vector<Way> wayVector);
-    QVariantList verifList(QVariantList nodeList);
+    bool verifList(QVariantList *nodeList);
     vector<Way *> createWayObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
     vector<Node *> createNodeObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
 
