@@ -114,15 +114,33 @@ ApplicationWindow {
         Rectangle{
             id:meteoContainer
             x:35
-            y:500
+            y:550
             width: 350
-            height: 350
+            height: 250
             color: "#243665"
             opacity: 0.9
             radius : 20
+            Button{
+                id: hideButton
+                width: 50
+                height : 25
+                x :(meteoContainer.width/2 - hideButton.width/2)
+                y : -hideButton.height
+                background: Rectangle{
+                    radius : 10
+                    color:"#243665"
+                    opacity: 0.9
+                }
+                onClicked:{
+                    if(meteoContainer.visible === true){
+                        meteoContainer.visible = false;
+                    }
+                }
+            }
             WeatherAddon{
                 id:element
             }
+
         }
 
         Rectangle {
@@ -134,6 +152,24 @@ ApplicationWindow {
             color: "#243665"
             opacity: 0.9
             radius : 20
+
+            Button{
+                id: showButton
+                width: 50
+                height : 25
+                x :(rectangleparameter.width/2 - showButton.width/2)
+                y : rectangleparameter.height
+                background: Rectangle{
+                    radius : 10
+                    color:"#243665"
+                    opacity: 0.9
+                }
+                onClicked:{
+                    if(meteoContainer.visible === false){
+                        meteoContainer.visible = true;
+                    }
+                }
+            }
 
             //Button to validate
             Button {
@@ -149,12 +185,6 @@ ApplicationWindow {
                     color : "black"
                     opacity: 0.2
                 }
-
-                //            layer.effect: DropShadow {
-                //                transparentBorder: true
-                //                horizontalOffset: 3
-                //                verticalOffset: 3
-                //            }
                 onClicked: {
                     var startingCoordinates = myAdress.toCoordinates(enterDepartInput.text);
                     var finishCoordinates = myAdress.toCoordinates(enterArriveeInput.text);
@@ -249,32 +279,6 @@ ApplicationWindow {
                     x: 396
                     y: 377
                     spacing: 5
-
-                    //route settings
-
-                    //                    MouseArea{
-                    //                        x : 0
-                    //                        y : 0
-                    //                        width : enterDepartInput.width
-                    //                        height : enterDepartInput.height
-                    //                        onClicked: {
-                    //                            if(enterDepartDefault.visible == true){
-                    //                                enterDepartDefault.visible = false;
-                    //                            }
-                    //                        }
-                    //                        Text {
-                    //                            id: enterDepartDefault
-                    //                            x : 0
-                    //                            y : 0
-                    //                            text: "Départ"
-                    //                            visible: true
-                    //                            font.pixelSize: 20
-                    //                            color:"#ffffff"
-                    //                            font.family: comfortaalight.name
-                    //                        }
-                    //                    }
-
-
                     Button {
                         id: button
                         Layout.preferredWidth: 30
