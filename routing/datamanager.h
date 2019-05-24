@@ -33,7 +33,7 @@ public:
     std::vector<Node> requestNodesFromRoad(unsigned long long idRoad);
     std::vector<Node> requestNodesFromRoad(QVariant idRoad);        //overload
     std::vector<Way *> requestRoadsFromNode(Node * node);
-    Node *getCircleCenter(double radius,int direction,unsigned long long startNodeId);
+    Node * getCircleCenter(double radius,int direction,unsigned long long startNodeId);
     void requestRoads(double lat,double lon,double rad);
     Q_INVOKABLE QVariantList requestLatLonFromNodes(QVariant idNode);
     std::vector<QVariant> requestNodeFromLatLon(double lat, double lon);
@@ -50,7 +50,9 @@ public:
     uint getPositionInWay(Node *node, Way *way);
 
     Node *findClosestNode(double latitude, double longitude);
-    Q_INVOKABLE QVariantList createItinerary();
+    Q_INVOKABLE QVariantList createItinerary(QList<double> startCoord, QList<double> finishCoord, QVariant km);
+
+
 private:
 
     //parameters
@@ -62,7 +64,7 @@ private:
     //    void addTables();
     //    void addValuesNodes(std::vector<Node> nodesVetor);
     //    void addValuesWays(std::vector<Way> wayVector);
-    QVariantList verifList(QVariantList nodeList);
+    bool verifList(QVariantList *nodeList);
     vector<Way *> createWayObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
     vector<Node *> createNodeObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
 
