@@ -41,7 +41,11 @@ int main(int argc, char *argv[])
     //create the datamanager class
     QScopedPointer<DataManager> db(new DataManager);
 
+<<<<<<< routing/main.cpp
     db->requestRoads(48.477680, -4.526258,60);   //radius in km
+=======
+    db->requestRoads(48.4256796, -4.5376689,1);   //radius in km
+>>>>>>> routing/main.cpp
 
 
     MyAdress* myAdress = new MyAdress();
@@ -68,7 +72,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("path",path);              //create a variable path and wu use it in our QML
     if (engine.rootObjects().isEmpty())
         return -1;
-//    engine.rootContext()->setContextProperty("path",path);
     engine.rootContext()->setContextProperty("myAdress",myAdress);      //create a variable myAdress usable in our QML code
     engine.rootContext()->setContextProperty("dataManager", db.data()); //create a variable dataManager usable in our QML code
     engine.rootContext()->setContextProperty("maCarte",carte);

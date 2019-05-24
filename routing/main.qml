@@ -113,19 +113,36 @@ ApplicationWindow {
 
         }
 
-
         Rectangle{
             id:meteoContainer
             x:35
-            y:500
+            y:550
             width: 350
-            height: 350
+            height: 250
             color: "#243665"
             opacity: 0.9
             radius : 20
+            Button{
+                id: hideButton
+                width: 50
+                height : 25
+                x :(meteoContainer.width/2 - hideButton.width/2)
+                y : -hideButton.height
+                background: Rectangle{
+                    radius : 10
+                    color:"#243665"
+                    opacity: 0.9
+                }
+                onClicked:{
+                    if(meteoContainer.visible === true){
+                        meteoContainer.visible = false;
+                    }
+                }
+            }
             WeatherAddon{
                 id:element
             }
+
         }
 
 
@@ -138,6 +155,24 @@ ApplicationWindow {
             color: "#243665"
             opacity: 0.9
             radius : 20
+
+            Button{
+                id: showButton
+                width: 50
+                height : 25
+                x :(rectangleparameter.width/2 - showButton.width/2)
+                y : rectangleparameter.height
+                background: Rectangle{
+                    radius : 10
+                    color:"#243665"
+                    opacity: 0.9
+                }
+                onClicked:{
+                    if(meteoContainer.visible === false){
+                        meteoContainer.visible = true;
+                    }
+                }
+            }
 
             //Button to validate
             Button {
@@ -153,12 +188,6 @@ ApplicationWindow {
                     color : "black"
                     opacity: 0.2
                 }
-
-                //            layer.effect: DropShadow {
-                //                transparentBorder: true
-                //                horizontalOffset: 3
-                //                verticalOffset: 3
-                //            }
                 onClicked: {
                     var startingCoordinates = myAdress.toCoordinates(enterDepartInput.text);
                     var finishCoordinates = myAdress.toCoordinates(enterArriveeInput.text);
