@@ -17,6 +17,7 @@ double addKmToLatitude(double lat,double km)                             // if k
 
 QVariantList addKmWithAngle(Node* center,double angle,double radius){           //angle based on the trigonometric circle
     QVariantList returnValues;
+    double realAngle = std::fmod(angle,360);                                    //modulo with double
     double startLat = center->getLatitude();                                    //get latitude and longitude from center
     double startLon = center->getLongitude();
 
@@ -24,8 +25,8 @@ QVariantList addKmWithAngle(Node* center,double angle,double radius){           
 
 
     //calculate the km to add to latitude and longitude based on the angle
-    addLat = qSin(qDegreesToRadians(angle))*radius;
-    addLon = qCos(qDegreesToRadians(angle))*radius;
+    addLat = qSin(qDegreesToRadians(realAngle))*radius;
+    addLon = qCos(qDegreesToRadians(realAngle))*radius;
 
     returnValues.append(addKmToLatitude(startLat,addLat));  //add the km and put the response in the return list
     returnValues.append(addKmToLongitude(startLon,startLat,addLon));

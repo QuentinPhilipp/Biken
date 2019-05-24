@@ -77,8 +77,10 @@ ApplicationWindow {
                 //                        anchors.left:mapContainer.left
                 //                        anchors.right:mapContainer.right
                 anchors.fill:mapContainer
-                //url:"file://"+path+"/card.html"
-                //                        url:"D:/Documents/ENIB/Semestre6/CPO/0-Projet/projets6/routing/Data/card.html"
+                url:"file://"+path+"/card.html"
+                //url:"D:/Documents/ENIB/Semestre6/CPO/0-Projet/projets6/routing/Data/card.html"            //Leo
+                //url:"/home/quentin/Documents/dev/projets6/routing/Data/card.html"            //Quentin
+
             }
             Button{
                 id: testButton
@@ -93,7 +95,7 @@ ApplicationWindow {
                     //from one road to another.
                     console.log("Calculating route...");
                     //var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
-                    var nodes = dataManager.getCircleNode();
+                    var nodes = dataManager.createItinerary();
                     maCarte.createMap(nodes,dataManager);
                     console.log("Carte créée");
                     webengine.reload();
@@ -142,6 +144,7 @@ ApplicationWindow {
             }
 
         }
+
 
         Rectangle {
             id: rectangleparameter
@@ -193,7 +196,10 @@ ApplicationWindow {
                     var endCoordinate = QtPositioning.coordinate(finishCoordinates[0],finishCoordinates[1]);
 
                     if (startCoordinate.isValid && endCoordinate.isValid) {
-                        thisIsTheMap.calculateCoordinateRoute(startCoordinate,endCoordinate)
+                        var nodes = dataManager.createItinerary(startingCoordinates,finishCoordinates,kmDesired.text);
+                        maCarte.createMap(nodes,dataManager);
+                        console.log("Carte créée");
+                        webengine.reload();
                     }
                 }
                 //zone texte
@@ -279,38 +285,24 @@ ApplicationWindow {
                     x: 396
                     y: 377
                     spacing: 5
-                    Button {
-                        id: button
+
+                    //route settings
+
+
+                    TextField {
+                        id: enterDepartInput
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
                         Layout.preferredWidth: 30
                         Layout.preferredHeight: 20
-                        Text{
-                            id: enterDepartDefault
-                            Layout.preferredWidth: 30
-                            Layout.preferredHeight: 20
-                            horizontalAlignment: Text.AlignLeft
-                            text: "Départ"
-                            visible: true
-                            font.pixelSize: 20
-                            color:"#ffffff"
-                            font.family: comfortaalight.name
-                        }
-                        background: Rectangle{
+                        Layout.alignment: Qt.AlignCenter
+                        font.pixelSize: 20
+                        color:"#ffffff"
+                        placeholderText : "Départ"
+                        horizontalAlignment: Text.AlignLeft
+                        font.family: comfortaalight.name
+                        background : Rectangle {
                             opacity: 0
-                            TextField {
-                                id: enterDepartInput
-                                Layout.fillHeight: true
-                                Layout.fillWidth: true
-                                Layout.preferredWidth: 30
-                                Layout.preferredHeight: 20
-                                Layout.alignment: Qt.AlignCenter
-                                font.pixelSize: 20
-                                color:"#ffffff"
-                                font.family: comfortaalight.name
-                                horizontalAlignment: Text.AlignLeft
-                            }
-                        }
-                        onClicked: {
-                            enterDepartDefault.visible = false;
                         }
 
 
@@ -336,7 +328,7 @@ ApplicationWindow {
                         Layout.alignment: Qt.AlignCenter
                         font.pixelSize: 20
                         color:"#ffffff"
-                        text: "Arrivée"
+                        placeholderText : "Arrivée"
                         horizontalAlignment: Text.AlignLeft
                         font.family: comfortaalight.name
                         background : Rectangle {
@@ -362,7 +354,7 @@ ApplicationWindow {
                         Layout.alignment: Qt.AlignCenter
                         font.pixelSize: 20
                         color:"#ffffff"
-                        text: "0 km"
+                        placeholderText : "0 km"
                         font.capitalization: Font.MixedCase
                         font.underline: false
                         visible: true
@@ -427,24 +419,6 @@ ApplicationWindow {
 
         }
 
-        Rectangle {
-            id : ahbon
-            x : 400
-            width : 10
-            height : 10
-            visible : false
-        }
-        onClicked: {
-            if (mouse.button === Qt.LeftButton){
-                ahbon.visible == true
-
-                if((enterDepartDefault.visible == false) && (enterDepartInput === "")){
-                    enterDepartDefault.visible = true;
-                    console.log(enterArriveeInput);
-                }
-                console.log("click :)");
-            }
-        }
     }
 }
 
