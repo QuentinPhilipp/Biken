@@ -661,11 +661,11 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
     return nodeList;
 }
 
-QVariantList DataManager::createItinerary(){
+QVariantList DataManager::createItinerary(QList<double> startCoord, QList<double> finishCoord,QVariant km){
     // get the circle
-    unsigned long long startNodeId = 1529313453;        //Lanrivoaré
-    int direction = 2;                      //0=Nord, 1=Est, 2=Sud, 3=Ouest
-    double radius = 2;
+    unsigned long long startNodeId = findClosestNode(startCoord[0],startCoord[1])->getId();                            //1182549307;        //Lanrivoaré
+    int direction =90;                      //Degrées (0 = Est)
+    double radius = km.toDouble()/(2*3.14);
     std::vector<Node *> waypointNodeList = getCircleNode(startNodeId,direction,radius);
 
 
@@ -686,20 +686,34 @@ QVariantList DataManager::createItinerary(){
             node->setDistance(100000);
         }
     }
-    QTime chrono = QTime::currentTime();
-    QVariantList verifiedList = verifList(nodeList);
-    QTime endChrono = QTime::currentTime();
-    qDebug() << "Chrono verifying roads : " << chrono.msecsTo(endChrono);           //8 ms -> Pas nécessaire d'optimiser pour l'instant
-    return verifiedList;
 
+
+//    nodeList.append(findRoute(waypointNodeList[4]->getId(),waypointNodeList[3]->getId()));
+//    for(auto node : allNodesAtCrossroads){
+//        node->setMarque(0);
+//        node->setDistance(100000);
+//    }
+
+    qDebug()<<nodeList;
+    QTime chrono = QTime::currentTime();
+    bool verifOk = false;
+    qDebug()<<"size of nodeList :" << nodeList.size();
+    while(!verifOk){
+        verifOk = verifList(&nodeList);
+    }
+    QTime endChrono = QTime::currentTime();
+    qDebug() << "Chrono verifying roads : " << chrono.msecsTo(endChrono);           //qq ms -> Pas nécessaire d'optimiser pour l'instant
+    qDebug()<<"size of nodeList :" << nodeList.size();
+    return nodeList;
 }
 
 std::vector<Node *> DataManager::getCircleNode(unsigned long long startNodeId,int direction,double radius){
-    int pointsNumber = 5;
+    int pointsNumber =4;
     double angleBetween = 360/pointsNumber;
     double startAngle;
 
-    (direction==0) ? (startAngle=270) : ((direction==1) ? (startAngle=180) : ((direction==2) ? (startAngle=90) : startAngle =0)); //set startAngle (180 - angle of direction)
+    startAngle = direction-180;
+    //set startAngle (180 - angle of direction)
     /* un depart vers l'est, implique un point de depart a gauche du cercle
      * on commence donc par ce point*/
 
@@ -719,9 +733,9 @@ std::vector<Node *> DataManager::getCircleNode(unsigned long long startNodeId,in
 
     QVariantList coord;
     coord = addKmWithAngle(centerNode,startAngle,radius);
+
     Node * waypoint = findClosestNode(coord[0].toDouble(),coord[1].toDouble());
     waypointList.append(waypoint->getId());            // adding startNode to close the route
-
 
     std::vector<Node *> waypointNodeList;
     //create a vector of node from a vector of id
@@ -729,68 +743,79 @@ std::vector<Node *> DataManager::getCircleNode(unsigned long long startNodeId,in
         waypointNodeList.emplace_back(getNodeFromNodeId(static_cast<unsigned long long>(waypnt.toDouble())));
 
     }
+    qDebug() << waypointNodeList;
     return waypointNodeList;
 }
 
-QVariantList DataManager::verifList(QVariantList nodeList){
-    for(int i=1;i<nodeList.size()-1;i++){
-        if(nodeList[i-1] == nodeList[i+1]){
-            nodeList.removeAt(i);
+bool DataManager::verifList(QVariantList *nodeList){
+    QVariantList localNode = *nodeList;
+    qDebug() << "enter verif" << localNode[1];
+    for(int i=1;i<localNode.size()-1;i++){
+        if(localNode[i-1] == localNode[i+1]){         //verifie si il y a un noeud puis demi-tour
+            qDebug() << "remove "<<localNode[i];
+            localNode.removeAt(i);
         }
     }
     bool isVerified = false;
     while(isVerified==false){
+        qDebug()<<"in while";
         isVerified = true;
-        for(int i=1;i<nodeList.size();i++){
-            QVariant currentValue = nodeList[i];
-            if(nodeList[i-1] == nodeList[i]){
-                nodeList.removeAt(i);
-                nodeList.removeAt(i-1);
-                isVerified = false;                     // one point was remove so we have to check another time all the list
-                if(nodeList[i-1]!=nodeList[i-2]){
-                    nodeList.insert(i-1,currentValue);
+        for(int i=1;i<localNode.size();i++){
+            QVariant currentValue = localNode[i];
+            if(localNode[i-1] == localNode[i]){               //verifie si il y a 2 noeuds successifs
+                localNode.removeAt(i);
+                localNode.removeAt(i-1);
+                qDebug() << "remove double";
+                isVerified = false;                     // au moins un point a été enlever, on verifie toute la liste pour etre sur
+
+                if(localNode[i-1]!=localNode[i-2]){               // les noeuds sont differents, on va sortir de la boucle
+                    bool flag = false;                              //permet de break dans un double for
+                    int lowIndex = 0;
+                    int highIndex = 0;
+                    bool detection = false;
+                    for(int j=0;j<30;j++) {
+                        for(int k=0;k<30;k++){
+                            if(localNode[i-2-j]==localNode[i+k]){   //on cherche un point commun dans les noeuds suivant pour etre sur d'eviter les "terre plein"
+                                lowIndex =i-2-j;
+                                highIndex = i+k;
+                                flag = true;
+                                detection = true;
+                                qDebug()<<"detect";
+                                break;
+                            }
+                        }
+                        if(flag==true){break;}
+                    }
+                    if (detection==true){               //si un terre plein est détécté, on enleve les points des deux coté de la liste
+                        std::vector<int> range;
+                        for (int removeIndex = lowIndex; removeIndex < highIndex; removeIndex++) {
+                            range.emplace_back(removeIndex);
+                        }
+                        for (int removeIndex2 = 0; removeIndex2 < highIndex-lowIndex; ++removeIndex2) {
+                            localNode.removeAt(lowIndex);
+                        }
+                        *nodeList = localNode;                  //on stocke dans le vecteur de retour la liste courante. en envoyant false on demande au programme de relancer la verification
+                        return false;
+                    }else {
+                        localNode.insert(i-1,currentValue);          // si aucune séparation est détéctée, a la fin de la suppression on ajoute le dernier noeud retiré pour combler le manque
+                    }
                 }
             }
         }
     }
-    return nodeList;
+    *nodeList = localNode;
+    return true;
 }
 
 Node *DataManager::getCircleCenter(double radius, int direction, unsigned long long startNodeId)
 {
     //this function returns the center of a tangent circle as a function of direction
     Node * startNode = getNodeFromNodeId(startNodeId);
-    double startLat = startNode->getLatitude();
-    double startLon = startNode->getLongitude();
 
-    double centerLat,centerLon;
-
-    switch (direction) {
-    case 0:    //Nord
-        qDebug()<<"Creating circle to the north";
-        centerLat = addKmToLatitude(startLat,radius);
-        centerLon = startLon;
-        break;
-
-    case 1:    //Est
-        qDebug()<<"Creating circle to the east";
-        centerLat = startLat;
-        centerLon = addKmToLongitude(startLon,centerLat,radius);
-        break;
-
-    case 2:    //Sud
-        qDebug()<<"Creating circle to the south";
-        centerLat = addKmToLatitude(startLat,-radius);
-        centerLon = startLon;
-        break;
-
-    default:   //Ouest  (direction 3)
-        qDebug()<<"Creating circle to the west";
-        centerLat = startLat;
-        centerLon = addKmToLongitude(startLon,centerLat,-radius);
-        break;
-    }
-    return findClosestNode(centerLat,centerLon);        //return the closest node from the coordinate
+    QVariantList returnValue = addKmWithAngle(startNode,direction,radius);
+    QVariantList coord;
+    Node * n = new Node(0,returnValue[0].toDouble(),returnValue[1].toDouble());
+    return n;        //return the closest node from the coordinate
 }
 
 
