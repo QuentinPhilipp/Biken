@@ -3,42 +3,33 @@
 
 
 //constructor
-Way::Way(uint64_t id,vector<uint64_t> nodsId, vector<Node> n)
+
+Way::Way(unsigned long long id, Node * ctrNode)
     : id{id}
-    ,nodesId{nodsId}
-    ,nodes{n}
+    ,centerNode{ctrNode}
 {}
 
+Way::Way(unsigned long long id,vector<Node *> nods)
+    : id{id}
+    ,nodes{nods}
+{}
 
-void Way::displayNode()
-{
-    for (auto &e : nodes)
-      {
-        qDebug() << e.getId()<< "\n";
-      }
-}
+Way::Way(unsigned long long id, vector<Node *> nods, Node * centerNode,bool oneway,bool roundabout,int maxspeed,QString type)
+    : id{id}
+    ,nodes{nods}
+    ,centerNode{centerNode}
+    ,oneway{oneway}
+     ,roundabout{roundabout}
+    ,maxspeed{maxspeed}
+    ,type{type}
+{}
 
-void Way::displayGPSData()         //display way id and the position
-{                                   //using qDebug to print in the Qt console
-  qDebug() << "\n~~~~~~~ Way n° : "<< id << " ~~~~~~~";
-  for (auto &e : nodes)
-  {
-    qDebug() << "Node id : "<< e.getId();
-    qDebug() << " -Latitude : "<<e.getLatitude();
-    qDebug() << " -longitude : " << e.getLongitude();
-  }
-}
-
-void Way::displayWay()         //display way id and the position
-{                                   //using qDebug to print in the Qt console
-  qDebug() << "\n~~~~~~~ Way n° : "<< id << " ~~~~~~~";
-  for (auto &e : nodesId)
-  {
-    qDebug() << "Node id : "<< e;
-  }
-}
-
-vector<Node> Way::getNodes() const
+vector<Node *> Way::getNodes() const
 {
     return nodes;
+}
+
+Node * Way::getCenterNode() const
+{
+    return centerNode;
 }

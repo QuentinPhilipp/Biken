@@ -1,10 +1,14 @@
-QT += quick
+QT       += quick
 QT       += core gui
-QT += network
-QT += sql
+QT       += network
+QT       += sql
 QT       += core gui sql
+QT       +=webengine
+QT       +=core
+QT       +=widgets
 
 CONFIG += c++11
+
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -20,13 +24,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
     node.cpp \
+    utils.cpp \
     way.cpp \
-    requeteapi.cpp \
-    roadsdata.cpp \
     datamanager.cpp \
-    myadress.cpp
+    myadress.cpp \
+    card.cpp \
+    weather.cpp
 
 RESOURCES += qml.qrc
+
+#Additional Resource Script for the icon. In order to be fonctional, the .ico must be in the same directory and the file name must match the .rc file
+RC_FILE = icone.rc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -41,8 +49,13 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     node.h \
+    utils.h \
     way.h \
-    requeteapi.h \
-    roadsdata.h \
     datamanager.h \
-    myadress.h
+    myadress.h \
+    card.h \
+    weather.h
+
+DISTFILES += \
+    icone.rc \
+    translation/weather_descriptions.json

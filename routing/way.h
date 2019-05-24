@@ -9,18 +9,25 @@ using namespace std;
 class Way
 {
   public :
-    Way(uint64_t id,vector<uint64_t> nodesId,vector<Node> n);
+    Way(unsigned long long id, Node * centerNode);
+    Way(unsigned long long id,vector<Node *> nods);
+    Way(unsigned long long id, vector<Node *> nods, Node * centerNode,bool oneway,bool roundabout,int maxspeed,QString type);
 
     void displayNode();
-    void displayGPSData();
-    void displayWay();
+    vector<unsigned long long> getNodesId() const;
+    inline unsigned long long getId(){return id;}
+    vector<Node *> getNodes() const;
 
-    vector<Node> getNodes() const;
+    Node * getCenterNode() const;
 
 private:
-    uint64_t id;
-    vector<uint64_t> nodesId;
-    vector<Node> nodes;
+    unsigned long long id;
+    vector<Node *> nodes;
+    Node * centerNode;
+    bool oneway;
+    bool roundabout;
+    int maxspeed;
+    QString type;
 };
 
 

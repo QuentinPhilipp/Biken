@@ -2,60 +2,78 @@
 #include <QQmlApplicationEngine>
 #include <QQmlEngine>
 #include <QQmlContext>
+#include <QTime>
+#include <QUrl>
+#include <QtWebEngine>
+#include <QString>
+#include <QApplication>
+#include <QLabel>
 
+#include "utils.h"
 #include "node.h"
 #include "way.h"
-#include "requeteapi.h"
-#include "roadsdata.h"
 #include "myadress.h"
+#include "datamanager.h"
+#include "card.h"
+#include "weather.h"
+#include <QSplashScreen>
+
+
+//QSettings settings("config.ini", QSettings::IniFormat);
+
+
 
 int main(int argc, char *argv[])
 {
-    QGuiApplication app(argc, argv);
+    //for the webengineview
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QCoreApplication::setOrganizationName("QtExamples");
+    QApplication app(argc, argv);
+//    QGuiApplication app1(argc, argv);
 
-    //make a request to get all the roads around a coordinate
-    RequeteAPI *requeteRoads = new RequeteAPI();
-    QString radius = "1000"; //radius in meters. Do not set the radius too high (~200km max), otherwise it will exceed the api's capacity.
-    QJsonObject allRoads = requeteRoads->getAllRoadsAroundThePoint("48.434420","-4.640103",radius);
+    //creating splash screen
+    QPixmap pixmap("../routing/icons/splashScreen.png");
+    QSplashScreen splash(pixmap);
+    splash.show();
+    app.processEvents();
 
-    //create the datamanger class
-    //DataManager *db = new DataManager();
+
+    //create the datamanager class
     QScopedPointer<DataManager> db(new DataManager);
 
-    /*RoadsData roadsData = RoadsData();
-    roadsData.generateWaysAndNodes(allRoads);
-    vector<Way> wayVector = roadsData.getWayVector();*/
-
-    QScopedPointer<RoadsData> roadsData(new RoadsData);
-    roadsData->generateWaysAndNodes(allRoads, *db);
-    vector<Way> wayVector = roadsData->getWayVector();
-
-    //Verification
-    qDebug() << "\nAmount of ways: " << wayVector.size() ;  //shows the amount of Way objects
-    wayVector[wayVector.size()-1].displayGPSData();         //shows the very last Way object
+    db->requestRoads(48.477680, -4.526258,60);   //radius in km
 
 
-    qDebug() << "List of the node of Road id 105576006";
-        std::vector<QVariant> nodes = db->requestNodesFromRoad(105576006);
-        for (auto elem : nodes)
-        {
-            qDebug() << elem.toString();
-        }
-        qDebug() << "Latitude and longitue of the node id 1215777654";
-        QVariant lat,lon;
-        std::tie(lat,lon) = db->requestLatLonFromNodes(1215777654);
-        qDebug() << "Latitude : "<<lat.toString()<<" | Longitude : "<<lon.toString();
+    MyAdress* myAdress = new MyAdress();
+    Weather* weather = new Weather();
 
+    //create the Map class
+    Card *carte = new Card(1);
+    carte->createGeolocalisedMap();
+
+    //Initialize the HTML code related to the map
+    QtWebEngine::initialize();
+
+    //Recuperation of the working path
+
+    QDir dir = QDir::currentPath();   //return path in the build folder
+    dir.cdUp();                         //project folder
+    dir.cd("routing/Data");                  //routing folder
+    QString path = dir.path();
+    qDebug()<<path;
 
     //Pour passer du C++ au QML
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    engine.rootContext()->setContextProperty("path",path);              //create a variable path and wu use it in our QML
     if (engine.rootObjects().isEmpty())
         return -1;
+//    engine.rootContext()->setContextProperty("path",path);
+    engine.rootContext()->setContextProperty("myAdress",myAdress);      //create a variable myAdress usable in our QML code
+    engine.rootContext()->setContextProperty("dataManager", db.data()); //create a variable dataManager usable in our QML code
+    engine.rootContext()->setContextProperty("maCarte",carte);
+    engine.rootContext()->setContextProperty("weather",weather);        //create a variable weather usable in our QML code
 
-    MyAdress* myAdress = new MyAdress();
-    engine.rootContext()->setContextProperty("myAdress",myAdress);
-    engine.rootContext()->setContextProperty("roadsData", roadsData.data()); //créer une variable roadsData utilisable dans notre QML
-
+    splash.close();
     return app.exec();
 }
