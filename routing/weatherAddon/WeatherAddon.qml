@@ -5,13 +5,14 @@ import QtLocation 5.6
 import QtPositioning 5.6
 import QtQuick.Controls.Private 1.0
 import QtQuick.Layouts 1.2
+import QtQuick.Controls.Styles 1.4
 
 //This item has to be summon from a Rectangle with size parameters and id : meteoContainer
 ColumnLayout {
     id : weatherAddon
     width : meteoContainer.width
     height: meteoContainer.height
-    spacing:7
+    spacing: 7
     Layout.alignment: Qt.AlignCenter
 
     Button{
@@ -101,6 +102,7 @@ ColumnLayout {
             ListElement{text:"+ 2 jours et 21 heures"}
             ListElement{text:"+ 3 jours"}
         }
+
         onCurrentIndexChanged: {
             if (weatherItem.visible === true){
                 weather.changeForecast(box.currentIndex);
@@ -162,8 +164,8 @@ ColumnLayout {
                 id: windIcon
                 asynchronous: true
                 Layout.alignment: Qt.AlignCenter
-                sourceSize.width : 0.4*meteoContainer.width
-                sourceSize.height : windIcon.width
+                sourceSize.width : weatherIcon.width
+                sourceSize.height : weatherIcon.height
             }
         }
     }

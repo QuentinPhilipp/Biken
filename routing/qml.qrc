@@ -44,5 +44,6 @@
         <file>icons/ventF1.png</file>
         <file>icons/ventF2.png</file>
         <file>icons/ventF3.png</file>
+        <file>icons/index.png</file>
     </qresource>
 </RCC>
