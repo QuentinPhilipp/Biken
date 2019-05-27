@@ -11,6 +11,8 @@
 #include <QtMath>
 
 #include <QCoreApplication>
+#include <QDir>
+#include <QProcess>
 #include <math.h>
 #include <utils.h>
 
@@ -84,61 +86,6 @@ Node * DataManager::getNodeFromNodeId(unsigned long long nodeId)
             prev_i=temporaryValue;
         }
     }
-}
-
-
-vector<Node>
-DataManager::requestNodesFromRoad(unsigned long long idRoad)
-{
-    //converting
-    QVariant idRoadVar;
-    idRoadVar.setValue(idRoad);
-    QSqlQuery query;
-
-    //preparing query
-    query.prepare("SELECT id_node,latitude,longitude FROM roads WHERE id_way = ? ");
-    query.addBindValue(idRoadVar);
-
-    //execute
-    if(!query.exec())
-        qWarning() << "ERROR Finding nodes: " << query.lastError().text();
-
-    //add all the nodes of the result in a vector
-    vector<Node> nodes;
-    while (query.next()) {
-        unsigned long long id = static_cast<unsigned long long>(query.value(0).toDouble());
-        double lat = query.value(1).toDouble();
-        double lon = query.value(2).toDouble();
-        Node n = Node(id,lat,lon);
-        nodes.emplace_back(n);
-    }
-    return nodes;
-}
-
-vector<Node>    //overload
-DataManager::requestNodesFromRoad(QVariant idRoad)
-{
-    QSqlQuery query;
-
-    //preparing query
-    query.prepare("SELECT id_node,latitude,longitude FROM roads WHERE id_way = ? ");
-    query.addBindValue(idRoad);
-
-
-    //execute
-    if(!query.exec())
-        qWarning() << "ERROR Finding nodes: " << query.lastError().text();
-
-    //add all the nodes of the result in a vector
-    vector<Node> nodes;
-    while (query.next()) {
-        unsigned long long id = static_cast<unsigned long long>(query.value(0).toDouble());
-        double lat = query.value(1).toDouble();
-        double lon = query.value(2).toDouble();
-        Node n = Node(id,lat,lon);
-        nodes.emplace_back(n);
-    }
-    return nodes;
 }
 
 vector<Way *>
@@ -248,8 +195,6 @@ DataManager::requestRoadsFromNode(Node * node)
     }
     return roadsAtThatNode;
 }
-
-
 
 //This function stores every roads from the database in a vector of Way
 void DataManager::requestRoads(double lat,double lon,double rad)
@@ -664,13 +609,14 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
 QVariantList DataManager::createItinerary(QList<double> startCoord, QList<double> finishCoord,QVariant km){
     // get the circle
     unsigned long long startNodeId = findClosestNode(startCoord[0],startCoord[1])->getId();                            //1182549307;        //Lanrivoaré
-    int direction =90;                      //Degrées (0 = Est)
+    int direction =45;                      //Degrées (0 = Est)
     double radius = km.toDouble()/(2*3.14);
     std::vector<Node *> waypointNodeList = getCircleNode(startNodeId,direction,radius);
 
 
 //    QVariantList test;                                    //enable this if you want to see the circle
 //    for(auto node : waypointNodeList){
+//        qDebug()<<node->getId();
 //        test.append(node->getId());
 //    }
 //    return test;
@@ -749,23 +695,19 @@ std::vector<Node *> DataManager::getCircleNode(unsigned long long startNodeId,in
 
 bool DataManager::verifList(QVariantList *nodeList){
     QVariantList localNode = *nodeList;
-    qDebug() << "enter verif" << localNode[1];
     for(int i=1;i<localNode.size()-1;i++){
         if(localNode[i-1] == localNode[i+1]){         //verifie si il y a un noeud puis demi-tour
-            qDebug() << "remove "<<localNode[i];
             localNode.removeAt(i);
         }
     }
     bool isVerified = false;
     while(isVerified==false){
-        qDebug()<<"in while";
         isVerified = true;
         for(int i=1;i<localNode.size();i++){
             QVariant currentValue = localNode[i];
             if(localNode[i-1] == localNode[i]){               //verifie si il y a 2 noeuds successifs
                 localNode.removeAt(i);
                 localNode.removeAt(i-1);
-                qDebug() << "remove double";
                 isVerified = false;                     // au moins un point a été enlever, on verifie toute la liste pour etre sur
 
                 if(localNode[i-1]!=localNode[i-2]){               // les noeuds sont differents, on va sortir de la boucle
@@ -780,7 +722,6 @@ bool DataManager::verifList(QVariantList *nodeList){
                                 highIndex = i+k;
                                 flag = true;
                                 detection = true;
-                                qDebug()<<"detect";
                                 break;
                             }
                         }
@@ -817,39 +758,6 @@ Node *DataManager::getCircleCenter(double radius, int direction, unsigned long l
     Node * n = new Node(0,returnValue[0].toDouble(),returnValue[1].toDouble());
     return n;        //return the closest node from the coordinate
 }
-
-
-//vector<Node *> DataManager::getNodesNearby(Node * node)
-//{
-//    vector<Node *> nodesNearby;
-////    qDebug() << "3, node lat:" << node->getLatitude();
-//    vector<Way *> ways = requestRoadsFromNode(node);
-////    qDebug() << "getNodesNearby";
-//    while(!ways.empty()){
-//        vector<Node *> nodes = ways[ways.size()-1]->getNodes();
-//        if(nodes[0]->getId()==node->getId() && nodes.size()>1){
-//            nodesNearby.emplace_back(nodes[1]);
-//        }
-//        else if(nodes[nodes.size()-1]->getId()==node->getId() && nodes.size()>1){
-//            nodesNearby.emplace_back(nodes[nodes.size()-2]);
-//        }
-//        else{
-//            for(uint i=0 ; i<nodes.size()-1 ; i++){
-//                if(nodes[i]->getId()==node->getId()){
-//                    if((int(i)-1)>=0){
-//                        nodesNearby.emplace_back(nodes[i-1]);
-//                    }
-//                    if((i+1)<nodes.size()){
-//                        nodesNearby.emplace_back(nodes[i+1]);
-//                    }
-//                    break;
-//                }
-//            }
-//        }
-//        ways.pop_back();
-//    }
-//    return nodesNearby;
-//}
 
 vector<Node *> DataManager::getNodesNearby(Node * node)
 {
@@ -896,6 +804,22 @@ Node * DataManager::findClosestNode(double latitude,double longitude){
 }
 
 
+bool DataManager::extendDatabase(QStringList departement){
+    QDir dir = QDir::currentPath();     //return path in the build folder
+    dir.cdUp();                         //project folder
+    dir.cd("routing");                  //routing folder
+
+    QString program("python");
+    QStringList filepath = QStringList()<< dir.path()+"/generateTiles.py";         //on récupére le path du fichier à éxécuter
+    QStringList args = QStringList()<<filepath<<departement;                             //création de la ligne de commande qui sera envoyée
+//    qDebug()<<args;
+    QProcess p;
+    p.setWorkingDirectory(dir.path());
+    //qDebug() << "args : " << args << "\n dir.path : " << dir.path();
+    p.execute(program, args);
+    return true;
+}
+
 double DataManager::distanceBetween(Node A, Node B)
 {
     int r=6371; //earth radius in km
@@ -924,8 +848,6 @@ double DataManager::bearingBetween(Node A, Node B)
 bool DataManager::addNodes(QVariantList &routeNodes, unsigned long long finishNodeId)
 {
     bool finishNodeIsHere = false;
-
-
     return finishNodeIsHere;
 }
 
@@ -941,23 +863,3 @@ uint DataManager::getPositionInWay(Node *n, Way *way)
         }
     }
 }
-
-//vector<Node *> DataManager::getAllNodes()
-//{
-////    vector<Node *> nodes;
-////    for(auto &elem:allNodes){
-////        nodes.emplace_back(std::move(&elem));
-////    }
-////    return nodes;
-//    return allNodes;
-//}
-
-//vector<Way *> DataManager::getAllWays()
-//{
-////    vector<Way *> ways;
-////    for(auto &elem:allWays){
-////        ways.emplace_back(std::move(&elem));
-////    }
-////    return ways;
-//    return allWays;
-//}

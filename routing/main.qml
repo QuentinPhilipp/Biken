@@ -74,7 +74,7 @@ ApplicationWindow {
             //                        anchors.left:mapContainer.left
             //                        anchors.right:mapContainer.right
             anchors.fill:mapContainer
-            //url:"file://"+path+"/card.html"
+            url:"file://"+path+"/card.html"
             //url:"D:/Documents/ENIB/Semestre6/CPO/0-Projet/projets6/routing/Data/card.html"            //Leo
             //url:"/home/quentin/Documents/dev/projets6/routing/Data/card.html"            //Quentin
 
@@ -101,10 +101,13 @@ ApplicationWindow {
             Text{
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
-                anchors.topMargin: 2
+                anchors.topMargin: 10
+                width: 150
+                height: 20
                 font.pixelSize: 12
                 text: "TEST"
                 color: "black"
+
             }
         }
 
@@ -178,11 +181,7 @@ ApplicationWindow {
             background: Image {
                 id: downArrow
                 source: "qrc:/icons/index.png"
-            }/*Rectangle{
-                radius : 10
-                color:"#243665"
-                opacity: 0.9
-            }*/
+            }
             onClicked:{
                 animationONopacity.running = true;
                 animationONx.running = true;
@@ -227,7 +226,8 @@ ApplicationWindow {
 
                 if (startCoordinate.isValid && endCoordinate.isValid) {
                     var nodes = dataManager.createItinerary(startingCoordinates,finishCoordinates,kmDesired.text);
-                    maCarte.createMap(nodes,dataManager);
+                    maCarte.sendNodes(nodes,dataManager);
+                    maCarte.createMap();
                     console.log("Carte créée");
                     webengine.reload();
                 }
@@ -246,10 +246,7 @@ ApplicationWindow {
                 font.family: comfortaalight.name
                 color:"white"
             }
-
         }
-
-
 
         RowLayout {
             x: 35
@@ -347,8 +344,6 @@ ApplicationWindow {
 
 
                 }
-
-
                 TextField {
                     id: enterArriveeInput
                     Layout.fillHeight: true
@@ -373,7 +368,6 @@ ApplicationWindow {
                         height: 3
                         color: "#8bd8bd"
                     }
-
                 }
                 TextField {
                     id: kmDesired
@@ -402,11 +396,7 @@ ApplicationWindow {
                         height: 3
                         color: "#8bd8bd"
                     }
-
                 }
-
-
-
             }
         }
 
@@ -450,6 +440,7 @@ ApplicationWindow {
     }
 
 }
+
 
 
 
