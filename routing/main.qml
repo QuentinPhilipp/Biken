@@ -101,10 +101,30 @@ ApplicationWindow {
             Text{
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
-                anchors.topMargin: 2
-                font.pixelSize: 12
-                text: "TEST"
-                color: "black"
+                anchors.topMargin: 10
+                width: 150
+                height: 20
+                onClicked: {
+                    //Calls the function findRouteFrom(lat,lon) from datamanager in C++. It will return a list of nodes which are
+                    //themself a list of 2 coordinates (latitude,longitude). Those nodes represent every node on which you change
+                    //from one road to another.
+                    console.log("Calculating route...");
+                    //var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
+                    var nodes = dataManager.createItinerary();
+                    maCarte.sendNodes(nodes,dataManager)
+                    maCarte.createMap();
+                    console.log("Carte créée");
+                    webengine.reload();
+
+                }
+                Text{
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: 2
+                    font.pixelSize: 12
+                    text: "TEST"
+                    color: "black"
+                }
             }
         }
 
@@ -189,20 +209,49 @@ ApplicationWindow {
             }
         }
 
-        PropertyAnimation {
-            id: animationONx;
-            target: meteoContainer;
-            property: "y";
-            to: 550;
-            duration: 400
-        }
-        PropertyAnimation{
-            id : animationONopacity
-            target: meteoContainer
-            property: "opacity"
-            to : 0.9
-            duration: 400
-        }
+            //Button to validate
+            Button {
+                id: valider
+                x: 215
+                y: 301
+                width: 120
+                height: 25
+                opacity: 1
+                layer.enabled: true
+                background: Rectangle{
+                    radius : 20
+                    color : "black"
+                    opacity: 0.2
+                }
+                onClicked: {
+                    var startingCoordinates = myAdress.toCoordinates(enterDepartInput.text);
+                    var finishCoordinates = myAdress.toCoordinates(enterArriveeInput.text);
+
+                    var startCoordinate = QtPositioning.coordinate(startingCoordinates[0],startingCoordinates[1]);
+                    var endCoordinate = QtPositioning.coordinate(finishCoordinates[0],finishCoordinates[1]);
+
+                    if (startCoordinate.isValid && endCoordinate.isValid) {
+                        var nodes = dataManager.createItinerary(startingCoordinates,finishCoordinates,kmDesired.text);
+                        maCarte.sendNodes(nodes,dataManager);
+                        maCarte.createMap();
+                        console.log("Carte créée");
+                        webengine.reload();
+                    }
+                }
+                //zone texte
+                Text {
+                    id: textvalider
+                    x: 0
+                    y: 0
+                    width: 119
+                    height: 24
+                    text: "Valider"
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: 15
+                    font.family: comfortaalight.name
+                    color:"white"
+                }
 
         //Button to validate
         Button {
