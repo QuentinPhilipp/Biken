@@ -616,6 +616,7 @@ QVariantList DataManager::createItinerary(QList<double> startCoord, QList<double
 
 //    QVariantList test;                                    //enable this if you want to see the circle
 //    for(auto node : waypointNodeList){
+//        qDebug()<<node->getId();
 //        test.append(node->getId());
 //    }
 //    return test;

@@ -12,8 +12,9 @@ Card::Card(int identifiant)
 int Card::sendNodes(QVariantList RouteNodes, DataManager *db)       //envoie des coordonnées de chaque Nodes et l'itinéraire [lat,lon]
 {
     int dataLength = RouteNodes.length();
+    qDebug()<<"reception"<<RouteNodes;
     //création d'un fichier
-    QFile file("coordinates.txt");
+    QFile file("../routing/Data/coordinates.txt");
     // On ouvre notre fichier en lecture seule et on vérifie l'ouverture
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -24,12 +25,13 @@ int Card::sendNodes(QVariantList RouteNodes, DataManager *db)       //envoie des
     // Écriture des différentes lignes dans le fichier
     for(int i=0; i<dataLength ; ++i)
     {
-        QVariantList node =db->DataManager::requestLatLonFromNodes(RouteNodes[i]);
-        QString lon = node[0].toString();
-        QString lat = node[1].toString();
-        flux<<lon<<endl<<lat<<endl;
+        Node * node = db->getNodeFromNodeId(static_cast<unsigned long long>(RouteNodes[i].toDouble()));
+        QString lon = QString::number(node->getLongitude());
+        QString lat = QString::number(node->getLatitude());
+        flux<<lat<<endl<<lon<<endl;
     }
     file.close();
+    return 0;
 }
 
 uint64_t Card::getId() const
@@ -44,7 +46,7 @@ void Card::createMap()
     dir.cdUp();                         //project folder
     dir.cd("routing");                  //routing folder
 
-    QString program("python");
+    QString program("python3");
     QStringList filepath = QStringList()<< dir.path()+"/CardGeneration.py";         //on récupére le path du fichier à éxécuter
     QProcess p;
     p.setWorkingDirectory(dir.path());

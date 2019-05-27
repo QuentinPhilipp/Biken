@@ -18,7 +18,7 @@ function haveMarkers(){
 
 		if(item[0]=='m' && item[1]=='a' && item[2]=='r' && item[3]=="k" && item[4]=="e" && item[5]=="r" && item[6]=="_")			//on récupère maintenant tous les marqueurs de la carte
 		{
-		markers.push(item)	;					
+		markers.push(item)	;
 		}
 	}
 }
@@ -27,7 +27,7 @@ function haveLayer(){
     for(item in window) {
         if(item[0]=='t' && item[1]=='i' && item[2]=='l' && item[3]=="e" && item[4]=="_" && item[5]=="l" && item[6]=="a")
         {
-        return item 
+        return item
         }
             }
 }
@@ -47,11 +47,11 @@ var Esri_WorldImagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/
     'AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
     });
 
-    
+
 
 var baseLayers = {
-    "Si tu cliques...": Esri_WorldImagery,
-    "Tu vas ...": layer
+    "Satellite": Esri_WorldImagery,
+    "Plan": layer
     };
 
 var layerControl = L.control.layers(baseLayers);                //avec ce layer --> peut choisir vue satellite ect --> faire pour retourner à la vue de base
@@ -90,10 +90,5 @@ mymap.on('click', function(e) {
     marker.on('dragend', function(e) {
     		console.log(marker.getLatLng())
     	}
-    	)	
+    	)
     */
-
-
-
-
-	

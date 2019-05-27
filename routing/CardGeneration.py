@@ -32,7 +32,7 @@ def toHaveNodes():
 	global a
 	global b
 	a=0
-	b=1	
+	b=1
 	for i in range(int(len(pointsep)/2)):
 		points.append([pointsep[a],pointsep[b]])
 		a=a+2
@@ -41,4 +41,3 @@ def toHaveNodes():
 
 nodes = toHaveNodes()
 MapCreation(nodes)
-

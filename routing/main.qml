@@ -198,7 +198,8 @@ ApplicationWindow {
 
                     if (startCoordinate.isValid && endCoordinate.isValid) {
                         var nodes = dataManager.createItinerary(startingCoordinates,finishCoordinates,kmDesired.text);
-                        maCarte.createMap(nodes,dataManager);
+                        maCarte.sendNodes(nodes,dataManager);
+                        maCarte.createMap();
                         console.log("Carte créée");
                         webengine.reload();
                     }
