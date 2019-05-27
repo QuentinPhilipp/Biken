@@ -5,14 +5,17 @@ import QtLocation 5.6
 import QtPositioning 5.6
 import QtQuick.Controls.Private 1.0
 import QtQuick.Layouts 1.2
+import QtQuick.Controls.Styles 1.4
 
 //This item has to be summon from a Rectangle with size parameters and id : meteoContainer
 ColumnLayout {
     id : weatherAddon
     width : meteoContainer.width
     height: meteoContainer.height
-    spacing:7
+    spacing: 7
     Layout.alignment: Qt.AlignCenter
+
+    property var rotationvalue: 0
 
     Button{
         id:testWeather
@@ -101,14 +104,17 @@ ColumnLayout {
             ListElement{text:"+ 2 jours et 21 heures"}
             ListElement{text:"+ 3 jours"}
         }
+
         onCurrentIndexChanged: {
             if (weatherItem.visible === true){
                 weather.changeForecast(box.currentIndex);
                 weatherIcon.source = weather.getActiveIcon();
                 weatherDescription.text = weather.getActiveDescription();
                 windIcon.source = weather.getActiveWindStrength();
-                windIcon.rotation = weather.getActiveDirection();
+                //windIcon.rotation = weather.getActiveDirection();
                 windSpeed.text = weather.getActiveWindSpeed();
+                rotationvalue = weather.getActiveDirection();
+                onIndexChangeRotation.running = true;
             }
         }
     }
@@ -162,8 +168,15 @@ ColumnLayout {
                 id: windIcon
                 asynchronous: true
                 Layout.alignment: Qt.AlignCenter
-                sourceSize.width : 0.4*meteoContainer.width
-                sourceSize.height : windIcon.width
+                sourceSize.width : weatherIcon.width
+                sourceSize.height : weatherIcon.height
+                PropertyAnimation{
+                    id : onIndexChangeRotation
+                    to : rotationvalue
+                    duration : 300
+                    property : "rotation"
+                    target: windIcon
+                }
             }
         }
     }
@@ -175,6 +188,7 @@ ColumnLayout {
         spacing: 10
         Layout.alignment: Qt.AlignCenter
         Layout.fillWidth: true
+        Layout.fillHeight: true
         Text{
             font.pixelSize: 15
             color:"#ffffff"
@@ -191,8 +205,8 @@ ColumnLayout {
             asynchronous: true
             Layout.margins: 10
             Layout.alignment: Qt.AlignCenter
-            sourceSize.width : 0.3*meteoContainer.width
-            sourceSize.height : 0.3*meteoContainer.height
+            sourceSize.width : 0.5*errorItem.width
+            sourceSize.height : errorIcon.width
             fillMode: Image.Stretch
             source: "qrc:/icons/connexion.png"
         }
