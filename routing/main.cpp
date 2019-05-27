@@ -40,8 +40,15 @@ int main(int argc, char *argv[])
 
     //create the datamanager class
     QScopedPointer<DataManager> db(new DataManager);
+    db->requestRoads(48.4256796, -4.5376689,1);   //radius in km
 
-    db->requestRoads(48.477680, -4.526258,5);   //radius in km
+    //Recuperation of the working path
+
+    QDir dir = QDir::currentPath();   //return path in the build folder
+    dir.cdUp();                         //project folder
+    dir.cd("routing/Data");                  //routing folder
+    QString path = dir.path();
+    qDebug()<<path;
 
 
     MyAdress* myAdress = new MyAdress();
@@ -54,25 +61,18 @@ int main(int argc, char *argv[])
     //Initialize the HTML code related to the map
     QtWebEngine::initialize();
 
-    //Recuperation of the working path
 
-    QDir dir = QDir::currentPath();   //return path in the build folder
-    dir.cdUp();                         //project folder
-    dir.cd("routing/Data");                  //routing folder
-    QString path = dir.path();
-    qDebug()<<path;
 
     //Pour passer du C++ au QML
     QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     engine.rootContext()->setContextProperty("path",path);              //create a variable path and wu use it in our QML
+    engine.rootContext()->setContextProperty("weather",weather);        //create a variable weather usable in our QML code
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
-//    engine.rootContext()->setContextProperty("path",path);
     engine.rootContext()->setContextProperty("myAdress",myAdress);      //create a variable myAdress usable in our QML code
     engine.rootContext()->setContextProperty("dataManager", db.data()); //create a variable dataManager usable in our QML code
     engine.rootContext()->setContextProperty("maCarte",carte);
-    engine.rootContext()->setContextProperty("weather",weather);        //create a variable weather usable in our QML code
 
     splash.close();
     return app.exec();

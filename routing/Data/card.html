@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <head>    
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <script>L_PREFER_CANVAS=false; L_NO_TOUCH=false; L_DISABLE_3D=false;</script>
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.4.0/dist/leaflet.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
@@ -18,7 +23,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_063afcbc17594661a4653fde44ebcc16 {
+                #map_639f9bbdc2d44a07b14cade660c44a1d {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -30,15 +35,15 @@
 </head>
 <body>    
     
-            <div class="folium-map" id="map_063afcbc17594661a4653fde44ebcc16" ></div>
+            <div class="folium-map" id="map_639f9bbdc2d44a07b14cade660c44a1d" ></div>
         
 </body>
 <script>    
     
-            var map_063afcbc17594661a4653fde44ebcc16 = L.map(
-                "map_063afcbc17594661a4653fde44ebcc16",
+            var map_639f9bbdc2d44a07b14cade660c44a1d = L.map(
+                "map_639f9bbdc2d44a07b14cade660c44a1d",
                 {
-                    center: [48.3877, -4.4839],
+                    center: [48.8582, 2.3387000000000002],
                     crs: L.CRS.EPSG3857,
                     zoom: 9,
                     zoomControl: true,
@@ -46,18 +51,19 @@
                 }
             );
 
+            
 
         
     
-            var tile_layer_289d1c18fdc24517b9e5299220234460 = L.tileLayer(
+            var tile_layer_42de5887cbe846118a97d7f2c51b766b = L.tileLayer(
                 "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
-            ).addTo(map_063afcbc17594661a4653fde44ebcc16);
+            ).addTo(map_639f9bbdc2d44a07b14cade660c44a1d);
         
     
-            var marker_29b56f37b1e84cceb0cc8e1dd2cd611e = L.marker(
-                [48.3877, -4.4839],
+            var marker_2a7f4af7095a4c0887ce28e1470832c5 = L.marker(
+                [48.8582, 2.3387000000000002],
                 {}
-            ).addTo(map_063afcbc17594661a4653fde44ebcc16);
+            ).addTo(map_639f9bbdc2d44a07b14cade660c44a1d);
         
 </script>
