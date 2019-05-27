@@ -43,10 +43,6 @@ class Way(object):
 
     def getRoundabout(self):
         return self.roundabout
-        # if (self.roundabout) :
-        #     return 'True'
-        # else : return 'False'
-
 
     def getMaxspeed(self):
         return self.maxspeed
@@ -77,11 +73,13 @@ def createTable():
         c.execute('''CREATE TABLE roads (id_way BIGINT, centerLat DOUBLE, centerLon DOUBLE, id_node BIGINT,oneway BOOL,roundabout BOOL, maxspeed INT, type TEXT,latitude DOUBLE, longitude DOUBLE)''')
 
         conn.commit()
+        c.execute('''CREATE TABLE departement (id TEXT,name TEXT)''')
+
+        conn.commit()
+
+
     except :
         pass
-        # c.execute('''DROP TABLE roads''')
-        # conn.commit()
-        # createTable()
 
 def getData(lat,lon,rad):
     global requestTime,stockageTime,fetchingTime
@@ -216,7 +214,6 @@ def addValues(nodesVector,wayVector):
     c.executemany(sqlInsertQuery, ways)
     conn.commit()
 
-
 def fixingError(errorList):
     while (len(errorList)!=0):
         print 'Still ',len(errorList),' errors'
@@ -226,25 +223,70 @@ def fixingError(errorList):
         except Exception as e:
             pass
 
-createTable()
-#start()
-
 def addId(args):
-    file = open("../routing/Data/departement.txt","a")
+    list = []
+    cur = conn.cursor()
+    with open('../routing/Data/regionCoord.json') as json_file:
+        data = json.load(json_file)
+        for j in range(len(sys.argv)):
+            for i in range(len(data)):
+                if j==0:
+                    pass
+
+                elif data[i]["ID"] == str(sys.argv[j]):
+                    name = data[i]["Name"]
+                    print(name,j)
+                    list.append((sys.argv[j],name));
+
+    print('Ajout de :',list)
+    cur.executemany("INSERT INTO departement(id,name) VALUES (?,?)",list)
+    conn.commit()
+
+def checkDataIn():
+    #return the list of departement to add to avoid double values in the database
+    cur = conn.cursor()
+    entryList = []
+    alreadyInList = []
+    outputList = []
+
+    #check which region we want
     for arg in sys.argv:
-        #except arg 0
-        if arg == sys.argv[0]:
+        if arg==sys.argv[0]:
             pass
-        else :
-            file.write(str(arg)+"\n")
+        else:
+            entryList.append(arg)
+
+    #check which region we have
+    cur.execute("SELECT * FROM departement")
+    rows = cur.fetchall()
+
+    for row in rows:
+        alreadyInList.append(row[0])
+
+
+    print("alreadyInList : ",alreadyInList)
+    print("entryList : ",entryList)
+
+    for e in entryList:
+        if e not in alreadyInList:
+            outputList.append(e)
+
+    #get the difference
+    return outputList
+
+createTable()
+
+regionToAdd = checkDataIn()
+print("add :",regionToAdd)
+
 
 with open('../routing/Data/regionCoord.json') as json_file:
     distance = 25           #distance*2 = size between two requestPoint
     errorList=[]
     data = json.load(json_file)
-    for j in range(len(sys.argv)):
+    for j in range(len(regionToAdd)):
         for i in range(len(data)):
-            if data[i]["ID"] == str(sys.argv[j]):
+            if data[i]["ID"] == str(regionToAdd[j]):
                 print "Nom :",data[i]["Name"]," | ID : ",data[i]["ID"]," | Coordonnées du centre : ",data[i]["Latitude"]," : ",data[i]["Longitude"]
                 lat1 = str(data[i]["Latitude"]+distance/111.11)
                 lon1 = str(data[i]["Longitude"]+distance/(111.11*cos(data[i]["Latitude"])))
@@ -282,9 +324,9 @@ with open('../routing/Data/regionCoord.json') as json_file:
 
     fixingError(errorList)
 
-    addId(sys.argv)
+    addId(regionToAdd)
 
-
+conn.close()
 
 #creer 4 carré equidistant
 #requetes d'environ 50~60 km de rayon (il faut que les cercles se croisent assez)

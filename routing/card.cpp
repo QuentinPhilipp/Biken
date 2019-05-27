@@ -44,7 +44,7 @@ void Card::createMap()
     dir.cdUp();                         //project folder
     dir.cd("routing");                  //routing folder
 
-    QString program("python3");
+    QString program("python");
     QStringList filepath = QStringList()<< dir.path()+"/CardGeneration.py";         //on récupére le path du fichier à éxécuter
     QProcess p;
     p.setWorkingDirectory(dir.path());

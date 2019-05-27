@@ -78,7 +78,9 @@ ApplicationWindow {
                 //                        anchors.right:mapContainer.right
                 anchors.fill:mapContainer
                 url:"file://"+path+"/card.html"
-                //                        url:"D:/Documents/ENIB/Semestre6/CPO/0-Projet/projets6/routing/Data/card.html"
+                //url:"D:/Documents/ENIB/Semestre6/CPO/0-Projet/projets6/routing/Data/card.html"            //Leo
+                //url:"/home/quentin/Documents/dev/projets6/routing/Data/card.html"            //Quentin
+
             }
             Button{
                 id: testButton
@@ -93,7 +95,7 @@ ApplicationWindow {
                     //from one road to another.
                     console.log("Calculating route...");
                     //var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
-                    var nodes = dataManager.getCircleNode();
+                    var nodes = dataManager.createItinerary();
                     maCarte.sendNodes(nodes,dataManager)
                     maCarte.createMap();
                     console.log("Carte créée");
@@ -112,9 +114,38 @@ ApplicationWindow {
 
         }
 
-        WeatherAddon{
-            id:element
+        Rectangle{
+            id:meteoContainer
+            x:35
+            y:550
+            width: 350
+            height: 250
+            color: "#243665"
+            opacity: 0.9
+            radius : 20
+            Button{
+                id: hideButton
+                width: 50
+                height : 25
+                x :(meteoContainer.width/2 - hideButton.width/2)
+                y : -hideButton.height
+                background: Rectangle{
+                    radius : 10
+                    color:"#243665"
+                    opacity: 0.9
+                }
+                onClicked:{
+                    if(meteoContainer.visible === true){
+                        meteoContainer.visible = false;
+                    }
+                }
+            }
+            WeatherAddon{
+                id:element
+            }
+
         }
+
 
         Rectangle {
             id: rectangleparameter
@@ -125,6 +156,24 @@ ApplicationWindow {
             color: "#243665"
             opacity: 0.9
             radius : 20
+
+            Button{
+                id: showButton
+                width: 50
+                height : 25
+                x :(rectangleparameter.width/2 - showButton.width/2)
+                y : rectangleparameter.height
+                background: Rectangle{
+                    radius : 10
+                    color:"#243665"
+                    opacity: 0.9
+                }
+                onClicked:{
+                    if(meteoContainer.visible === false){
+                        meteoContainer.visible = true;
+                    }
+                }
+            }
 
             //Button to validate
             Button {
@@ -140,12 +189,6 @@ ApplicationWindow {
                     color : "black"
                     opacity: 0.2
                 }
-
-                //            layer.effect: DropShadow {
-                //                transparentBorder: true
-                //                horizontalOffset: 3
-                //                verticalOffset: 3
-                //            }
                 onClicked: {
                     var startingCoordinates = myAdress.toCoordinates(enterDepartInput.text);
                     var finishCoordinates = myAdress.toCoordinates(enterArriveeInput.text);
@@ -154,7 +197,10 @@ ApplicationWindow {
                     var endCoordinate = QtPositioning.coordinate(finishCoordinates[0],finishCoordinates[1]);
 
                     if (startCoordinate.isValid && endCoordinate.isValid) {
-                        thisIsTheMap.calculateCoordinateRoute(startCoordinate,endCoordinate)
+                        var nodes = dataManager.createItinerary(startingCoordinates,finishCoordinates,kmDesired.text);
+                        maCarte.createMap(nodes,dataManager);
+                        console.log("Carte créée");
+                        webengine.reload();
                     }
                 }
                 //zone texte
@@ -243,61 +289,21 @@ ApplicationWindow {
 
                     //route settings
 
-                    //                    MouseArea{
-                    //                        x : 0
-                    //                        y : 0
-                    //                        width : enterDepartInput.width
-                    //                        height : enterDepartInput.height
-                    //                        onClicked: {
-                    //                            if(enterDepartDefault.visible == true){
-                    //                                enterDepartDefault.visible = false;
-                    //                            }
-                    //                        }
-                    //                        Text {
-                    //                            id: enterDepartDefault
-                    //                            x : 0
-                    //                            y : 0
-                    //                            text: "Départ"
-                    //                            visible: true
-                    //                            font.pixelSize: 20
-                    //                            color:"#ffffff"
-                    //                            font.family: comfortaalight.name
-                    //                        }
-                    //                    }
 
-
-                    Button {
-                        id: button
+                    TextField {
+                        id: enterDepartInput
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
                         Layout.preferredWidth: 30
                         Layout.preferredHeight: 20
-                        Text{
-                            id: enterDepartDefault
-                            Layout.preferredWidth: 30
-                            Layout.preferredHeight: 20
-                            horizontalAlignment: Text.AlignLeft
-                            text: "Départ"
-                            visible: true
-                            font.pixelSize: 20
-                            color:"#ffffff"
-                            font.family: comfortaalight.name
-                        }
-                        background: Rectangle{
+                        Layout.alignment: Qt.AlignCenter
+                        font.pixelSize: 20
+                        color:"#ffffff"
+                        placeholderText : "Départ"
+                        horizontalAlignment: Text.AlignLeft
+                        font.family: comfortaalight.name
+                        background : Rectangle {
                             opacity: 0
-                            TextField {
-                                id: enterDepartInput
-                                Layout.fillHeight: true
-                                Layout.fillWidth: true
-                                Layout.preferredWidth: 30
-                                Layout.preferredHeight: 20
-                                Layout.alignment: Qt.AlignCenter
-                                font.pixelSize: 20
-                                color:"#ffffff"
-                                font.family: comfortaalight.name
-                                horizontalAlignment: Text.AlignLeft
-                            }
-                        }
-                        onClicked: {
-                            enterDepartDefault.visible = false;
                         }
 
 
@@ -323,7 +329,7 @@ ApplicationWindow {
                         Layout.alignment: Qt.AlignCenter
                         font.pixelSize: 20
                         color:"#ffffff"
-                        text: "Arrivée"
+                        placeholderText : "Arrivée"
                         horizontalAlignment: Text.AlignLeft
                         font.family: comfortaalight.name
                         background : Rectangle {
@@ -349,7 +355,7 @@ ApplicationWindow {
                         Layout.alignment: Qt.AlignCenter
                         font.pixelSize: 20
                         color:"#ffffff"
-                        text: "0 km"
+                        placeholderText : "0 km"
                         font.capitalization: Font.MixedCase
                         font.underline: false
                         visible: true
@@ -414,24 +420,6 @@ ApplicationWindow {
 
         }
 
-        Rectangle {
-            id : ahbon
-            x : 400
-            width : 10
-            height : 10
-            visible : false
-        }
-        onClicked: {
-            if (mouse.button === Qt.LeftButton){
-                ahbon.visible == true
-
-                if((enterDepartDefault.visible == false) && (enterDepartInput === "")){
-                    enterDepartDefault.visible = true;
-                    console.log(enterArriveeInput);
-                }
-                console.log("click :)");
-            }
-        }
     }
 }
 
