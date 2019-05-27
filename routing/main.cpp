@@ -40,11 +40,18 @@ int main(int argc, char *argv[])
 
     //create the datamanager class
     QScopedPointer<DataManager> db(new DataManager);
-
-    db->requestRoads(48.477680, -4.526258,60);   //radius in km
-
-
     MyAdress* myAdress = new MyAdress();
+
+    QStringList departments;
+    departments<<"29"<<"57";
+    db->extendDatabase(departments);
+    qDebug()<<"End script database";
+
+    QString defaultAdress = "Brest";              //load the database around the adress
+    QList<double> defaultCoord = myAdress->toCoordinates(defaultAdress);
+    qDebug()<<defaultCoord;
+    db->requestRoads(defaultCoord[0],defaultCoord[1],60);   //radius in km
+
     Weather* weather = new Weather();
 
     //create the Map class

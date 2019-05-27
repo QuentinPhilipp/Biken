@@ -73,7 +73,7 @@
  },
  {
    "ID": "13",
-   "Name": "BOUCHES-DU-RHÔNE",
+   "Name": "BOUCHES-DU-RHONE",
    "Longitude": 5.0511,
    "Latitude": 43.3236
  },
@@ -127,13 +127,13 @@
  },
  {
    "ID": "21",
-   "Name": "CÔTE-D'OR",
+   "Name": "COTE-D'OR",
    "Longitude": 4.462,
    "Latitude": 47.2529
  },
  {
    "ID": "22",
-   "Name": "CÔTES-D'ARMOR",
+   "Name": "COTES-D'ARMOR",
    "Longitude": -2.5151,
    "Latitude": 48.2628
  },
@@ -175,7 +175,7 @@
  },
  {
    "ID": "29",
-   "Name": "FINISTÈRE",
+   "Name": "FINISTERE",
    "Longitude": -4.0332,
    "Latitude": 48.154
  },
@@ -205,7 +205,7 @@
  },
  {
    "ID": "34",
-   "Name": "HÉRAULT",
+   "Name": "HERAULT",
    "Longitude": 3.2202,
    "Latitude": 43.3447
  },
@@ -229,7 +229,7 @@
  },
  {
    "ID": "38",
-   "Name": "ISÈRE",
+   "Name": "ISERE",
    "Longitude": 5.3434,
    "Latitude": 45.1548
  },
@@ -289,7 +289,7 @@
  },
  {
    "ID": "48",
-   "Name": "LOZÈRE",
+   "Name": "LOZERE",
    "Longitude": 3.3001,
    "Latitude": 44.3102
  },
@@ -349,7 +349,7 @@
  },
  {
    "ID": "58",
-   "Name": "NIÈVRE",
+   "Name": "NIEVRE",
    "Longitude": 3.3017,
    "Latitude": 47.0655
  },
@@ -379,25 +379,25 @@
  },
  {
    "ID": "63",
-   "Name": "PUY-DE-DÔME",
+   "Name": "PUY-DE-DOME",
    "Longitude": 3.0827,
    "Latitude": 45.4333
  },
  {
    "ID": "64",
-   "Name": "PYRÉNÉES-ATLANTIQUES",
+   "Name": "PYRENEES-ATLANTIQUES",
    "Longitude": -0.4541,
    "Latitude": 43.1524
  },
  {
    "ID": "65",
-   "Name": "HAUTES-PYRÉNÉES",
+   "Name": "HAUTES-PYRENEES",
    "Longitude": -0.095,
    "Latitude": 43.0311
  },
  {
    "ID": "66",
-   "Name": "PYRÉNÉES-ORIENTALES",
+   "Name": "PYRENEES-ORIENTALES",
    "Longitude": -2.312,
    "Latitude": 42.36
  },
@@ -421,13 +421,13 @@
  },
  {
    "ID": "70",
-   "Name": "HAUTE-SAÔNE",
+   "Name": "HAUTE-SAONE",
    "Longitude": 6.051,
    "Latitude": 47.3828
  },
  {
    "ID": "71",
-   "Name": "SAÔNE-ET-LOIRE",
+   "Name": "SAONE-ET-LOIRE",
    "Longitude": 4.3232,
    "Latitude": 46.3841
  },
@@ -475,7 +475,7 @@
  },
  {
    "ID": "79",
-   "Name": "DEUX-SÈVRES",
+   "Name": "DEUX-SEVRES",
    "Longitude": -0.1902,
    "Latitude": 46.332
  },
@@ -511,7 +511,7 @@
  },
  {
    "ID": "85",
-   "Name": "VENDÉE",
+   "Name": "VENDEE",
    "Longitude": -1.1752,
    "Latitude": 46.4029
  },
@@ -541,7 +541,7 @@
  },
  {
    "ID": "90",
-   "Name": "TERRITOIRE,DE,BELFORT",
+   "Name": "TERRITOIRE DE BELFORT",
    "Longitude": 6.5543,
    "Latitude": 47.3754
  },
