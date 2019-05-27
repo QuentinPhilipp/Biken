@@ -23,9 +23,6 @@
         <file>icons/50n.png</file>
         <file>icons/connexion.png</file>
         <file>weatherAddon/WeatherAddon.qml</file>
-        <file>icons/windSpeed1.png</file>
-        <file>icons/windSpeed2.png</file>
-        <file>icons/windSpeed3.png</file>
         <file>Data/.gitkeep</file>
         <file>Data/requestPoint.json</file>
         <file>flag.png</file>
@@ -44,5 +41,8 @@
         <file>Images/logorouge.png</file>
         <file>Images/logovert.png</file>
         <file>Images/road.png</file>
+        <file>icons/ventF1.png</file>
+        <file>icons/ventF2.png</file>
+        <file>icons/ventF3.png</file>
     </qresource>
 </RCC>

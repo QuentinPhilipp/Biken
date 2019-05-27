@@ -57,8 +57,9 @@ ColumnLayout {
         font.pixelSize: 20
         color:"#ffffff"
         font.family: comfortaalight.name
-        text: "Weather Forecast"
+        text: "Prévisions météo"
         Layout.alignment: Qt.AlignCenter
+        Layout.topMargin: 5
     }
 
     ComboBox {
@@ -74,7 +75,7 @@ ColumnLayout {
         model: ListModel{
 
             id: forecastItem
-            ListElement{text:"Now"}
+            ListElement{text:"Maintenant"}
             ListElement{text:"+ 3 heures"}
             ListElement{text:"+ 6 heures"}
             ListElement{text:"+ 9 heures"}
@@ -114,50 +115,55 @@ ColumnLayout {
 
     RowLayout{
         spacing:10
-
+        id: layouts
 
         ColumnLayout{
             id:weatherItem
             visible:false
             spacing : 10
+            Layout.alignment: Qt.AlignLeft
+            width: layouts.width / 2
+            height:meteoContainer.height - weatherItem.x
             Text{
                 id:weatherDescription
                 Layout.margins: 10
-                Layout.alignment: Qt.AlignCenter
-                font.pixelSize: 20
+                Layout.fillWidth: true
+                font.pixelSize: 15
                 color:"#ffffff"
                 font.family: comfortaalight.name
+                horizontalAlignment: Text.AlignHCenter
             }
             Image {
                 id: weatherIcon
                 asynchronous: true
-                Layout.margins: 10
                 Layout.alignment: Qt.AlignCenter
-                sourceSize.width : 0.2*meteoContainer.width
-                sourceSize.height : 0.2*meteoContainer.height
-                fillMode: Image.Stretch
+                sourceSize.width : 0.4*meteoContainer.width
+                sourceSize.height : windIcon.width
             }
         }
         ColumnLayout{
             id:windItem
             visible: false
             spacing : 10
+            width: layouts.width / 2
+            Layout.alignment: Qt.AlignRight
+            height:meteoContainer.height - windItem.x
             Text{
                 id:windSpeed
-                Layout.alignment: Qt.AlignCenter
+                Layout.fillWidth: true
                 Layout.margins: 10
-                font.pixelSize: 20
+                font.pixelSize: 15
                 color:"#ffffff"
                 font.family: comfortaalight.name
+                horizontalAlignment: Text.AlignHCenter
+
             }
             Image {
                 id: windIcon
                 asynchronous: true
-                Layout.margins: 10
                 Layout.alignment: Qt.AlignCenter
-                sourceSize.width : 0.2*meteoContainer.width
-                sourceSize.height : 0.2*meteoContainer.height
-                fillMode: Image.Stretch
+                sourceSize.width : 0.4*meteoContainer.width
+                sourceSize.height : windIcon.width
             }
         }
     }
@@ -166,14 +172,19 @@ ColumnLayout {
     ColumnLayout {
         id: errorItem
         visible: false
-        spacing:10
+        spacing: 10
         Layout.alignment: Qt.AlignCenter
+        Layout.fillWidth: true
         Text{
-            font.pixelSize: 20
+            font.pixelSize: 15
             color:"#ffffff"
             font.family: comfortaalight.name
             id:errorDescription
             Layout.alignment: Qt.AlignCenter
+            Layout.margins: 15
+            Layout.fillWidth: true
+            maximumLineCount:2
+            wrapMode:Text.Wrap
         }
         Image{
             id :errorIcon
