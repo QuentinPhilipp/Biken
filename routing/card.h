@@ -17,10 +17,10 @@ class Card : public QObject
 Q_OBJECT
 public:
     Card(int identifiant);
-    Q_INVOKABLE void createMap(QVariantList RouteNodes, DataManager *db);
+    Q_INVOKABLE void createMap();
     uint64_t getId() const;
     Q_INVOKABLE QString getCurrentPath();
-    Q_INVOKABLE QStringList sendNodes(QVariantList RouteNodes, DataManager *db);
+    Q_INVOKABLE int sendNodes(QVariantList RouteNodes, DataManager *db);
     Q_INVOKABLE void createGeolocalisedMap();
 private:
     int id;
