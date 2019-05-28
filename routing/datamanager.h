@@ -32,14 +32,10 @@ public:
     //    //methods
     std::vector<Node> requestNodesFromRoad(unsigned long long idRoad);
     std::vector<Node> requestNodesFromRoad(QVariant idRoad);        //overload
-    std::vector<Way *> requestRoadsFromNode(Node * node);
     Node * getCircleCenter(double radius,int direction,unsigned long long startNodeId);
     void requestRoads(double lat,double lon,double rad);
     Q_INVOKABLE QVariantList requestLatLonFromNodes(QVariant idNode);
-    std::vector<QVariant> requestNodeFromLatLon(double lat, double lon);
 
-    Q_INVOKABLE QVariantList findRouteFrom(double lat, double lon);
-    //vector<Node> findRoute();
     Q_INVOKABLE QVariantList findRoute(unsigned long long startNodeId,unsigned long long finishNodeId);
     Q_INVOKABLE std::vector<Node *> getCircleNode(unsigned long long startNodeId,int direction,double radius);
     vector<Node *> getNodesNearby(Node * node);
@@ -52,6 +48,7 @@ public:
     Node *findClosestNode(double latitude, double longitude);
     Q_INVOKABLE QVariantList createItinerary(QList<double> startCoord, QList<double> finishCoord, QVariant km);
     bool extendDatabase(QStringList departement);
+    double getItineraryLength(QVariantList routeNodes);
 
 private:
 
@@ -59,6 +56,8 @@ private:
     vector<Node *> allNodes;
     vector<Node *> allNodesAtCrossroads;
     vector<Way *> allWays;
+    vector<Way *> allWaysCloseRange;
+
 
     //methods
     //    void addTables();
