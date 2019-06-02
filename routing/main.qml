@@ -60,6 +60,60 @@ ApplicationWindow {
 
     }
 
+    Popup{
+        id:loadingScreen
+        width : 400
+        height : 300
+        x : mainWaindow.width/2 - (width/2)
+        y : mainWaindow.height/2 - (height/2)
+        background: Rectangle {
+            radius : 5
+            color : "#243665"
+        }
+
+        property var running: false
+
+        function loading(){
+            open();
+            running = true;
+        }
+
+        function loaded(){
+            running = false;
+            close();
+        }
+
+        ColumnLayout{
+            spacing: 10
+            width : 400
+            height : 300
+            Text {
+                id: loadingText
+                text: "Chargement de l'itinéraire en cours..."
+                Layout.fillWidth: true
+                verticalAlignment: Text.AlignHCenter
+                Layout.alignment: Qt.AlignCenter
+                font.pixelSize: 19
+                font.family: comfortaalight.name
+                color:"white"
+            }
+            Image {
+                id: loadingIcon
+                source: "qrc:icons/loading.png"
+                Layout.alignment:Qt.AlignCenter
+
+                RotationAnimation on rotation{
+                    id : iconRotation
+                    from : 0
+                    to : 360
+                    duration: 6000
+                    running : loadingScreen.running
+                    loops : Animation.Infinite
+                }
+            }
+        }
+    }
+
     //Rectangle where the map will appear
     Rectangle {
         id: mapContainer
@@ -170,6 +224,12 @@ ApplicationWindow {
         opacity: 0.9
         radius : 20
 
+        Keys.onPressed: {
+            if(event.key === Qt.Key_Enter){
+                valider.validate();
+            }
+        }
+
         Button{
             id: showButton
             width: 50
@@ -215,7 +275,8 @@ ApplicationWindow {
                 color : "black"
                 opacity: 0.2
             }
-            onClicked: {
+
+            function validate(){
                 var startingCoordinates = myAdress.toCoordinates(enterDepartInput.text);
                 var finishCoordinates = myAdress.toCoordinates(enterArriveeInput.text);
 
@@ -223,13 +284,19 @@ ApplicationWindow {
                 var endCoordinate = QtPositioning.coordinate(finishCoordinates[0],finishCoordinates[1]);
 
                 if (startCoordinate.isValid && endCoordinate.isValid) {
+                    loadingScreen.loading();
+                    element.activate(startingCoordinates[0],startingCoordinates[1]);
                     var nodes = dataManager.createItinerary(startingCoordinates,finishCoordinates,kmDesired.text);
                     maCarte.sendNodes(nodes,dataManager);
                     //maCarte.createMap();
                     console.log("Carte créée");
                     webengine.reload();
                 }
+                loadingScreen.loaded();
             }
+
+            onClicked: validate()
+
             //zone texte
             Text {
                 id: textvalider
