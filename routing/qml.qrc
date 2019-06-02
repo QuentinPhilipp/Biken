@@ -45,5 +45,6 @@
         <file>icons/ventF2.png</file>
         <file>icons/ventF3.png</file>
         <file>icons/index.png</file>
+        <file>icons/loading.png</file>
     </qresource>
 </RCC>
