@@ -225,6 +225,7 @@ ApplicationWindow {
                 var endCoordinate = QtPositioning.coordinate(finishCoordinates[0],finishCoordinates[1]);
 
                 if (startCoordinate.isValid && endCoordinate.isValid) {
+                    element.activate(startingCoordinates[0],startingCoordinates[1]);
                     var nodes = dataManager.createItinerary(startingCoordinates,finishCoordinates,kmDesired.text);
                     maCarte.sendNodes(nodes,dataManager);
                     maCarte.createMap();
