@@ -172,6 +172,13 @@ ApplicationWindow {
         opacity: 0.9
         radius : 20
 
+        Keys.onPressed: {
+            if(event.key === Qt.Key_Enter){
+                valider.validate();
+            }
+
+        }
+
         Button{
             id: showButton
             width: 50
@@ -217,7 +224,8 @@ ApplicationWindow {
                 color : "black"
                 opacity: 0.2
             }
-            onClicked: {
+
+            function validate(){
                 var startingCoordinates = myAdress.toCoordinates(enterDepartInput.text);
                 var finishCoordinates = myAdress.toCoordinates(enterArriveeInput.text);
 
@@ -233,6 +241,9 @@ ApplicationWindow {
                     webengine.reload();
                 }
             }
+
+            onClicked: validate()
+
             //zone texte
             Text {
                 id: textvalider
