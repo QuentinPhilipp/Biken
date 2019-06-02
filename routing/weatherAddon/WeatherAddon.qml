@@ -17,41 +17,27 @@ ColumnLayout {
 
     property var rotationvalue: 0
 
-    Button{
-        id:testWeather
-        Layout.alignment: Qt.AlignCenter
-        height: 20
-        visible:true
-        Text{
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 2
-            font.pixelSize: 12
-            text: "TEST"
-            color: "black"
+    function activate(coord1,coord2){
+        weather.createForecast(coord1,coord2);
+        if(!weather.getError()){
+            weatherIcon.source = weather.getActiveIcon();
+            weatherDescription.text = weather.getActiveDescription();
+            windSpeed.text = weather.getActiveWindSpeed();
+            windIcon.source = weather.getActiveWindStrength();
+            windIcon.rotation = weather.getActiveDirection();
+            weatherItem.visible = true;
+            windItem.visible = true;
+            box.visible = true;
+            errorItem.visible = false;
+            animationONopacity.running = true;
+            animationONx.running = true;
         }
-        onClicked: {
-            weather.createForecast(48.4000000,-4.4833300);
-            if(!weather.getError()){
-                testWeather.visible = false;
-                weatherIcon.source = weather.getActiveIcon();
-                weatherDescription.text = weather.getActiveDescription();
-                windSpeed.text = weather.getActiveWindSpeed();
-                windIcon.source = weather.getActiveWindStrength();
-                windIcon.rotation = weather.getActiveDirection();
-                weatherItem.visible = true;
-                windItem.visible = true;
-                box.visible = true;
-                errorItem.visible = false
-            }
-            else{
-                errorDescription.text = weather.getError();
-                weatherItem.visible = false;
-                windItem.visible = false;
-                box.visible = false;
-                errorItem.visible = true;
-                testWeather.visible = true;
-            }
+        else{
+            errorDescription.text = weather.getError();
+            weatherItem.visible = false;
+            windItem.visible = false;
+            box.visible = false;
+            errorItem.visible = true;
         }
     }
 
