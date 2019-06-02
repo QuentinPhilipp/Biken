@@ -1,6 +1,6 @@
 #include "card.h"
 #include "node.h"
-
+#include <QTime>
 
 //this function can be called in QML
 Card::Card(int identifiant)
@@ -11,8 +11,10 @@ Card::Card(int identifiant)
 //this function can be called in QML
 int Card::sendNodes(QVariantList RouteNodes, DataManager *db)       //envoie des coordonnées de chaque Nodes et l'itinéraire [lat,lon]
 {
+    QTime t1;
+    t1.start();
     int dataLength = RouteNodes.length();
-    qDebug()<<"reception"<<RouteNodes;
+    //qDebug()<<"reception"<<RouteNodes;
     //création d'un fichier
     QFile file("../routing/Data/coordinates.txt");
     // On ouvre notre fichier en lecture seule et on vérifie l'ouverture
@@ -31,6 +33,8 @@ int Card::sendNodes(QVariantList RouteNodes, DataManager *db)       //envoie des
         flux<<lat<<endl<<lon<<endl;
     }
     file.close();
+    createMap();
+    qDebug() << "Temps pour faire la carte: " << t1.elapsed() << "ms";
     return 0;
 }
 
