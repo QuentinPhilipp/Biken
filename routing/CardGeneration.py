@@ -12,7 +12,7 @@ def MapCreation(nodes):
 	for each in deparr :
 		folium.Marker(each,draggable = True).add_to(c)
 	#add lines
-	folium.PolyLine(nodes, color="red", weight=2.5, opacity=1).add_to(c)
+	#folium.PolyLine(nodes, color="red", weight=2.5, opacity=1).add_to(c)
 	folium.PolyLine(nodes).add_to(c)
 	c.save('../routing/Data/card.html')
 	#ouverture du fichier créé et inclusion de notre js

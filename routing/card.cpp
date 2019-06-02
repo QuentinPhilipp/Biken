@@ -50,7 +50,7 @@ void Card::createMap()
     dir.cdUp();                         //project folder
     dir.cd("routing");                  //routing folder
 
-    QString program("python3");
+    QString program("python");
     QStringList filepath = QStringList()<< dir.path()+"/CardGeneration.py";         //on récupére le path du fichier à éxécuter
     QProcess p;
     p.setWorkingDirectory(dir.path());
@@ -68,7 +68,7 @@ void Card::createGeolocalisedMap()
     QDir dir = QDir::currentPath();   //return path in the build folder
     dir.cdUp();                         //project folder
     dir.cd("routing");
-    QString program("python3");
+    QString program("python");
     QStringList args = QStringList()<< dir.path()+"/geolocalisedCardGeneration.py";
     QProcess p;
     p.setWorkingDirectory(dir.path());
