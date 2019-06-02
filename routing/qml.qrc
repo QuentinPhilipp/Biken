@@ -26,7 +26,6 @@
         <file>Data/.gitkeep</file>
         <file>Data/requestPoint.json</file>
         <file>flag.png</file>
-        <file>logogrand.png</file>
         <file>placeholder.png</file>
         <file>road.png</file>
         <file>comfortaa/Comfortaa-Bold.ttf</file>
@@ -45,5 +44,6 @@
         <file>icons/ventF2.png</file>
         <file>icons/ventF3.png</file>
         <file>icons/index.png</file>
+        <file>Images/move-to-next.png</file>
     </qresource>
 </RCC>

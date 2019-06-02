@@ -17,6 +17,9 @@ ApplicationWindow {
     id: mainWaindow
 
     property var map
+    ListModel {
+        id :listdpt
+    }
 
     visibility: "Maximized"
     minimumWidth: Screen.width/2
@@ -57,8 +60,168 @@ ApplicationWindow {
         y: 100
         width: 900
         height: 300
+        Column {
+            CheckBox {
+                id : ain01
+                text : "Ain"
+            }
+            CheckBox {
+                id : aisne02
+                text : "Aisne"
+            }
+            CheckBox {
+                id : allier03
+                text : "Allier"
+            }
+            CheckBox {
+                id : alpesdehauteprovence04
+                text : "Alpes-de-Haute-Provence"
+            }
+            CheckBox {
+                id : hatesalpes05
+                text : "Hautes-Alpes"
+            }
+            CheckBox {
+                id : alpesmaritimes06
+                text : "Alpes-Maritimes"
+            }
+            CheckBox {
+                id : ardeche07
+                text : "Ardèche"
+            }
+            CheckBox {
+                id : ardennes08
+                text : "Ardennes"
+            }
+            CheckBox {
+                id : ariege09
+                text : "Ariège"
+            }
+            CheckBox {
+                id : aube10
+                text : "Aube"
+            }
+            CheckBox {
+                id : aude11
+                text : "Aude"
+            }
+            CheckBox {
+                id : aveyron12
+                text : "Aveyron"
+            }
+            CheckBox {
+                id : bouchesdurhone13
+                text : "Bouches-du-Rhône"
+            }
+            CheckBox {
+                id : calvados14
+                text : "Calvados"
+            }
+            Button {
+                id : refreshDatabase
+                onClicked : {
+                    if (ain01.checked == true){
+                        listdpt.append({'number':'01'})
+                        dataManager.extendDatabase("01")
+                    }
+                }
 
+
+
+
+            }
+
+
+
+
+            //                Cantal
+            //                Charente
+            //                Charente-Maritime
+            //                Cher
+            //                Corrèze
+            //                Côte-d Or
+            //                Côtes-d Armor
+            //                Creuse
+            //                Dordogne
+            //                Doubs
+            //                Drôme
+            //                Eure
+            //                Eure-et-Loir
+            //                Finistère
+            //                2ACorse-du-Sud
+            //                2BHaute-Corse
+            //                Gard
+            //                Haute-Garonne
+            //                Gers
+            //                Gironde
+
+            //                Hérault
+            //                Ille-et-Vilaine
+            //                Indre
+            //                Indre-et-Loire
+            //                Isère
+            //                Jura
+            //                Landes
+            //                Loir-et-Cher
+            //                Loire
+            //                Haute-Loire
+            //                Loire-Atlantique
+            //                Loiret
+            //                Lot
+            //                Lot-et-Garonne
+            //                Lozère
+            //                Maine-et-Loire
+            //                Manche
+            //                Marne
+            //                Haute-Marne
+            //                Mayenne
+            //                Meurthe-et-Moselle
+            //                Meuse
+            //                Morbihan
+            //                Moselle
+            //                Nièvre
+            //                Nord
+            //                Oise
+            //                Orne
+            //                Pas-de-Calais
+            //                Puy-de-Dôme
+            //                Pyrénées-Atlantiques
+            //                Hautes-Pyrénées
+            //                Pyrénées-Orientales
+            //                Bas-Rhin
+
+            //                Haut-Rhin
+            //                Rhône
+            //                Haute-Saône
+            //                Saône-et-Loire
+            //                Sarthe
+            //                Savoie
+            //                Haute-Savoie
+            //                Paris
+            //                Seine-Maritime
+            //                Seine-et-Marne
+            //                Yvelines
+            //                Deux-Sèvres
+            //                Somme
+            //                Tarn
+            //                Tarn-et-Garonne
+            //                Var
+            //                Vaucluse
+            //                Vendée
+            //                Vienne
+            //                Haute-Vienne
+            //                Vosges
+            //                Yonne
+            //                Territoire de Belfort
+            //                Essonne
+            //                Hauts-de-Seine
+            //                Seine-Saint-Denis
+            //                Val-de-Marne
+            //                Val-d Oise
+        }
     }
+
+
 
     //Rectangle where the map will appear
     Rectangle {
@@ -79,37 +242,6 @@ ApplicationWindow {
             //url:"/home/quentin/Documents/dev/projets6/routing/Data/card.html"            //Quentin
 
         }
-        Button{
-            id: testButton
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 10
-            width: 150
-            height: 20
-            onClicked: {
-                //Calls the function findRouteFrom(lat,lon) from datamanager in C++. It will return a list of nodes which are
-                //themself a list of 2 coordinates (latitude,longitude). Those nodes represent every node on which you change
-                //from one road to another.
-                console.log("Calculating route...");
-                //var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
-                var nodes = dataManager.createItinerary();
-                maCarte.createMap(nodes,dataManager);
-                console.log("Carte créée");
-                webengine.reload();
-
-            }
-            Text{
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: parent.top
-                anchors.topMargin: 10
-                width: 150
-                height: 20
-                font.pixelSize: 12
-                text: "TEST"
-                color: "black"
-
-            }
-        }
 
     }
 
@@ -122,24 +254,58 @@ ApplicationWindow {
         color: "#243665"
         opacity: 0
         radius : 20
-        Button{
-            id: hideButton
-            width: 50
+        Rectangle {
+            id : hideButtoncontainer
+            width: 130
             height : 25
             x :(meteoContainer.width/2 - hideButton.width/2)
-            y : -hideButton.height
-            background: Image {
+            y : -hideButton.height -5
+            radius : 5
+            color: "#243665"
+
+            Text {
+                id: desaffichermeteo
+                x: 2
+                y: 2
+                width: 105
+                height: 25
+                text: "Enlever météo"
+                color: "white"
+            }
+            Image {
                 id: upArrow
-                source: "qrc:/icons/index.png"
-                rotation: 180
-            }/*Rectangle{
+                source: "qrc:/Images/move-to-next.png"
+                x : 105
+                y : 0
+                rotation: 270
+                width: 25
+                height: 25
+                fillMode: Image.PreserveAspectFit
+
+
+            }
+        }
+
+        Button{
+            id: hideButton
+            width: 130
+            height : 25
+            x :(meteoContainer.width/2 - hideButton.width/2)
+            y : -hideButton.height - 5
+            opacity: 0
+
+
+            /*Rectangle{
                 radius : 10
                 color:"#243665"
                 opacity: 0.9
             }*/
+
             onClicked:{
                 animationOFFopacity.running = true;
                 animationOFFx.running = true;
+                animationOFFopacity2.running = true;
+
             }
         }
         WeatherAddon{
@@ -172,19 +338,66 @@ ApplicationWindow {
         opacity: 0.9
         radius : 20
 
-        Button{
-            id: showButton
-            width: 50
+        PropertyAnimation{
+            id : animationOFFopacity2
+            target: showButtoncontainer
+            property: "opacity"
+            to : 1
+            duration: 200
+        }
+
+        PropertyAnimation{
+            id : animationONopacity2
+            target: showButtoncontainer
+            property: "opacity"
+            to : 0
+            duration: 200
+        }
+
+        Rectangle {
+            id : showButtoncontainer
+            width: 75
             height : 25
             x :(rectangleparameter.width/2 - showButton.width/2)
-            y : rectangleparameter.height
-            background: Image {
-                id: downArrow
-                source: "qrc:/icons/index.png"
+            y : rectangleparameter.height + 5
+            radius : 5
+            color: "#243665"
+
+            Text {
+                id: affichermeteo
+                x: 2
+                y: 2
+                width: 50
+                height: 25
+                text: "météo"
+                color: "white"
             }
+            Image {
+                id: downArrow
+                source: "qrc:/Images/move-to-next.png"
+                x : 50
+                y : 0
+                rotation: 90
+                width: 25
+                height: 25
+                fillMode: Image.PreserveAspectFit
+
+
+            }
+        }
+
+
+        Button{
+            id: showButton
+            width: 75
+            height : 25
+            x :(rectangleparameter.width/2 - showButton.width/2)
+            y : rectangleparameter.height + 5
+            opacity : 0
             onClicked:{
                 animationONopacity.running = true;
                 animationONx.running = true;
+                animationONopacity2.running = true;
             }
         }
 
@@ -230,7 +443,30 @@ ApplicationWindow {
                     maCarte.createMap();
                     console.log("Carte créée");
                     webengine.reload();
+                    weather.createForecast(startingCoordinates[0],startingCoordinates[1]);
+                    if(!weather.getError()){
+                        testWeather.visible = false;
+                        weatherIcon.source = weather.getActiveIcon();
+                        weatherDescription.text = weather.getActiveDescription();
+                        windSpeed.text = weather.getActiveWindSpeed();
+                        windIcon.source = weather.getActiveWindStrength();
+                        windIcon.rotation = weather.getActiveDirection();
+                        weatherItem.visible = true;
+                        windItem.visible = true;
+                        box.visible = true;
+                        errorItem.visible = false
+                    }
+                    else{
+                        errorDescription.text = weather.getError();
+                        weatherItem.visible = false;
+                        windItem.visible = false;
+                        box.visible = false;
+                        errorItem.visible = true;
+                        testWeather.visible = true;
+                    }
+
                 }
+
             }
             //zone texte
             Text {
@@ -257,7 +493,7 @@ ApplicationWindow {
             spacing : 7
 
             ColumnLayout{
-                spacing: 20
+                spacing: 25
 
 
                 //icons
@@ -440,6 +676,8 @@ ApplicationWindow {
     }
 
 }
+
+
 
 
 
