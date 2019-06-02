@@ -127,6 +127,7 @@ void DataManager::requestRoads(double lat,double lon,double rad)
 }
 
 vector<Node *> DataManager::createNodeObject(QSqlQuery query,double minLat,double maxLat,double minLon,double maxLon){
+    QCoreApplication::processEvents(QEventLoop::AllEvents);                                     //display splash screen while loading
     query.prepare("SELECT DISTINCT id_node,latitude,longitude FROM roads WHERE ((:minLat<=centerLat) and (centerLat<=:maxLat) and (:minLon<=centerLon) and (centerLon<=:maxLon)) ORDER BY id_node");
     query.bindValue(":minLat",minLat);  // this query get all the node with their id,latitude and longitude
     query.bindValue(":maxLat",maxLat);
@@ -140,7 +141,6 @@ vector<Node *> DataManager::createNodeObject(QSqlQuery query,double minLat,doubl
     qDebug() << "Query Node finish";
     vector<Node *> nodeVect;
     while (query.next()) {
-        QCoreApplication::processEvents(QEventLoop::AllEvents);                                     //display splash screen while loading
         unsigned long long idNode = static_cast<unsigned long long>(query.value(0).toDouble());     //get id
         double lat = query.value(1).toDouble();             // get latitude
         double lon = query.value(2).toDouble();             // get longitude
@@ -158,6 +158,8 @@ vector<Way *> DataManager::createWayObject(QSqlQuery query,double minLat,double 
     query.bindValue(":maxLat",maxLat);
     query.bindValue(":minLon",minLon);
     query.bindValue(":maxLon",maxLon); // Binding all the values to the SQL query
+    QCoreApplication::processEvents(QEventLoop::AllEvents);                                     //display splash screen while loading
+
 
     //execute
     if(!query.exec()){
@@ -192,7 +194,6 @@ vector<Way *> DataManager::createWayObject(QSqlQuery query,double minLat,double 
     n->setNumberOfWays(n->getNumberOfWays()+1);
 
     while (query.next()) {
-        QCoreApplication::processEvents(QEventLoop::AllEvents);                                                             //display splash screen while loading
         unsigned long long idWay = static_cast<unsigned long long>(query.value(0).toDouble());
         if (idWay != lastId)                                                                                    // can't go there without a full circle in the while() bc way are at least 2 node long
         {
@@ -249,6 +250,8 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
 
     QTime t;
     t.start();
+    QCoreApplication::processEvents(QEventLoop::AllEvents);                                     //display splash screen while loading
+
 
     Node * start = getNodeFromNodeId(startNodeId);
     Node * finish = getNodeFromNodeId(finishNodeId);
@@ -262,6 +265,7 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
     bool exit = false;
 
     //Dijkstra
+//    int j=0;
     while(aTraiter.size()>0){
         unsigned int idMin=0;
         //On regarde quel node est le plus proche du départ
@@ -276,11 +280,21 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
         //croisements = les Node qui sont communs à plusieurs routes) -> Cela permet d'optimiser le calcul d'itinéraire
         vector<Node *> nodesNearby = getNodesNearby(currentNode);
         currentNode->setMarque(true);
+
+//        j=j+1;
+//        if (j/10>1){
+//            //reducing frequency of processEvents function
+//            QCoreApplication::processEvents(QEventLoop::AllEvents);                                     //display splash screen while loading
+//            j=0;
+//        }
+
         for(auto &node: nodesNearby){
             if(node->getMarque()==false){
                 //Pour chacun de ces nodes, on regarde si la distance par rapport au départ en passant par
                 //currentNode est plus petite que l'ancienne distance par rapport au départ (stockée dans le node).
                 if(node->getDistance()>currentNode->getDistance()+distanceBetween(*node,*currentNode)){
+
+                    //                    QCoreApplication::processEvents(QEventLoop::AllEvents);                                     //display splash screen while loading
                     node->setDistance(currentNode->getDistance()+distanceBetween(*node,*currentNode));//Si c'est le cas, on change la distance de ce node par rapport au départ
                     node->setPrecedingNodeId(currentNode->getId());//Et on dit par quel node il faudra passer pour aller au node de départ depuis ce node.
                     node->setMarque(true);
@@ -300,6 +314,7 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
         //On fait un parcours de l'arrivée au départ (en utilisant à chaque fois precedingNode pour savoir par où passer)
         unsigned long long id = finishNodeId;
         while(id!=startNodeId){
+
             Node *currentNode =getNodeFromNodeId(id);
             vector<Way *> roadsFromCurrentNode = (currentNode)->getWays();
 
@@ -354,19 +369,21 @@ QVariantList DataManager::createItinerary(QList<double> startCoord, QList<double
     int direction =45;                      //Degrées (0 = Est)
     double radius = km.toDouble()/(2*3.14);
     std::vector<Node *> waypointNodeList = getCircleNode(startNodeId,direction,radius);
+    QCoreApplication::processEvents(QEventLoop::AllEvents);         //display splash screen while loading
 
 
-//    QVariantList test;                                    //enable this if you want to see the circle
-//    for(auto node : waypointNodeList){
-//        qDebug()<<node->getId();
-//        test.append(node->getId());
-//    }
-//    return test;
+    //    QVariantList test;                                    //enable this if you want to see the circle
+    //    for(auto node : waypointNodeList){
+    //        qDebug()<<node->getId();
+    //        test.append(node->getId());
+    //    }
+    //    return test;
 
 
     //draw the itinerary
     QVariantList nodeList;
     for(unsigned long i=0;i<waypointNodeList.size()-1;i++){
+        QCoreApplication::processEvents(QEventLoop::AllEvents);         //display splash screen while loading
         nodeList.append(findRoute(waypointNodeList[i+1]->getId(),waypointNodeList[i]->getId()));
         qDebug() << "Done : " <<i+1<<"/"<<waypointNodeList.size()-1;
         for(auto node : allNodesAtCrossroads){
@@ -376,13 +393,13 @@ QVariantList DataManager::createItinerary(QList<double> startCoord, QList<double
     }
 
 
-//    nodeList.append(findRoute(waypointNodeList[4]->getId(),waypointNodeList[3]->getId()));
-//    for(auto node : allNodesAtCrossroads){
-//        node->setMarque(0);
-//        node->setDistance(100000);
-//    }
+    //    nodeList.append(findRoute(waypointNodeList[4]->getId(),waypointNodeList[3]->getId()));
+    //    for(auto node : allNodesAtCrossroads){
+    //        node->setMarque(0);
+    //        node->setDistance(100000);
+    //    }
 
-    qDebug()<<nodeList;
+    //qDebug()<<nodeList;
     QTime chrono = QTime::currentTime();
     bool verifOk = false;
     qDebug()<<"size of nodeList :" << nodeList.size();
@@ -415,6 +432,7 @@ std::vector<Node *> DataManager::getCircleNode(unsigned long long startNodeId,in
     //get Node for every waypoint
     for(int i=0;i<pointsNumber;i++){
         QVariantList coord;
+
         qDebug() << startAngle+angleBetween*i;
         coord = addKmWithAngle(centerNode,startAngle+angleBetween*i,radius);
         Node * waypoint = findClosestNode(coord[0].toDouble(),coord[1].toDouble());
@@ -430,10 +448,11 @@ std::vector<Node *> DataManager::getCircleNode(unsigned long long startNodeId,in
     std::vector<Node *> waypointNodeList;
     //create a vector of node from a vector of id
     for(auto waypnt : waypointList){
+
         waypointNodeList.emplace_back(getNodeFromNodeId(static_cast<unsigned long long>(waypnt.toDouble())));
 
     }
-    qDebug() << waypointNodeList;
+    //qDebug() << waypointNodeList;
     return waypointNodeList;
 }
 
@@ -556,7 +575,7 @@ bool DataManager::extendDatabase(QStringList departement){
     QString program("python");
     QStringList filepath = QStringList()<< dir.path()+"/generateTiles.py";         //on récupére le path du fichier à éxécuter
     QStringList args = QStringList()<<filepath<<departement;                             //création de la ligne de commande qui sera envoyée
-//    qDebug()<<args;
+    //    qDebug()<<args;
     QProcess p;
     p.setWorkingDirectory(dir.path());
     //qDebug() << "args : " << args << "\n dir.path : " << dir.path();

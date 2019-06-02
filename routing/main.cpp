@@ -52,14 +52,14 @@ int main(int argc, char *argv[])
     MyAdress* myAdress = new MyAdress();
 
     QStringList departments;
-    departments<<"29"<<"57";
+    departments<<"29";
     db->extendDatabase(departments);
     qDebug()<<"End script database";
 
-    QString defaultAdress = "Brest";              //load the database around the adress
+    QString defaultAdress = "Loudeac";              //load the database around the adress
     QList<double> defaultCoord = myAdress->toCoordinates(defaultAdress);
     qDebug()<<defaultCoord;
-    db->requestRoads(defaultCoord[0],defaultCoord[1],60);   //radius in km
+    db->requestRoads(defaultCoord[0],defaultCoord[1],100);   //radius in km
 
     Weather* weather = new Weather();
 

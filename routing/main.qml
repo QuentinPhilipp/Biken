@@ -89,7 +89,7 @@ ApplicationWindow {
             height : 300
             Text {
                 id: loadingText
-                text: "Chargement de l'itinéraire en cours..."
+                text: "Génération de l'itinéraire en cours..."
                 Layout.fillWidth: true
                 verticalAlignment: Text.AlignHCenter
                 Layout.alignment: Qt.AlignCenter
@@ -106,7 +106,7 @@ ApplicationWindow {
                     id : iconRotation
                     from : 0
                     to : 360
-                    duration: 6000
+                    duration: 2000
                     running : loadingScreen.running
                     loops : Animation.Infinite
                 }
@@ -397,7 +397,6 @@ ApplicationWindow {
                         opacity: 0
                     }
 
-
                     Rectangle {
                         id: rectangle1
                         x: 0
@@ -421,9 +420,17 @@ ApplicationWindow {
                     placeholderText : "Arrivée"
                     horizontalAlignment: Text.AlignLeft
                     font.family: comfortaalight.name
+                    readOnly : false
                     background : Rectangle {
                         opacity: 0
                     }
+
+                    function disableKm(){
+                        kmDesired.disableKm()
+                    }
+
+
+                    onEditingFinished: disableKm();
 
                     Rectangle {
                         id: rectangle
@@ -447,11 +454,19 @@ ApplicationWindow {
                     font.capitalization: Font.MixedCase
                     font.underline: false
                     visible: true
+                    readOnly : false
+
                     font.family: comfortaalight.name
                     horizontalAlignment: Text.AlignLeft
                     background : Rectangle {
                         opacity: 0
                     }
+                    function disableArrivee(){
+                        enterArriveeInput.readOnly()
+                    }
+
+                    onEditingFinished: disableArrivee();
+
 
                     Rectangle {
                         id: rectangle2
