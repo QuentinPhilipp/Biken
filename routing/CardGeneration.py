@@ -17,7 +17,8 @@ def MapCreation(nodes):
 	c.save('../routing/Data/card.html')
 	#ouverture du fichier créé et inclusion de notre js
 	fichier = open("../routing/Data/card.html","a")
-	fichier.write("<script src='interaction.js'></script>")
+	fichier.write("\n<script src='interaction.js'></script>")
+	fichier.write("\n<script src='export.js'></script>\n<script src='togpx-master/togpx.js'></script>\n<script>\n    var GPXFile = togpx(polyline.toGeoJSON());\n</script>")
 	fichier.close()
 
 
