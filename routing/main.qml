@@ -228,6 +228,7 @@ ApplicationWindow {
 
         Keys.onPressed: {
             if(event.key === Qt.Key_Enter){
+                console.log("Enter pressed")
                 valider.validate();
             }
         }

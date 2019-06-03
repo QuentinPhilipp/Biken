@@ -39,6 +39,7 @@ Forecast::Forecast(double wDir,
 
 void Weather::createForecast(double lat, double lon)
 {
+    forecasts.clear();
     qDebug() << "Starting weather request for coord : " << lat << " , " << lon;
     this->lat = lat;
     this->lon = lon;
