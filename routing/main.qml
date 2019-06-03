@@ -128,41 +128,9 @@ ApplicationWindow {
             //                        anchors.left:mapContainer.left
             //                        anchors.right:mapContainer.right
             anchors.fill:mapContainer
-            url:"file://"+path+"/card.html" //Linux
-            //url:path+"/card.html"  //Windows
-
+            //url:"file://"+path+"/card.html" //Linux
+            url:path+"/card.html"  //Windows
         }
-        Button{
-            id: testButton
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 10
-            width: 150
-            height: 20
-            onClicked: {
-                //Calls the function findRouteFrom(lat,lon) from datamanager in C++. It will return a list of nodes which are
-                //themself a list of 2 coordinates (latitude,longitude). Those nodes represent every node on which you change
-                //from one road to another.
-                console.log("Calculating route...");
-                //var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
-                var nodes = dataManager.createItinerary();
-                maCarte.createMap(nodes,dataManager);
-                console.log("Carte créée");
-                webengine.reload();
-            }
-            Text{
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: parent.top
-                anchors.topMargin: 10
-                width: 150
-                height: 20
-                font.pixelSize: 12
-                text: "TEST"
-                color: "black"
-
-            }
-        }
-
     }
 
     Rectangle{
@@ -284,9 +252,15 @@ ApplicationWindow {
                 var endCoordinate = QtPositioning.coordinate(finishCoordinates[0],finishCoordinates[1]);
 
                 if (startCoordinate.isValid && endCoordinate.isValid) {
+                    var nodes;
                     loadingScreen.loading();
                     element.activate(startingCoordinates[0],startingCoordinates[1]);
-                    var nodes = dataManager.createItinerary(startingCoordinates,finishCoordinates,kmDesired.text);
+                    if(enterArriveeInput.length==0){
+                        nodes = dataManager.createRoute(startingCoordinates,kmDesired.text);
+                    }
+                    else{
+                        nodes = dataManager.createItinerary(startingCoordinates,finishCoordinates,kmDesired.text);
+                    }
                     maCarte.sendNodes(nodes,dataManager);
                     //maCarte.createMap();
                     console.log("Carte créée");
