@@ -363,7 +363,8 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
     return nodeList;
 }
 
-QVariantList DataManager::createItinerary(QList<double> startCoord, QList<double> finishCoord,QVariant km){
+QVariantList DataManager::createRoute(QList<double> startCoord, QVariant km)
+{
     QTime t;
     t.start();
     // get the circle
@@ -415,10 +416,47 @@ QVariantList DataManager::createItinerary(QList<double> startCoord, QList<double
     QTime endChrono = QTime::currentTime();
     qDebug() << "Chrono verifying roads : " << chrono.msecsTo(endChrono);           //qq ms -> Pas nécessaire d'optimiser pour l'instant
     qDebug() << "size of nodeList :" << nodeList.size();
+    double itinerarylength = getItineraryLength(nodeList);
+    qDebug() << "Longueur de l'itinéraire : " << itinerarylength ;
+    qDebug() << "Temps total pour créer l'itinéraire : " << t.elapsed() << "ms";
+    if(itinerarylength>=(km.toDouble()*1.2) || itinerarylength<=(km.toDouble()*0.8)){
+        nodeList=createRoute(startCoord,km);
+    }
+    qDebug() << "Temps total pour créer l'itinéraire : " << t.elapsed() << "ms";
+    return nodeList;
+}
+
+QVariantList DataManager::createItinerary(QList<double> startCoord, QList<double> finishCoord){
+    QTime t;
+    t.start();
+    // get the circle
+    unsigned long long startNodeId = findClosestNode(startCoord[0],startCoord[1])->getId();
+    unsigned long long finishNodeId = findClosestNode(finishCoord[0],finishCoord[1])->getId();//1182549307;        //Lanrivoaré
+
+    //draw the itinerary
+    QVariantList nodeList;
+    QCoreApplication::processEvents(QEventLoop::AllEvents);         //display splash screen while loading
+    nodeList.append(findRoute(startNodeId,finishNodeId));
+    for(auto node : allNodesAtCrossroads){
+        node->setMarque(0);
+        node->setDistance(100000);
+    }
+
+    //qDebug()<<nodeList;
+    QTime chrono = QTime::currentTime();
+    bool verifOk = false;
+    qDebug()<<"size of nodeList :" << nodeList.size();
+    while(!verifOk){
+        verifOk = verifList(&nodeList);
+    }
+    QTime endChrono = QTime::currentTime();
+    qDebug() << "Chrono verifying roads : " << chrono.msecsTo(endChrono);           //qq ms -> Pas nécessaire d'optimiser pour l'instant
+    qDebug() << "size of nodeList :" << nodeList.size();
     qDebug() << "Longueur de l'itinéraire : " << getItineraryLength(nodeList);
     qDebug() << "Temps total pour créer l'itinéraire : " << t.elapsed() << "ms";
     return nodeList;
 }
+
 
 std::vector<Node *> DataManager::getCircleNode(unsigned long long startNodeId,double radius){
     int pointsNumber =4;
@@ -660,8 +698,4 @@ uint DataManager::getPositionInWay(Node *n, Way *way)
             if(nodes[i]->getId() == wantedId){return i;}
         }
     }
-}
-
-bool DataManager::verifDirection(std::vector<Node *> waypointNodeList,int direction){
-    qDebug()<<"Testing direction for waypointNodeList";
 }
