@@ -10,6 +10,7 @@
 #include <QLabel>
 
 #include "utils.h"
+#include "thread.h"
 #include "node.h"
 #include "way.h"
 #include "myadress.h"
@@ -50,6 +51,11 @@ int main(int argc, char *argv[])
     qDebug()<<path;
     
     MyAdress* myAdress = new MyAdress();
+
+    //Création du seveur pour l'échange de données avec la carte géolocalisée
+    Thread *thread = new Thread();
+    thread->start();
+
 
     QStringList departments;
     departments<<"29";

@@ -10,6 +10,7 @@ import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.2
 import QtQuick.Controls.Styles 1.4
 import QtWebEngine 1.7
+import QtWebSockets 1.1
 
 
 ApplicationWindow {
@@ -300,7 +301,6 @@ ApplicationWindow {
             ColumnLayout{
                 spacing: 20
 
-
                 //icons
 
                 Image {
@@ -356,6 +356,46 @@ ApplicationWindow {
 
                 //route settings
 
+                WebSocket {
+                    id: socket
+                    url: "ws://localhost:1234"
+                    onTextMessageReceived: {
+                        var lastchar = message.substring(message.length-1);
+                        if(lastchar == '0')
+                        {
+                            var depart = message.substring(1,message.length-2);
+                            enterDepartInput.text = depart;
+                        }
+                        else if (lastchar == '1')
+                        {
+                            var arrivee = message.substring(1,message.length-2);
+                            enterArriveeInput.text = arrivee;
+                        }
+                        else {
+                            //enterDepartInput.text ="";
+                            //enterArriveeInput.text ="";
+                        }
+                    }
+                    onStatusChanged: if (socket.status == WebSocket.Error) {
+                                         console.log("Error: " + socket.errorString)
+                                     } else if (socket.status == WebSocket.Open) {
+                                         socket.sendTextMessage("Donne moi les coordonnées")
+                                     } else if (socket.status == WebSocket.Closed) {
+                                         //messageBox.text = "Arrivée"
+                                         //console.log("socket fermee");
+                                         //if(message de la socket est null)
+                                     }
+                    active: false
+                }
+
+                Item {
+                    Timer{
+                        interval: 20; running:true; repeat:true        //tous les 500 ms le texte est mis à jour
+                        onTriggered: socket.active = !socket.active
+                    }
+                }
+
+
 
                 TextField {
                     id: enterDepartInput
@@ -366,6 +406,7 @@ ApplicationWindow {
                     Layout.alignment: Qt.AlignCenter
                     font.pixelSize: 20
                     color:"#ffffff"
+                    text: ""
                     placeholderText : "Départ"
                     horizontalAlignment: Text.AlignLeft
                     font.family: comfortaalight.name
@@ -392,6 +433,7 @@ ApplicationWindow {
                     Layout.preferredHeight: 20
                     Layout.alignment: Qt.AlignCenter
                     font.pixelSize: 20
+                    text: ""
                     color:"#ffffff"
                     placeholderText : "Arrivée"
                     horizontalAlignment: Text.AlignLeft

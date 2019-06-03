@@ -5,14 +5,13 @@ import sys
 
 
 def MapCreation(nodes):
-	c= folium.Map(location=[48.3677820, -4.7591771])
+	c= folium.Map(location=nodes[0],zoom_control=False)
 	deparr=[]
 	deparr.append(nodes[0])
 	deparr.append(nodes[len(nodes)-1])					#on récupère le premier et le dernier noeud pour y placer des marqueurs
 	for each in deparr :
-		folium.Marker(each,draggable = True).add_to(c)
+		folium.Marker(each,draggable = False).add_to(c)
 	#add lines
-	folium.PolyLine(nodes, color="red", weight=2.5, opacity=1).add_to(c)
 	folium.PolyLine(nodes).add_to(c)
 	c.save('../routing/Data/card.html')
 	#ouverture du fichier créé et inclusion de notre js
