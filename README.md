@@ -1,6 +1,17 @@
 # Projet S6
 > Written with [StackEdit](https://stackedit.io/).
 
+## Pré-requis pour faire fonctionner le programme sur Qt:
+
+Le logiciel a été réalisé sur la version 5.11 de Qt. Il faut avoir une version au moins aussi récente pour pouvoir utiliser toutes les fonctionnalités du programme.
+
+### Windows
+    Installer Qt avec le module QtWebEngine (ou l'ajouter si Qt est déja installé).
+    
+    
+### Linux
+    
+
 ## API Météo :
 On utilise l'API de openweathermap.org
 
