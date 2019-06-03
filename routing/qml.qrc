@@ -25,9 +25,6 @@
         <file>weatherAddon/WeatherAddon.qml</file>
         <file>Data/.gitkeep</file>
         <file>Data/requestPoint.json</file>
-        <file>flag.png</file>
-        <file>placeholder.png</file>
-        <file>road.png</file>
         <file>comfortaa/Comfortaa-Bold.ttf</file>
         <file>comfortaa/Comfortaa-Light.ttf</file>
         <file>comfortaa/Comfortaa-Regular.ttf</file>
@@ -44,10 +41,8 @@
         <file>icons/ventF2.png</file>
         <file>icons/ventF3.png</file>
         <file>icons/index.png</file>
-<<<<<<< routing/qml.qrc
         <file>Images/move-to-next.png</file>
-=======
         <file>icons/loading.png</file>
->>>>>>> routing/qml.qrc
+        <file>Departements/Departements.qml</file>
     </qresource>
 </RCC>
