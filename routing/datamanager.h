@@ -37,7 +37,7 @@ public:
     Q_INVOKABLE QVariantList requestLatLonFromNodes(QVariant idNode);
 
     Q_INVOKABLE QVariantList findRoute(unsigned long long startNodeId,unsigned long long finishNodeId);
-    Q_INVOKABLE std::vector<Node *> getCircleNode(unsigned long long startNodeId,int direction,double radius);
+    Q_INVOKABLE std::vector<Node *> getCircleNode(unsigned long long startNodeId, double radius);
     vector<Node *> getNodesNearby(Node * node);
     double distanceBetween(Node A, Node B);
     double bearingBetween(Node A, Node B);
@@ -67,6 +67,7 @@ private:
     vector<Way *> createWayObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
     vector<Node *> createNodeObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
 
+    bool verifDirection(std::vector<Node *> waypointNodeList, int direction);
 };
 
 #endif // DATAMANAGER_H

@@ -15,8 +15,10 @@
 #include <QProcess>
 #include <math.h>
 #include <utils.h>
+#include <QRandomGenerator>
 
 using namespace std;
+static bool isDirectionOk;
 
 DataManager::DataManager(QObject *parent) : QObject(parent)
 {
@@ -265,7 +267,7 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
     bool exit = false;
 
     //Dijkstra
-//    int j=0;
+    //    int j=0;
     while(aTraiter.size()>0){
         unsigned int idMin=0;
         //On regarde quel node est le plus proche du départ
@@ -281,12 +283,12 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
         vector<Node *> nodesNearby = getNodesNearby(currentNode);
         currentNode->setMarque(true);
 
-//        j=j+1;
-//        if (j/10>1){
-//            //reducing frequency of processEvents function
-//            QCoreApplication::processEvents(QEventLoop::AllEvents);                                     //display splash screen while loading
-//            j=0;
-//        }
+        //        j=j+1;
+        //        if (j/10>1){
+        //            //reducing frequency of processEvents function
+        //            QCoreApplication::processEvents(QEventLoop::AllEvents);                                     //display splash screen while loading
+        //            j=0;
+        //        }
 
         for(auto &node: nodesNearby){
             if(node->getMarque()==false){
@@ -366,19 +368,23 @@ QVariantList DataManager::createItinerary(QList<double> startCoord, QList<double
     t.start();
     // get the circle
     unsigned long long startNodeId = findClosestNode(startCoord[0],startCoord[1])->getId();                            //1182549307;        //Lanrivoaré
-    int direction =45;                      //Degrées (0 = Est)
-    double radius = km.toDouble()/(2*3.14);
-    std::vector<Node *> waypointNodeList = getCircleNode(startNodeId,direction,radius);
+
+    double radius = km.toDouble()/(2*3.1415);
+    qDebug() << radius;
+    std::vector<Node *> waypointNodeList = getCircleNode(startNodeId,radius);
     QCoreApplication::processEvents(QEventLoop::AllEvents);         //display splash screen while loading
 
 
-    //    QVariantList test;                                    //enable this if you want to see the circle
-    //    for(auto node : waypointNodeList){
-    //        qDebug()<<node->getId();
-    //        test.append(node->getId());
-    //    }
-    //    return test;
-
+    bool testLigne = false;                         //enable this if you want to see the circle
+    if (testLigne==true){
+        QVariantList test;
+        for(auto node : waypointNodeList){
+            //qDebug()<<node->getId();
+            test.append(node->getId());
+        }
+        qDebug()<<test;
+        return test;
+    }
 
     //draw the itinerary
     QVariantList nodeList;
@@ -414,30 +420,43 @@ QVariantList DataManager::createItinerary(QList<double> startCoord, QList<double
     return nodeList;
 }
 
-std::vector<Node *> DataManager::getCircleNode(unsigned long long startNodeId,int direction,double radius){
+std::vector<Node *> DataManager::getCircleNode(unsigned long long startNodeId,double radius){
     int pointsNumber =4;
     double angleBetween = 360/pointsNumber;
     double startAngle;
-
-    startAngle = direction-180;
-    //set startAngle (180 - angle of direction)
-    /* un depart vers l'est, implique un point de depart a gauche du cercle
-     * on commence donc par ce point*/
-
-    Node * centerNode = getCircleCenter(radius,direction,startNodeId);
-
+    Node * centerNode;
+    int direction;
     QVariantList waypointList;
+    isDirectionOk = false;
 
+    while (isDirectionOk==false){
+        waypointList.clear();   //clear the list
+        isDirectionOk = true;  //reset for another  test
 
-    //get Node for every waypoint
-    for(int i=0;i<pointsNumber;i++){
-        QVariantList coord;
+        int maxValue = 360;
+        direction = int(QRandomGenerator::global()->generateDouble()*maxValue);
+        qDebug() << "direction : " << direction;
 
-        qDebug() << startAngle+angleBetween*i;
-        coord = addKmWithAngle(centerNode,startAngle+angleBetween*i,radius);
-        Node * waypoint = findClosestNode(coord[0].toDouble(),coord[1].toDouble());
-        waypointList.append(waypoint->getId());
+        startAngle = direction-180;
+        //set startAngle (180 - angle of direction)
+        /* un depart vers l'est, implique un point de depart a gauche du cercle
+         * on commence donc par ce point*/
+
+        centerNode = getCircleCenter(radius,direction,startNodeId);
+
+        //get Node for every waypoint
+        for(int i=0;i<pointsNumber;i++){
+            QVariantList coord;
+
+            //qDebug() << startAngle+angleBetween*i;
+            coord = addKmWithAngle(centerNode,startAngle+angleBetween*i,radius);
+            Node * waypoint = findClosestNode(coord[0].toDouble(),coord[1].toDouble());
+            waypointList.append(waypoint->getId());
+        }
+
+        qDebug() <<"Is direction ok ? : "<< isDirectionOk;
     }
+    isDirectionOk = true;
 
     QVariantList coord;
     coord = addKmWithAngle(centerNode,startAngle,radius);
@@ -563,6 +582,10 @@ Node * DataManager::findClosestNode(double latitude,double longitude){
             bestNode = node;
         }
     }
+//    qDebug() << "Best Distance : "<<bestDistance;
+    if (bestDistance>3){
+        isDirectionOk = false;
+    }
     return bestNode;
 }
 
@@ -637,4 +660,8 @@ uint DataManager::getPositionInWay(Node *n, Way *way)
             if(nodes[i]->getId() == wantedId){return i;}
         }
     }
+}
+
+bool DataManager::verifDirection(std::vector<Node *> waypointNodeList,int direction){
+    qDebug()<<"Testing direction for waypointNodeList";
 }

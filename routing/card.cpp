@@ -28,8 +28,8 @@ int Card::sendNodes(QVariantList RouteNodes, DataManager *db)       //envoie des
     for(int i=0; i<dataLength ; ++i)
     {
         Node * node = db->getNodeFromNodeId(static_cast<unsigned long long>(RouteNodes[i].toDouble()));
-        QString lon = QString::number(node->getLongitude());
-        QString lat = QString::number(node->getLatitude());
+        QString lon = QString::number(node->getLongitude(),'g',10);
+        QString lat = QString::number(node->getLatitude(),'g',10);
         flux<<lat<<endl<<lon<<endl;
     }
     file.close();
