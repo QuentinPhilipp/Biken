@@ -128,9 +128,8 @@ ApplicationWindow {
             //                        anchors.left:mapContainer.left
             //                        anchors.right:mapContainer.right
             anchors.fill:mapContainer
-            url:"file://"+path+"/card.html"
-            //url:"D:/Documents/ENIB/Semestre6/CPO/0-Projet/projets6/routing/Data/card.html"            //Leo
-            //url:"/home/quentin/Documents/dev/projets6/routing/Data/card.html"            //Quentin
+            url:"file://"+path+"/card.html" //Linux
+            //url:path+"/card.html"  //Windows
 
         }
         Button{
@@ -150,7 +149,6 @@ ApplicationWindow {
                 maCarte.createMap(nodes,dataManager);
                 console.log("Carte créée");
                 webengine.reload();
-
             }
             Text{
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -241,7 +239,7 @@ ApplicationWindow {
             y : rectangleparameter.height
             background: Image {
                 id: downArrow
-                source: "qrc:/icons/index.png"
+                source: "qrc:/icons/50d.png"
             }
             onClicked:{
                 animationONopacity.running = true;
@@ -291,7 +289,7 @@ ApplicationWindow {
                     element.activate(startingCoordinates[0],startingCoordinates[1]);
                     var nodes = dataManager.createItinerary(startingCoordinates,finishCoordinates,kmDesired.text);
                     maCarte.sendNodes(nodes,dataManager);
-                    maCarte.createMap();
+                    //maCarte.createMap();
                     console.log("Carte créée");
                     webengine.reload();
                 }
