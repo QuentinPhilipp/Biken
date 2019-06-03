@@ -24,6 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
     node.cpp \
+    thread.cpp \
     utils.cpp \
     way.cpp \
     datamanager.cpp \
@@ -49,6 +50,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     node.h \
+    thread.h \
     utils.h \
     way.h \
     datamanager.h \

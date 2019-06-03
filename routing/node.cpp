@@ -62,6 +62,16 @@ void Node::setNumberOfWays(int value)
 {
     numberOfWays = value;
 }
+
+void Node::addWay(Way *way)
+{
+    ways.emplace_back(way);
+}
+
+vector<Way *> Node::getWays() const
+{
+    return ways;
+}
 double Node::getLatitude() const
 {
     return this->latitude;

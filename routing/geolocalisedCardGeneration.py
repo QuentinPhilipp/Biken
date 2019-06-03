@@ -21,8 +21,12 @@ def givemyPosition():
 	return [latitude,longitude]
 
 def MapCreation():
-	c= folium.Map(location=givemyPosition(),zoom_start=9) 
+	c= folium.Map(location=givemyPosition(),zoom_start=9,zoom_control=False)
 	folium.Marker(givemyPosition()).add_to(c)
 	c.save('../routing/Data/card.html')
+	fichier = open("../routing/Data/card.html","a")
+	fichier.write("<script src='interactionGeolocalisedCard.js'></script>")
+	fichier.close()
+
 
 MapCreation()

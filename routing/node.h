@@ -8,6 +8,8 @@
 
 using namespace std;
 
+class Way;
+
 class Node
 {
 public :
@@ -33,6 +35,9 @@ public :
   int getNumberOfWays() const;
   void setNumberOfWays(int value);
 
+  void addWay(Way * way);
+  vector<Way *> getWays() const;
+
 private :
   unsigned long long id;          //id of the Node
   double latitude;    //latitude of the node
@@ -41,6 +46,7 @@ private :
   unsigned long long precedingNodeId;
   bool marque=false;
   int numberOfWays=0;
+  vector<Way *> ways;
 };
 
 #endif // NODE_H

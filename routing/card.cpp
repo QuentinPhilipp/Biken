@@ -1,6 +1,6 @@
 #include "card.h"
 #include "node.h"
-
+#include <QTime>
 
 //this function can be called in QML
 Card::Card(int identifiant)
@@ -9,18 +9,33 @@ Card::Card(int identifiant)
 }
 
 //this function can be called in QML
-QStringList Card::sendNodes(QVariantList RouteNodes, DataManager *db)       //envoie des coordonnées de chaque Nodes et l'itinéraire [lat,lon]
+int Card::sendNodes(QVariantList RouteNodes, DataManager *db)       //envoie des coordonnées de chaque Nodes et l'itinéraire [lat,lon]
 {
-    QStringList nodes;
+    QTime t1;
+    t1.start();
     int dataLength = RouteNodes.length();
+    //qDebug()<<"reception"<<RouteNodes;
+    //création d'un fichier
+    QFile file("../routing/Data/coordinates.txt");
+    // On ouvre notre fichier en lecture seule et on vérifie l'ouverture
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        return 1;
+    }
+    // Création d'un objet QTextStream à partir de notre objet QFile
+    QTextStream flux(&file);
+    // Écriture des différentes lignes dans le fichier
     for(int i=0; i<dataLength ; ++i)
-        {
-        QVariantList node =db->DataManager::requestLatLonFromNodes(RouteNodes[i]);
-        QString lon = node[0].toString();
-        QString lat = node[1].toString();
-        nodes.append(QStringList()<<"["+lon+","+lat+"]");          //problème : , entre chaque coordonnées
-        }
-    return nodes;   //this is a list of string wich contains coordinates [lat,lon] --> execution of script python to create a card
+    {
+        Node * node = db->getNodeFromNodeId(static_cast<unsigned long long>(RouteNodes[i].toDouble()));
+        QString lon = QString::number(node->getLongitude(),'g',10);
+        QString lat = QString::number(node->getLatitude(),'g',10);
+        flux<<lat<<endl<<lon<<endl;
+    }
+    file.close();
+    createMap();
+    qDebug() << "Temps pour faire la carte: " << t1.elapsed() << "ms";
+    return 0;
 }
 
 uint64_t Card::getId() const
@@ -28,23 +43,19 @@ uint64_t Card::getId() const
     return this->id;
 }
 
-void Card::createMap(QVariantList RouteNodes, DataManager *db)
+void Card::createMap()
 {
 
     QDir dir = QDir::currentPath();     //return path in the build folder
     dir.cdUp();                         //project folder
     dir.cd("routing");                  //routing folder
 
-    QString program("python");
+    QString program("python3");
     QStringList filepath = QStringList()<< dir.path()+"/CardGeneration.py";         //on récupére le path du fichier à éxécuter
-    QStringList nodes = QStringList()<<sendNodes(RouteNodes, db);                  //on récupère les nodes a donner en paramètre à notre script de création de carte
-    QStringList nodes_command;
-    QStringList args = QStringList()<<filepath<<nodes;                             //création de la ligne de commande qui sera envoyée
-//    qDebug()<<args;
     QProcess p;
     p.setWorkingDirectory(dir.path());
     //qDebug() << "args : " << args << "\n dir.path : " << dir.path();
-    p.execute(program, args);
+    p.execute(program, filepath);
 }
 
 QString Card::getCurrentPath()

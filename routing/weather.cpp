@@ -39,6 +39,8 @@ Forecast::Forecast(double wDir,
 
 void Weather::createForecast(double lat, double lon)
 {
+    forecasts.clear();
+
     qDebug() << "Starting weather request for coord : " << lat << " , " << lon;
     this->lat = lat;
     this->lon = lon;
@@ -126,12 +128,7 @@ double Weather::getActiveDirection(){
         return 0.0;
     }
 
-    if(forecasts[unsigned(i)].getWindDirection()-56.0 < 0.0){
-        dir = 360.0 - (forecasts[unsigned(i)].getWindDirection() - 56.0);
-    }
-    else {
-        dir = forecasts[unsigned(i)].getWindDirection() - 56.0;
-    }
+    dir = forecasts[unsigned(i)].getWindDirection();
 
     return dir;
 }
@@ -144,7 +141,7 @@ QString Weather::getActiveWindSpeed(){
         return "";
     }
 
-    QString speed = QString::number(forecasts[unsigned(i)].getWindSpeed());
+    QString speed = QString::number(int(forecasts[unsigned(i)].getWindSpeed() * 3.6));
 
     return speed + " km/h";
 }
@@ -171,13 +168,13 @@ QString Weather::getActiveWindStrength(){
     double speed = forecasts[unsigned(i)].getWindSpeed() * 3.6;
 
     if (speed < 20.0){
-        return "qrc:/icons/windSpeed1.png";
+        return "qrc:/icons/ventF1.png";
     }
     else if (speed < 50.0) {
-        return "qrc:/icons/windSpeed2.png";
+        return "qrc:/icons/ventF2.png";
     }
     else {
-        return "qrc:/icons/windSpeed3.png";
+        return "qrc:/icons/ventF3.png";
     }
 
 }
