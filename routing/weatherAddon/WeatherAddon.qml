@@ -17,6 +17,29 @@ ColumnLayout {
 
     property var rotationvalue: 0
 
+    function activate(coord1,coord2){
+        weather.createForecast(coord1,coord2);
+        if(!weather.getError()){
+            weatherIcon.source = weather.getActiveIcon();
+            weatherDescription.text = weather.getActiveDescription();
+            windSpeed.text = weather.getActiveWindSpeed();
+            windIcon.source = weather.getActiveWindStrength();
+            windIcon.rotation = weather.getActiveDirection();
+            weatherItem.visible = true;
+            windItem.visible = true;
+            box.visible = true;
+            errorItem.visible = false;
+            animationONopacity.running = true;
+            animationONx.running = true;
+        }
+        else{
+            errorDescription.text = weather.getError();
+            weatherItem.visible = false;
+            windItem.visible = false;
+            box.visible = false;
+            errorItem.visible = true;
+        }
+    }
 
     Text{
         id:weatherTitle

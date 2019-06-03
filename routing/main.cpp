@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     MyAdress* myAdress = new MyAdress();
 
     QStringList departments;
-    departments<<"29"<<"57";
+    departments<<"29";
     db->extendDatabase(departments);
     qDebug()<<"End script database";
 

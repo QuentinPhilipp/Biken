@@ -44,6 +44,10 @@
         <file>icons/ventF2.png</file>
         <file>icons/ventF3.png</file>
         <file>icons/index.png</file>
+<<<<<<< routing/qml.qrc
         <file>Images/move-to-next.png</file>
+=======
+        <file>icons/loading.png</file>
+>>>>>>> routing/qml.qrc
     </qresource>
 </RCC>
