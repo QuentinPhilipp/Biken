@@ -60,6 +60,60 @@ ApplicationWindow {
 
     }
 
+    Popup{
+        id:loadingScreen
+        width : 400
+        height : 300
+        x : mainWaindow.width/2 - (width/2)
+        y : mainWaindow.height/2 - (height/2)
+        background: Rectangle {
+            radius : 5
+            color : "#243665"
+        }
+
+        property var running: false
+
+        function loading(){
+            open();
+            running = true;
+        }
+
+        function loaded(){
+            running = false;
+            close();
+        }
+
+        ColumnLayout{
+            spacing: 10
+            width : 400
+            height : 300
+            Text {
+                id: loadingText
+                text: "Génération de l'itinéraire en cours..."
+                Layout.fillWidth: true
+                verticalAlignment: Text.AlignHCenter
+                Layout.alignment: Qt.AlignCenter
+                font.pixelSize: 19
+                font.family: comfortaalight.name
+                color:"white"
+            }
+            Image {
+                id: loadingIcon
+                source: "qrc:icons/loading.png"
+                Layout.alignment:Qt.AlignCenter
+
+                RotationAnimation on rotation{
+                    id : iconRotation
+                    from : 0
+                    to : 360
+                    duration: 2000
+                    running : loadingScreen.running
+                    loops : Animation.Infinite
+                }
+            }
+        }
+    }
+
     //Rectangle where the map will appear
     Rectangle {
         id: mapContainer
@@ -74,41 +128,9 @@ ApplicationWindow {
             //                        anchors.left:mapContainer.left
             //                        anchors.right:mapContainer.right
             anchors.fill:mapContainer
-            url:"file://"+path+"/card.html"
-            //url:"D:/Documents/ENIB/Semestre6/CPO/0-Projet/projets6/routing/Data/card.html"            //Leo
-            //url:"/home/quentin/Documents/dev/projets6/routing/Data/card.html"            //Quentin
+            url:"file://"+path+"/card.html" //Linux
+            //url:path+"/card.html"  //Windows
 
-        }
-        Button{
-            id: testButton
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 10
-            width: 150
-            height: 20
-            onClicked: {
-                //Calls the function findRouteFrom(lat,lon) from datamanager in C++. It will return a list of nodes which are
-                //themself a list of 2 coordinates (latitude,longitude). Those nodes represent every node on which you change
-                //from one road to another.
-                console.log("Calculating route...");
-                //var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
-                var nodes = dataManager.createItinerary();
-                maCarte.createMap(nodes,dataManager);
-                console.log("Carte créée");
-                webengine.reload();
-
-            }
-            Text{
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: parent.top
-                anchors.topMargin: 10
-                width: 150
-                height: 20
-                font.pixelSize: 12
-                text: "TEST"
-                color: "black"
-
-            }
         }
 
     }
@@ -172,6 +194,12 @@ ApplicationWindow {
         opacity: 0.9
         radius : 20
 
+        Keys.onPressed: {
+            if(event.key === Qt.Key_Enter){
+                valider.validate();
+            }
+        }
+
         Button{
             id: showButton
             width: 50
@@ -180,7 +208,7 @@ ApplicationWindow {
             y : rectangleparameter.height
             background: Image {
                 id: downArrow
-                source: "qrc:/icons/index.png"
+                source: "qrc:/icons/50d.png"
             }
             onClicked:{
                 animationONopacity.running = true;
@@ -217,7 +245,8 @@ ApplicationWindow {
                 color : "black"
                 opacity: 0.2
             }
-            onClicked: {
+
+            function validate(){
                 var startingCoordinates = myAdress.toCoordinates(enterDepartInput.text);
                 var finishCoordinates = myAdress.toCoordinates(enterArriveeInput.text);
 
@@ -225,13 +254,25 @@ ApplicationWindow {
                 var endCoordinate = QtPositioning.coordinate(finishCoordinates[0],finishCoordinates[1]);
 
                 if (startCoordinate.isValid && endCoordinate.isValid) {
-                    var nodes = dataManager.createItinerary(startingCoordinates,finishCoordinates,kmDesired.text);
+                    var nodes;
+                    loadingScreen.loading();
+                    element.activate(startingCoordinates[0],startingCoordinates[1]);
+                    if(enterArriveeInput.length==0){
+                        nodes = dataManager.createRoute(startingCoordinates,kmDesired.text);
+                    }
+                    else{
+                        nodes = dataManager.createItinerary(startingCoordinates,finishCoordinates,kmDesired.text);
+                    }
                     maCarte.sendNodes(nodes,dataManager);
-                    maCarte.createMap();
+                    //maCarte.createMap();
                     console.log("Carte créée");
                     webengine.reload();
                 }
+                loadingScreen.loaded();
             }
+
+            onClicked: validate()
+
             //zone texte
             Text {
                 id: textvalider
@@ -332,7 +373,6 @@ ApplicationWindow {
                         opacity: 0
                     }
 
-
                     Rectangle {
                         id: rectangle1
                         x: 0
@@ -356,9 +396,23 @@ ApplicationWindow {
                     placeholderText : "Arrivée"
                     horizontalAlignment: Text.AlignLeft
                     font.family: comfortaalight.name
+                    readOnly : false
                     background : Rectangle {
                         opacity: 0
                     }
+
+                    function disableKm(){
+                        if(enterArriveeInput.text != ""){
+                            kmDesired.readOnly = true;
+                            kmDesired.placeholderText = "Indisponible";
+                        }
+                        else{
+                            kmDesired.readOnly = false;
+                            kmDesired.placeholderText = "0 km";
+                        }
+                    }
+                    onTextEdited: disableKm();
+
 
                     Rectangle {
                         id: rectangle
@@ -382,11 +436,27 @@ ApplicationWindow {
                     font.capitalization: Font.MixedCase
                     font.underline: false
                     visible: true
+                    readOnly : false
+
                     font.family: comfortaalight.name
                     horizontalAlignment: Text.AlignLeft
                     background : Rectangle {
                         opacity: 0
                     }
+
+                    function disableArrivee(){
+                        if(kmDesired.text != ""){
+                            enterArriveeInput.placeholderText = "Indisponible";
+                            enterArriveeInput.readOnly = true;
+                        }
+                        else{
+                            enterArriveeInput.placeholderText = "Arrivée";
+                            enterArriveeInput.readOnly = false;
+                        }
+                    }
+
+                    onTextEdited: disableArrivee();
+
 
                     Rectangle {
                         id: rectangle2
