@@ -369,11 +369,10 @@ QVariantList DataManager::createItinerary(QList<double> startCoord, QList<double
     // get the circle
     unsigned long long startNodeId = findClosestNode(startCoord[0],startCoord[1])->getId();                            //1182549307;        //Lanrivoaré
 
-    double radius = km.toDouble()/(2*3.14);
+    double radius = km.toDouble()/(2*3.1415);
+    qDebug() << radius;
     std::vector<Node *> waypointNodeList = getCircleNode(startNodeId,radius);
     QCoreApplication::processEvents(QEventLoop::AllEvents);         //display splash screen while loading
-
-    //bool isDirectionOk = verifDirection(waypointNodeList,direction);
 
 
     bool testLigne = false;                         //enable this if you want to see the circle
@@ -383,6 +382,7 @@ QVariantList DataManager::createItinerary(QList<double> startCoord, QList<double
             //qDebug()<<node->getId();
             test.append(node->getId());
         }
+        qDebug()<<test;
         return test;
     }
 
@@ -427,6 +427,7 @@ std::vector<Node *> DataManager::getCircleNode(unsigned long long startNodeId,do
     Node * centerNode;
     int direction;
     QVariantList waypointList;
+    isDirectionOk = false;
 
     while (isDirectionOk==false){
         waypointList.clear();   //clear the list
