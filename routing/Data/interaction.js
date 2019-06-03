@@ -63,6 +63,12 @@ var baseLayers = {
 var layerControl = L.control.layers(baseLayers);                //avec ce layer --> peut choisir vue satellite ect --> faire pour retourner à la vue de base
 layerControl.addTo(map);
 
+var exampleSocket = new WebSocket("ws://localhost:8080");
+exampleSocket.onopen = function (event) { 
+                //console.log("Connexion serveur");
+                exampleSocket.send("");             //quand la carte avec l'itinéraire est chargée, on se connecte au serveur pour lui envoyer un message vide
+
+             }
 
 
 

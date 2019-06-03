@@ -585,6 +585,12 @@ ApplicationWindow {
                             var arrivee = message.substring(1,message.length-2);
                             enterArriveeInput.text = arrivee;
                         }
+                        else if(message == "")
+                        {
+                            //console.log("devrait pouvoir modifier le texte");
+                            //ne fait rien
+                        }
+
                         else {
                             //enterDepartInput.text ="";
                             //enterArriveeInput.text ="";
@@ -604,7 +610,7 @@ ApplicationWindow {
 
                 Item {
                     Timer{
-                        interval: 20; running:true; repeat:true        //tous les 500 ms le texte est mis à jour
+                        interval: 20; running:true; repeat:true        //tous les 20 ms le texte est mis à jour
                         onTriggered: socket.active = !socket.active
                     }
                 }
