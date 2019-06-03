@@ -426,11 +426,17 @@ ApplicationWindow {
                     }
 
                     function disableKm(){
-                        kmDesired.disableKm()
+                        if(enterArriveeInput.text != ""){
+                            kmDesired.readOnly = true;
+                            kmDesired.placeholderText = "Indisponible";
+                        }
+                        else{
+                            kmDesired.readOnly = false;
+                            kmDesired.placeholderText = "0 km";
+                        }
                     }
+                    onTextEdited: disableKm();
 
-
-                    onEditingFinished: disableKm();
 
                     Rectangle {
                         id: rectangle
@@ -461,11 +467,19 @@ ApplicationWindow {
                     background : Rectangle {
                         opacity: 0
                     }
+
                     function disableArrivee(){
-                        enterArriveeInput.readOnly()
+                        if(kmDesired.text != ""){
+                            enterArriveeInput.placeholderText = "Indisponible";
+                            enterArriveeInput.readOnly = true;
+                        }
+                        else{
+                            enterArriveeInput.placeholderText = "Arrivée";
+                            enterArriveeInput.readOnly = false;
+                        }
                     }
 
-                    onEditingFinished: disableArrivee();
+                    onTextEdited: disableArrivee();
 
 
                     Rectangle {
