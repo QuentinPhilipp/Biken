@@ -140,7 +140,7 @@ QString Weather::getActiveWindSpeed(){
         return "";
     }
 
-    QString speed = QString::number(forecasts[unsigned(i)].getWindSpeed() * 3.6);
+    QString speed = QString::number(int(forecasts[unsigned(i)].getWindSpeed() * 3.6));
 
     return speed + " km/h";
 }

@@ -48,7 +48,7 @@ public:
     Node *findClosestNode(double latitude, double longitude);
     Q_INVOKABLE QVariantList createItinerary(QList<double> startCoord, QList<double> finishCoord, QVariant km);
     bool extendDatabase(QStringList departement);
-    double getItineraryLength(QVariantList routeNodes);
+    Q_INVOKABLE int getItineraryLength(QVariantList routeNodes);
 
 private:
 

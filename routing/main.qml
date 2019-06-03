@@ -29,11 +29,6 @@ ApplicationWindow {
     }
 
     menuBar: MenuBar {
-        Menu {
-            title: "Fichier"
-            MenuItem { text: "Open" }
-            MenuItem { text: "Close" }
-        }
 
         Menu {
             title: "Paramètres"
@@ -43,11 +38,116 @@ ApplicationWindow {
                 onClicked :popupselectdepartment.open()
             }
         }
-        Menu {
-            title: "Export"
-        }
+        //        Menu {
+        //            title: "Export"
+        //        }
         Menu {
             title: "Credit"
+            MenuItem{
+                text:"Biken Team"
+                onClicked: teampopup.open()
+            }
+        }
+    }
+
+    Popup{
+        id:teampopup
+        width: 500
+        height : names.height + 20
+        x : mainWaindow.width/2 - width/2
+        y : mainWaindow.height/2 - height/2
+        background: Rectangle {
+            radius : 5
+            color : "#243665"
+        }
+        ColumnLayout{
+            id:names
+            spacing : 10
+            RowLayout{
+                Layout.minimumWidth: teampopup.width - 20
+                Text {
+                    text: "Beuzet Charles"
+                    font.pixelSize: 19
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignLeft
+                }
+                Text {
+                    text: "c6beuzet@enib.fr"
+                    font.pixelSize: 17
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignRight
+                }
+            }
+            RowLayout{
+                Layout.minimumWidth: teampopup.width - 20
+                Text {
+                    text: "Mérel Léo"
+                    font.pixelSize: 19
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignLeft
+                }
+                Text {
+                    text: "l6merel@enib.fr"
+                    font.pixelSize: 17
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignRight
+                }
+            }
+            RowLayout{
+                Layout.minimumWidth: teampopup.width - 20
+                Text {
+                    text: "Mesnage Guillaume"
+                    font.pixelSize: 19
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignLeft
+                }
+                Text {
+                    text: "g6mesnag@enib.fr"
+                    font.pixelSize: 17
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignRight
+                }
+            }
+            RowLayout{
+                Layout.minimumWidth: teampopup.width - 20
+                Text {
+                    text: "Lepoittevin Titouan"
+                    font.pixelSize: 19
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignLeft
+                }
+                Text {
+                    text: "t6lepoit@enib.fr"
+                    font.pixelSize: 17
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignRight
+                }
+            }
+            RowLayout{
+                Layout.minimumWidth: teampopup.width - 20
+                Text {
+                    text: "Philipp Quentin"
+                    font.pixelSize: 19
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignLeft
+                }
+                Text {
+                    text: "q6philip@enib.fr"
+                    font.pixelSize: 17
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignRight
+                }
+            }
         }
     }
 
@@ -130,39 +230,7 @@ ApplicationWindow {
             anchors.fill:mapContainer
             url:"file://"+path+"/card.html" //Linux
             //url:path+"/card.html"  //Windows
-
         }
-        Button{
-            id: testButton
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 10
-            width: 150
-            height: 20
-            onClicked: {
-                //Calls the function findRouteFrom(lat,lon) from datamanager in C++. It will return a list of nodes which are
-                //themself a list of 2 coordinates (latitude,longitude). Those nodes represent every node on which you change
-                //from one road to another.
-                console.log("Calculating route...");
-                //var nodes = dataManager.findRouteFrom(4.5,5.6); //(random parameters, they are not used yet)
-                var nodes = dataManager.createItinerary();
-                maCarte.createMap(nodes,dataManager);
-                console.log("Carte créée");
-                webengine.reload();
-            }
-            Text{
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: parent.top
-                anchors.topMargin: 10
-                width: 150
-                height: 20
-                font.pixelSize: 12
-                text: "TEST"
-                color: "black"
-
-            }
-        }
-
     }
 
     Rectangle{
@@ -219,7 +287,7 @@ ApplicationWindow {
         x: 35
         y: 35
         width: 350
-        height: 350
+        height: 390
         color: "#243665"
         opacity: 0.9
         radius : 20
@@ -287,10 +355,13 @@ ApplicationWindow {
                     loadingScreen.loading();
                     element.activate(startingCoordinates[0],startingCoordinates[1]);
                     var nodes = dataManager.createItinerary(startingCoordinates,finishCoordinates,kmDesired.text);
+                    var length = dataManager.getItineraryLength(nodes);
                     maCarte.sendNodes(nodes,dataManager);
                     //maCarte.createMap();
                     console.log("Carte créée");
                     webengine.reload();
+                    kmobtenus.text = "Itinéraire obtenu : " + length + "km";
+                    kmobtenus.visible = true;
                 }
                 loadingScreen.loaded();
             }
@@ -311,6 +382,24 @@ ApplicationWindow {
                 font.family: comfortaalight.name
                 color:"white"
             }
+        }
+
+        Rectangle{
+            id : line
+            height : 1
+            width : rectangleparameter.width
+            x : 0
+            y : valider.y + valider.height + 10
+            color: "#8bd8bd"
+        }
+        Text {
+            id: kmobtenus
+            x : 35
+            y : line.y + 15
+            visible : false
+            font.family: comfortaalight.name
+            font.pixelSize: 20
+            color:"#ffffff"
         }
 
         RowLayout {
