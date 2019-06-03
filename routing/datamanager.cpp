@@ -644,7 +644,7 @@ bool DataManager::extendDatabase(QStringList departement){
     return true;
 }
 
-double DataManager::getItineraryLength(QVariantList routeNodes)
+int DataManager::getItineraryLength(QVariantList routeNodes)
 {
     double itineraryLength = 0;
     qDebug() << "1" << routeNodes.size();
@@ -653,7 +653,7 @@ double DataManager::getItineraryLength(QVariantList routeNodes)
         unsigned long long nodeB = static_cast<unsigned long long>(routeNodes[i+1].toDouble());
         itineraryLength+=distanceBetween(*getNodeFromNodeId(nodeA),*getNodeFromNodeId(nodeB));
     }
-    return itineraryLength;
+    return int(itineraryLength);
 }
 
 double DataManager::distanceBetween(Node A, Node B)

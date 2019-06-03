@@ -5,7 +5,7 @@ import QtLocation 5.6
 import QtPositioning 5.6
 import "helper.js" as Helper
 import "map"
-import "weatherAddon"
+import "qmlModules"
 import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.2
 import QtQuick.Controls.Styles 1.4
@@ -31,35 +31,141 @@ ApplicationWindow {
 
     menuBar: MenuBar {
         Menu {
-            title: "Fichier"
-            MenuItem { text: "Open" }
-            MenuItem { text: "Close" }
-        }
-
-        Menu {
             title: "Paramètres"
             MenuItem{
-                text: "Département"
+                text: "Départements"
 
                 onClicked :popupselectdepartment.open()
             }
         }
         Menu {
-            title: "Export"
-        }
-        Menu {
             title: "Credit"
+            MenuItem{
+                text:"Biken Team"
+                onClicked: teampopup.open()
+            }
         }
     }
 
+    Popup{
+        id:teampopup
+        width: 500
+        height : names.height + 20
+        x : mainWaindow.width/2 - width/2
+        y : mainWaindow.height/2 - height/2
+        background: Rectangle {
+            radius : 5
+            color : "#243665"
+        }
+        ColumnLayout{
+            id:names
+            spacing : 10
+            Text {
+                id: popuptitle
+                text: "Biken Team"
+                Layout.alignment: Qt.AlignCenter
+                color: "#8bd8bd"
+                font.family: comfortaalight.name
+                font.pixelSize: 40
+            }
+            RowLayout{
+                Layout.minimumWidth: teampopup.width - 20
+                Text {
+                    text: "Beuzet Charles"
+                    font.pixelSize: 19
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignLeft
+                }
+                Text {
+                    text: "c6beuzet@enib.fr"
+                    font.pixelSize: 17
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignRight
+                }
+            }
+            RowLayout{
+                Layout.minimumWidth: teampopup.width - 20
+                Text {
+                    text: "Mérel Léo"
+                    font.pixelSize: 19
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignLeft
+                }
+                Text {
+                    text: "l6merel@enib.fr"
+                    font.pixelSize: 17
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignRight
+                }
+            }
+            RowLayout{
+                Layout.minimumWidth: teampopup.width - 20
+                Text {
+                    text: "Mesnage Guillaume"
+                    font.pixelSize: 19
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignLeft
+                }
+                Text {
+                    text: "g6mesnag@enib.fr"
+                    font.pixelSize: 17
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignRight
+                }
+            }
+            RowLayout{
+                Layout.minimumWidth: teampopup.width - 20
+                Text {
+                    text: "Lepoittevin Titouan"
+                    font.pixelSize: 19
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignLeft
+                }
+                Text {
+                    text: "t6lepoit@enib.fr"
+                    font.pixelSize: 17
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignRight
+                }
+            }
+            RowLayout{
+                Layout.minimumWidth: teampopup.width - 20
+                Text {
+                    text: "Philipp Quentin"
+                    font.pixelSize: 19
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignLeft
+                }
+                Text {
+                    text: "q6philip@enib.fr"
+                    font.pixelSize: 17
+                    font.family: comfortaalight.name
+                    color:"white"
+                    Layout.alignment: Qt.AlignRight
+                }
+            }
+        }
+    }
     Popup {
         id: popupselectdepartment
-        x: 100
-        y: 100
-        width: 900
-        height: 300
-
+        x: 50
+        y: 50
+        width: 1300
+        height: 650
+        Departements{
+            id : itemDepartements
+        }
     }
+
 
     Popup{
         id:loadingScreen
@@ -145,24 +251,59 @@ ApplicationWindow {
         color: "#243665"
         opacity: 0
         radius : 20
-        Button{
-            id: hideButton
-            width: 50
+        Rectangle {
+            id : hideButtoncontainer
+            width: 130
             height : 25
             x :(meteoContainer.width/2 - hideButton.width/2)
-            y : -hideButton.height
-            background: Image {
+            y : -hideButton.height -5
+            radius : 5
+            color: "#243665"
+
+
+            Text {
+                id: desaffichermeteo
+                x: 8
+                y: 2
+                width: 105
+                height: 25
+                text: "Enlever météo"
+                color: "white"
+            }
+            Image {
                 id: upArrow
-                source: "qrc:/icons/index.png"
-                rotation: 180
-            }/*Rectangle{
+                source: "qrc:/Images/move-to-next.png"
+                x : 105
+                y : 0
+                rotation: 270
+                width: 25
+                height: 25
+                fillMode: Image.PreserveAspectFit
+
+
+            }
+        }
+
+        Button{
+            id: hideButton
+            width: 130
+            height : 25
+            x :(meteoContainer.width/2 - hideButton.width/2)
+            y : -hideButton.height - 5
+            opacity: 0
+
+
+            /*Rectangle{
                 radius : 10
                 color:"#243665"
                 opacity: 0.9
             }*/
+
             onClicked:{
                 animationOFFopacity.running = true;
                 animationOFFx.running = true;
+                animationOFFopacity2.running = true;
+
             }
         }
         WeatherAddon{
@@ -190,7 +331,7 @@ ApplicationWindow {
         x: 35
         y: 35
         width: 350
-        height: 350
+        height: 390
         color: "#243665"
         opacity: 0.9
         radius : 20
@@ -201,19 +342,67 @@ ApplicationWindow {
             }
         }
 
-        Button{
-            id: showButton
-            width: 50
+        PropertyAnimation{
+            id : animationOFFopacity2
+            target: showButtoncontainer
+            property: "opacity"
+            to : 1
+            duration: 200
+        }
+
+        PropertyAnimation{
+            id : animationONopacity2
+            target: showButtoncontainer
+            property: "opacity"
+            to : 0
+            duration: 200
+        }
+
+        Rectangle {
+            id : showButtoncontainer
+            width: 75
             height : 25
             x :(rectangleparameter.width/2 - showButton.width/2)
-            y : rectangleparameter.height
-            background: Image {
-                id: downArrow
-                source: "qrc:/icons/50d.png"
+            y : rectangleparameter.height + 5
+            radius : 5
+            color: "#243665"
+            opacity: 0
+
+            Text {
+                id: affichermeteo
+                x: 8
+                y: 2
+                width: 50
+                height: 25
+                text: "Météo"
+                color: "white"
             }
+            Image {
+                id: downArrow
+                source: "qrc:/Images/move-to-next.png"
+                x : 50
+                y : 0
+                rotation: 90
+                width: 25
+                height: 25
+                fillMode: Image.PreserveAspectFit
+
+
+            }
+        }
+
+
+        Button{
+            id: showButton
+            width: 75
+            height : 25
+            x :(rectangleparameter.width/2 - showButton.width/2)
+            y : rectangleparameter.height + 5
+            opacity : 0
             onClicked:{
                 animationONopacity.running = true;
                 animationONx.running = true;
+                animationONopacity2.running = true;
             }
         }
 
@@ -231,6 +420,7 @@ ApplicationWindow {
             to : 0.9
             duration: 400
         }
+
 
         //Button to validate
         Button {
@@ -255,19 +445,24 @@ ApplicationWindow {
                 var endCoordinate = QtPositioning.coordinate(finishCoordinates[0],finishCoordinates[1]);
 
                 if (startCoordinate.isValid && endCoordinate.isValid) {
-                    var nodes;
-                    loadingScreen.loading();
-                    element.activate(startingCoordinates[0],startingCoordinates[1]);
-                    if(enterArriveeInput.length==0){
-                        nodes = dataManager.createRoute(startingCoordinates,kmDesired.text);
+                    if (enterDepartInput.text!=""&&(enterArriveeInput.text!=""||kmDesired.text!="")){
+                        var nodes;
+                        loadingScreen.loading();
+                        element.activate(startingCoordinates[0],startingCoordinates[1]);
+                        if(enterArriveeInput.length==0){
+                            nodes = dataManager.createRoute(startingCoordinates,kmDesired.text);
+                        }
+                        else{
+                            nodes = dataManager.createItinerary(startingCoordinates,finishCoordinates,kmDesired.text);
+                        }
+                        var length = dataManager.getItineraryLength(nodes);
+                        maCarte.sendNodes(nodes,dataManager);
+                        //maCarte.createMap();
+                        console.log("Carte créée");
+                        webengine.reload();
+                        kmobtenus.text = "Itinéraire obtenu : " + length + " km."
+                        kmobtenus.visible = true;
                     }
-                    else{
-                        nodes = dataManager.createItinerary(startingCoordinates,finishCoordinates,kmDesired.text);
-                    }
-                    maCarte.sendNodes(nodes,dataManager);
-                    //maCarte.createMap();
-                    console.log("Carte créée");
-                    webengine.reload();
                 }
                 loadingScreen.loaded();
             }
@@ -290,6 +485,24 @@ ApplicationWindow {
             }
         }
 
+        Rectangle{
+            id : line
+            height : 1
+            width : rectangleparameter.width
+            x : 0
+            y : valider.y + valider.height + 10
+            color: "#8bd8bd"
+        }
+        Text {
+            id: kmobtenus
+            x : 35
+            y : line.y + 15
+            visible : false
+            font.family: comfortaalight.name
+            font.pixelSize: 20
+            color:"#ffffff"
+        }
+
         RowLayout {
             x: 35
             y: 124
@@ -299,7 +512,8 @@ ApplicationWindow {
             spacing : 7
 
             ColumnLayout{
-                spacing: 20
+                spacing: 25
+
 
                 //icons
 
@@ -394,7 +608,6 @@ ApplicationWindow {
                         onTriggered: socket.active = !socket.active
                     }
                 }
-
 
 
                 TextField {
@@ -512,6 +725,8 @@ ApplicationWindow {
             }
         }
 
+
+
         RowLayout {
             x: 35
             y: 35
@@ -552,24 +767,3 @@ ApplicationWindow {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*##^## Designer {
-    D{i:0;autoSize:true;height:480;width:640}
-}
- ##^##*/
