@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     QString defaultAdress = "Brest";              //load the database around the adress
     QList<double> defaultCoord = myAdress->toCoordinates(defaultAdress);
     qDebug()<<defaultCoord;
-    db->requestRoads(defaultCoord[0],defaultCoord[1],60);   //radius in km
+    db->requestRoads(defaultCoord[0],defaultCoord[1],10);   //radius in km
 
     Weather* weather = new Weather();
 
