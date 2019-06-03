@@ -56,10 +56,10 @@ int main(int argc, char *argv[])
     db->extendDatabase(departments);
     qDebug()<<"End script database";
 
-    QString defaultAdress = "Loudeac";              //load the database around the adress
+    QString defaultAdress = "Brest";              //load the database around the adress
     QList<double> defaultCoord = myAdress->toCoordinates(defaultAdress);
     qDebug()<<defaultCoord;
-    db->requestRoads(defaultCoord[0],defaultCoord[1],100);   //radius in km
+    db->requestRoads(defaultCoord[0],defaultCoord[1],150);   //radius in km
 
     Weather* weather = new Weather();
 
