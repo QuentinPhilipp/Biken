@@ -46,7 +46,8 @@ public:
     uint getPositionInWay(Node *node, Way *way);
 
     Node *findClosestNode(double latitude, double longitude);
-    Q_INVOKABLE QVariantList createItinerary(QList<double> startCoord, QList<double> finishCoord, QVariant km);
+    Q_INVOKABLE QVariantList createRoute(QList<double> startCoord, QVariant km);
+    Q_INVOKABLE QVariantList createItinerary(QList<double> startCoord, QList<double> finishCoord);
     bool extendDatabase(QStringList departement);
     double getItineraryLength(QVariantList routeNodes);
 
@@ -66,8 +67,6 @@ private:
     bool verifList(QVariantList *nodeList);
     vector<Way *> createWayObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
     vector<Node *> createNodeObject(QSqlQuery query, double minLat, double maxLat, double minLon, double maxLon);
-
-    bool verifDirection(std::vector<Node *> waypointNodeList, int direction);
 };
 
 #endif // DATAMANAGER_H
