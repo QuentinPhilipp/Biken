@@ -54,10 +54,10 @@ Il faut aussi que la région que vous souhaitez charger ai précédemment été 
 
 
 > **Développé par  :** 
-> Beuzet Charles
-> Lepoittevin Titouan
-> Mérel Léo
-> Mesnage Guillaume
+> Beuzet Charles,
+> Lepoittevin Titouan,
+> Mérel Léo,
+> Mesnage Guillaume,
 > Philipp Quentin
 
 > **Biken**, Projet S6, Juin 2019, ENIB
