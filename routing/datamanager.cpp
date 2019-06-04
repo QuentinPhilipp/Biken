@@ -283,13 +283,6 @@ QVariantList DataManager::findRoute(unsigned long long startNodeId,unsigned long
         vector<Node *> nodesNearby = getNodesNearby(currentNode);
         currentNode->setMarque(true);
 
-        //        j=j+1;
-        //        if (j/10>1){
-        //            //reducing frequency of processEvents function
-        //            QCoreApplication::processEvents(QEventLoop::AllEvents);                                     //display splash screen while loading
-        //            j=0;
-        //        }
-
         for(auto &node: nodesNearby){
             if(node->getMarque()==false){
                 //Pour chacun de ces nodes, on regarde si la distance par rapport au départ en passant par
