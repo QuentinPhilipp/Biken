@@ -73,3 +73,6 @@ Thumbs.db
 
 # Database
 *.db
+
+.html
+.txt
