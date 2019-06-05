@@ -56,7 +56,7 @@ QList<double> MyAdress::toCoordinates(QString address){
         QJsonValue latitude = jsonArray[0].toObject()["lat"];
         QJsonValue longitude = jsonArray[0].toObject()["lon"];
 
-        coord.append(latitude.toString().toDouble());                       //Attention à la perte de précision
+        coord.append(latitude.toString().toDouble());
         coord.append(longitude.toString().toDouble());
     }
 

@@ -32,7 +32,7 @@ ColumnLayout {
             animationONopacity.running = true;
             animationONx.running = true;
         }
-        else{
+        else{                                                   //User feedback of the error description.
             errorDescription.text = weather.getError();
             weatherItem.visible = false;
             windItem.visible = false;

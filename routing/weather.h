@@ -5,6 +5,8 @@
 
 #include <QObject>
 
+//This object hold the weather informations claimed through the OpenWeatherMap API.
+
 class Forecast
 {
 private:
@@ -36,6 +38,9 @@ public:
 
     QString getIcon(){return iconCode;}
 };
+
+//This object can be send to the QML Module once in the main.
+//When the weather is updated, the "forecasts" is cleared and new Forecast objects are sent.
 
 class Weather: public QObject
 {
