@@ -23,7 +23,7 @@ function haveLayer(){
 
 
 var map =window[haveMap()]  //on récupère notre carte
-var layer = window[haveLayer()]
+var layer = window[haveLayer()] //récupère notre layer
 
 //ajout du controlzoom
 L.control.zoom({
@@ -44,14 +44,13 @@ var baseLayers = {
     "Plan": layer
     };
 
-var layerControl = L.control.layers(baseLayers);				//avec ce layer --> peut choisir vue satellite ect --> faire pour retourner à la vue de base
+var layerControl = L.control.layers(baseLayers);				//avec ce layer --> peut choisir vue satellite ect 
 layerControl.addTo(map);
 
 //on ne peut en créer que deux : arrivée et départ
 
 //on connaît le nombre de marqueurs au début, qui est forément nul
 
-//var socket = io.connect('http://localhost:8080');                       //inclure le script de socket.js dans le html
 
 var exampleSocket = new WebSocket("ws://localhost:8080");
 exampleSocket.onopen = function (event) {
@@ -82,7 +81,7 @@ function MarkersCreation(){
 				if(marker==markers[0])
 				{
   				exampleSocket.send(marker.getLatLng().toString()+'0');						//on identifie les deux marqueurs par 0 ou 1 en fin de string
-  				}
+  				}                                                                 //marqueurs ont propriété d'envoyer leurs coordonnées lorsqu'ils sont bougés
   				else{
   					exampleSocket.send(marker.getLatLng().toString()+'1');
   				}
@@ -105,18 +104,3 @@ function MarkersCreation(){
 
 
 MarkersCreation();
-
-
-//************************************************TEST FOR THE SEVER***********************************************************
-
-/*
-var socket = io.connect('http://localhost:8080');                       //inclure le script de socket.js dans le html
-
-socket.on('message', function(message) {
-    alert('Le serveur a un message pour vous : ' + message);                    //à mettre directement dans interaction.js
-        })
-
-$('#poke').click(function () {
-    socket.emit('message', 'Salut serveur, ça va ?');
-    })
-    */

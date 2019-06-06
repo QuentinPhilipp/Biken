@@ -4,7 +4,6 @@ import QtQuick.Controls 2.4
 import QtLocation 5.6
 import QtPositioning 5.6
 import "helper.js" as Helper
-import "map"
 import "qmlModules"
 import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.2
@@ -230,7 +229,7 @@ ApplicationWindow {
         border.color: "#36e855"
         anchors.right: parent.right
         anchors.top: parent.top
-        WebEngineView{
+        WebEngineView{                      //pour visualiser le html de la carte
             id:webengine
             //                        anchors.left:mapContainer.left
             //                        anchors.right:mapContainer.right
@@ -570,7 +569,7 @@ ApplicationWindow {
 
                 //route settings
 
-                WebSocket {
+                WebSocket {                                         //connexion au serveur pour affichage coordonnées dans les cases arrivée et départ
                     id: socket
                     url: "ws://localhost:1234"
                     onTextMessageReceived: {
@@ -610,7 +609,7 @@ ApplicationWindow {
 
                 Item {
                     Timer{
-                        interval: 20; running:true; repeat:true        //tous les 20 ms le texte est mis à jour
+                        interval: 20; running:true; repeat:true        //tous les 20 ms le texte est mis à jour par ce que nous envoie le serveur
                         onTriggered: socket.active = !socket.active
                     }
                 }

@@ -7,7 +7,7 @@ Thread::Thread()
 
 }
 
-void Thread::run()
+void Thread::run()                         //Pour éxécuter le serveur node.js en arrière plan
 {
     QDir direc = QDir::currentPath();     //return path in the build folder
     direc.cdUp();                         //project folder

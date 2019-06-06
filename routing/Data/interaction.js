@@ -70,37 +70,3 @@ exampleSocket.onopen = function (event) {
 
              }
 
-
-
-
-
-
-
-
-
-/*
-mymap.on('click', function(e) {
-    //alert("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)				//on récupére lon/lat au clic de la souris
-    lat = e.latlng.lat
-    lon = e.latlng.lng
-    console.log(lat,lon)
-
-    var marker= L.marker(													//on lui demande de créer un marqueur à ce moment là
-            [lat, lon],
-            {
-                icon: new L.Icon.Default(),
-                draggable: true,
-                autoPan: true,
-                }
-            ).addTo(mymap);
-    console.log(marker.getLatLng())
-}); */
-
-    //alert("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)				//on récupére lon/lat au clic de la souris
-
-/*
-    marker.on('dragend', function(e) {
-    		console.log(marker.getLatLng())
-    	}
-    	)
-    */
